@@ -1,0 +1,2182 @@
+/**
+ *------
+ * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * kingsguild implementation : © Adam Novotny <adam.novotny.ck@gmail.com>
+ *
+ * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
+ * See http://en.boardgamearena.com/#!doc/Studio for more information.
+ * -----
+ *
+ * kingsguild.css
+ *
+ * kingsguild stylesheet
+ *
+ */
+
+/*
+    This is the CSS stylesheet of your game User Interface.
+    
+    Styles defined on this file will be applied to the HTML elements you define in your
+    HTML template (kingsguild_kingsguild.tpl), and to HTML elements you create dynamically
+    (in kingsguild.js).
+    
+    Usually, you are using CSS to:
+    
+    1°) define the overall layout of your game
+        (ex: place the board on the top left, place player's hand beside, place the deck on the right, ...).
+
+    2°) create your CSS-sprites:
+        All images of your games should be gathered into a small number of image files. Then, using
+        background-image and background-position CSS properties, you create HTML blocks that can 
+        display these images correctly (see example below).
+    
+    3°) ... anything else:
+        It is really easy to add and remove CSS classes dynamically from your Javascript with
+        dojo.addClass and dojo.removeClass. It is also easy to check if an element has a class
+        (dojo.hasClass) or to get all elements with a specific class (dojo.query). This is why,
+        very often, using CSS classes for the logic of your user interface allow you to do complex
+        thing easily.
+        
+        
+     Note: on the production platform, this file will be compressed and comments will be removed.
+           Consequently, don't hesitate to put as many comments as necessary.
+*/
+
+@import url(../../../css/csslayer.css); /* Note: you must not use any @import directive other than this one */
+
+/********* You can start writing your CSS below this line: **********/
+
+.mainboard {
+    /* background-image: url(img/BoardSmaller.jpg); */
+    background-image: url(img/BoardPureSmaller.jpg);
+    background-repeat: no-repeat;
+
+    background-position: -50px -50px;
+    background-size: 108.5%;
+
+    width: 1100px;
+    height: 785px;
+    display: inline-block;
+    position: relative;
+    /* overflow: hidden; */
+
+    -webkit-box-shadow: 4px 4px 4px #222;
+    box-shadow: 4px 4px 4px #222;
+}
+
+.playerboardwrap {
+    display: inline-block;
+    position: relative; 
+    /* border: 2px solid red; */
+    height: 785px;
+    width: 710px;
+}
+
+@media screen and (min-width: 990px) {
+    .restboardswrap .playerboardwrap {
+        margin-left: 7.2%;
+    }
+    .restboardswrap .playerboardwrap:last-child:not(:nth-child(2n)) {
+        margin-left: 30.4%;
+    }
+}
+
+@media screen and (max-width: 990px) {
+    .playerboardwrap {
+      display: block;
+      margin: 0 auto;
+    }
+}
+
+.discardtile {
+    height: 150px;
+    width: 100px;
+    position: absolute;
+    left: 500px;
+    top: 360px;
+    cursor: pointer;
+    /* border: 2px solid red; */
+}
+
+.handcontainer {
+    position: relative;
+    display: block;
+    max-height: 400px;
+    margin-top: 5px;
+
+    transition: max-height 1s;
+    -webkit-transition: max-height 1s;
+    -o-transition: max-height 1s;
+
+    overflow: hidden;
+}
+
+.handcontainer.hidden {
+    max-height: 0;
+    transition: max-height 1s ease-out;
+    -webkit-transition: max-height 1s ease-out;
+    -o-transition: max-height 1s ease-out;
+}
+
+.handcontainer.left {
+    margin: 0 auto;
+    text-align: center;
+}
+.handcontainer.right {
+    width: 36.5%;
+    min-height: 0;
+    display: inline-block;
+}
+
+.playercards {
+    display: -webkit-inline-box;
+
+    display: -ms-inline-flexbox;
+
+    display: inline-flex;
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+    position: relative;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+}
+
+.card_menu {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+    position: absolute;
+    -ms-flex-pack: distribute;
+        justify-content: space-around;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    background: beige;
+    border: 2px solid black;
+    padding: 15px;
+    border-radius: 10px;
+    z-index: 20;
+}
+
+.card_menu .treasurecontainer {
+    position: relative;
+}
+
+.playerboard {
+    background-image: url(img/playermats.jpg);
+    background-size: 331% 207%;
+    width: 700px;
+    height: 560px;
+    position: absolute;
+    left: 0.5%;
+    top: 225px;
+    background-repeat: no-repeat;
+
+    -webkit-box-shadow: 4px 4px 4px #222;
+    box-shadow: 4px 4px 4px #222;
+}
+
+.playerboardA {background-position: -50px 0px;} .playerboardB {background-position: -1592px -580px;} .playerboardC {background-position: -824px -0px;} 
+.playerboardD {background-position: -50px -580px;} .playerboardE {background-position: -824px -580px;} .playerboardF {background-position: -1592px -0px;} 
+
+.restboardswrap {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    /* border: 2px solid black; */
+}
+
+.tile {
+    /* background-color: rgba(255, 248, 220, 0.4); */
+    position: absolute;
+    pointer-events: none;
+}
+
+.tile.selection  {
+    /* background-color: rgba(255, 248, 220, 0.4); */
+    border: 1px dashed skyblue;
+    z-index: 10;
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.questcontainer .selection {
+    border: 2px dashed aqua;
+}
+
+.questcontainer .selected {
+    border: 2px solid red;
+}
+
+.tile.selection:hover {
+    background-color: rgb(135, 206, 235, 0.3);
+}
+
+.tilestorage {
+    /* background-color: rgba(255, 248, 220, 0.4); */
+    position: absolute;
+    border-radius: 50%;
+}
+
+.tilespecialist {
+    position: absolute;
+    /* background-color: rgba(255, 248, 220, 0.4); */
+}
+
+.cardtile {
+    -webkit-box-flex: 0;
+        -ms-flex-positive: 0;
+            flex-grow: 0;
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+}
+
+.playerheader {
+    position: absolute;
+    top: 1%;
+}
+
+.masterroombox {
+    background-image: url(img/BoardPureSmaller.jpg);
+    position: absolute; 
+    background-position: -50px -62px;
+    background-size: 108.5%;
+    top: 0px;
+    width: 1100px;
+    height: 134px;
+    left: 1100px;
+
+    z-index: 10;
+    background-color: rgba(199, 171, 59, 1.4);
+
+    -webkit-transition: left 1s;
+    -o-transition: left 1s;
+    transition: left 1s;
+}
+
+.masterroomwrap{
+    position: absolute; 
+    top: 12px;
+    width: 1100px;
+    height: 160px;
+    left: 0px;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.masterroomtoggler {
+    position: absolute; 
+    top: 160px; 
+    left: 580px; 
+    font-size: 26px;
+    text-align: end;
+    width: 500px;
+    height: 40px;
+    color: lightyellow;
+    cursor: pointer;
+}
+
+.glowing {
+    /* text-shadow: 0 0 5px #FFF, 0 0 10px #FFF, 0 0 15px #FFF, 0 0 15px #49ff18, 0 0 20px #49FF18, 0 0 30px #49FF18, 0 0 40px #49FF18, 0 0 60px #49ff18; */
+    -webkit-animation: glow 2s forwards;
+    animation: glow 2s forwards;
+}
+
+@keyframes glow {
+    0%   { text-shadow: none; }
+    100% {     text-shadow: 0 0 2px #FFF, 0 0 2px #FFF, 0 0 2px #FFF, 0 0 1px #FFFF66, 0 0 2px #FFFF66, 0 0 2px #FFFF66, 0 0 2px #FFFF66, 0 0 2px #FFFF66; }
+}
+
+@-webkit-keyframes glow {
+    0%  { text-shadow: none; }
+    100% {     text-shadow: 0 0 2px #FFF, 0 0 2px #FFF, 0 0 2px #FFF, 0 0 1px #FFFF66, 0 0 2px #FFFF66, 0 0 2px #FFFF66, 0 0 2px #FFFF66, 0 0 2px #FFFF66;}
+}
+
+.showtreasure {
+    position: absolute; right: 4%; top: 4%;
+    font-size: 24px;
+    color: white;
+    /* line-height: 26px; */
+    text-align: end;
+    cursor: pointer;
+}
+
+.hinttoggler {
+    position: absolute; left: 92%; top: -2%;
+    width: 20px;
+    height: 20px;
+    background-image: url(img/iconssprite.png);
+    background-position: calc(-79px/(60/20)) calc(-430px/(60/20));
+    background-size: calc( 674px/(60/20) ) calc(490px/(60/20));
+}
+
+.hinttoggler:hover {
+    cursor: pointer;
+    background-color: white;
+}
+
+.resource {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-size: 600%; 
+    background-image: url(img/resources.png);
+    -webkit-filter: drop-shadow(1px 2px 1px #000000);
+    filter: drop-shadow(1px 2px 1px #000000);
+    pointer-events: all;
+    z-index: 10;
+}
+
+.resource.selection {
+    border: 2px dashed aqua;
+    border-radius: 60%;
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.resource.selected {
+    border: 2px solid red;
+    border-radius: 60%;
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.logresource{
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    position: relative;
+    vertical-align: middle;
+}
+
+.panelresource {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    position: relative;
+    vertical-align: middle;
+}
+
+.resource.iron{ background-position-x: 0px } .logresource.iron{ background-position-x: 0px }            .panelresource.iron{ background-position-x: 0px }
+.resource.wood{ background-position-x: 250px;} .logresource.wood{ background-position-x: 125px;}        .panelresource.wood{ background-position-x: 100px;}
+.resource.leather{ background-position-x: 500px;} .logresource.leather{ background-position-x: 250px;}  .panelresource.leather{ background-position-x: 200px;}
+.resource.cloth{ background-position-x: 750px;} .logresource.cloth{ background-position-x: 375px;}      .panelresource.cloth{ background-position-x: 300px;}
+.resource.gem { background-position-x: 1000px;} .logresource.gem { background-position-x: 500px;}     .panelresource.magic { background-position-x: 400px;}
+.resource.magic { background-position-x: 1248px;} .logresource.magic { background-position-x: 624px;}   .panelresource.magic { background-position-x: 500px;}
+
+.logitem {
+    position: relative;  
+    background-image: url(img/iconssprite.png);
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.goldlog{
+    width: 20px;
+    height: 20px;
+    /* background-size: calc(674px/(59/20)) calc(490px/(59/20)); 
+    background-position: calc(-441px/(59/20)) calc(-2px/(59/20)); */
+
+    background-size: calc(674px/(80/20)) calc(490px/(80/20)); 
+    background-position: calc(-555px/(80/20)) calc(-300px/(80/20));
+    font-size: 15px;
+    text-align: center;
+    line-height: 20px;
+
+    -webkit-box-shadow: 1px 1px 1px #222, inset 0 0 1px #222;
+    box-shadow: 1px 1px 1px #222, inset 0 0 1px #222;
+    border-radius: 50%;
+}
+
+.pointslog{
+    width: 20px;
+    height: 27px;
+    background-size: calc(674px/(48/20)) calc(490px/(65/27)); 
+    background-position: calc(-440px/(48/20)) calc(-125px/(65/27));
+    font-size: 16px;
+    text-align: center;
+    line-height: 24px;
+}
+
+.resourceplain {
+    width: 22px;
+    height: 27.4px;
+    background-size: calc(674px/(49/22)) calc(490px/(61/27.4)); 
+    background-position: calc(-441px/(49/22)) calc(-195px/(61/27.4));
+}
+
+.treasureplain {
+    background-size: calc(674px/(46/20)) calc(490px/(62/26)); 
+    background-position: calc(-441px/(46/20)) calc(-260px/(62/26));
+    height: 26px;
+    width: 20px;
+}
+
+.magiclog {
+    width: 22px;
+    height: 27px;
+    background-size: calc(674px/(54/22)) calc(490px/(66/27)); 
+    background-position: calc(-492px/(54/22)) calc(-234px/(66/27));
+}
+
+.gemlog {
+    width: 26px;
+    height: 22.3px;
+    background-size: calc(674px/(63/26)) calc(490px/(54/22.3)); 
+    background-position: calc(-611px/(63/26)) calc(-203px/(54/22.3));
+}
+
+
+.specialistdiscount {
+    width: 30px;
+    height: 30px;
+    /* background-size: calc( (554/59)*100% ) calc( (490/59)*100% );  */
+    /* background-size: calc( (674/59)*100% ) calc( (490/59)*100% ); 
+    background-position: calc(-441px/(59/30)) calc(-2px/(59/30)); */
+
+    /* background-size: calc( (674/80)*100%) calc( (490/80)*100%);   */
+    background-size: 842.5% 612.5%;  
+    background-position: calc(-555px/(80/30)) calc(-300px/(80/30));
+    font-size: 20px;
+    text-align: center;
+    line-height: 18px;
+    position: absolute;
+    z-index: 9;
+
+    -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    border-radius: 50%;
+}
+
+
+/*----------------------------------------------------ACTION PANEL--------------------------------------------------------*/
+.actionpanel {
+    position: relative;
+    width: 100%;
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    height: 80px;
+}
+
+.actionpanel.closed {
+    height: 0px;
+    visibility: hidden;
+}
+
+.actionpanel.opened {
+    height: 85px;
+    visibility: visible;
+}
+
+.actioncell {
+    padding: 10px;
+    text-align: center;
+    position: relative;
+    border: 2px solid white;
+    border-right: none;
+    /* border-radius: 10%; */
+    -webkit-box-flex: 0;
+        -ms-flex: 0 1 25%;
+            flex: 0 1 25%;
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+}
+
+.actioncell:last-child {
+    border-right: 2px solid white;
+}
+
+.iconholder {
+        /* width: fit-content; */
+    /* height: min-content; */
+    /* background: ghostwhite; */
+    border: 1px solid transparent;
+    border-radius: 15%;
+    /* margin-top: 4%; */
+    /* margin-left: 1%; */
+    /* position: absolute; */
+    /* top: 50%; */
+    /* transform: translateY(-50%); */
+    cursor: pointer;
+    padding: 4px;
+}
+
+.iconholder:hover {
+    background: yellowgreen;
+}
+
+.actionicon {
+    position: relative;
+    /* transform: scale(0.7); */
+    background-image: url(img/iconssprite.png);
+    pointer-events: none;
+}
+
+.actionicon.gather{background-position: 0px calc(-279px/(146/65)); width: 60px; height: 65px; background-size: calc(674px/(131/60)) calc(490px/(146/65));} 
+.actionicon.craft{background-position: calc(-133px/(131/60)) calc(-279px/(145/65)); width: 60px; height: 65px; background-size: calc(674px/(131/60)) calc(490px/(145/65));} 
+.actionicon.build{background-position: calc(-269px/(132/60)) calc(-279px/(146/65)); width: 60px; height: 65px; background-size: calc(674px/(132/60)) calc(490px/(146/65)); }
+
+.actioncustombutton {
+    padding: 4px 4px;
+    border: none;
+    border-radius: 15%;
+    background: rgb(154, 205, 50, 0.6);
+    -webkit-box-shadow: none; 
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.actioncustombutton.resbutton {
+    padding: 5px 16px;
+    border: 1px solid #060606;
+    border-radius: 6px;
+}
+
+.actioncustombutton:hover {
+    background: rgb(154, 205, 50, 1.0) !important;
+}
+
+/* #gatherAB_gather {
+    padding: 4px 4px;
+    border: none;
+    border-radius: 15%;
+    background: rgb(154, 205, 50, 0.6);
+    -webkit-box-shadow: none; 
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+#buildAB_expand {
+    padding: 4px 4px;
+    border: none;
+    border-radius: 15%;
+    background: rgb(154, 205, 50, 0.6);
+    -webkit-box-shadow: none; 
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+#craftAB_craft {
+    padding: 4px 4px;
+    border: none;
+    border-radius: 15%;
+    background: rgb(154, 205, 50, 0.6);
+    -webkit-box-shadow: none; 
+    -moz-box-shadow: none;
+    box-shadow: none;
+} */
+
+.bonusholder {
+    /* height: 80%;
+    width:45%;
+    position: absolute;
+    left: 40%; */
+    /* top: 30px; */
+    /* display: block; */
+    text-align: left;
+}
+
+.actiontext {
+    left: 28%;
+    position: absolute;
+    display: block;
+    top: 2%;
+}
+
+.actionbaritem {
+    margin-bottom: 5px;
+    margin-left: 25%;
+    width: 140%;
+}
+
+.bonusicon {
+    width: 20px;
+    height: 20px;
+    position: relative;  
+    background-image: url(img/iconssprite.png);
+}
+
+/* .bonusicon.coin{background-size: calc(554px/(59/20)) calc(490px/(59/20)); background-position: calc(-441px/(59/20)) calc(-2px/(59/20));} */
+.bonusicon.coin{background-size: calc(674px/(59/20)) calc(490px/(59/20)); background-position: calc(-441px/(59/20)) calc(-2px/(59/20));}
+
+/*--------------------PLAYER PANEL---------------------------------  */
+.cp_board{ 
+    width: 100%; 
+}
+
+.row1 {
+    /* display: inline-block; */
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    font-size: 0;
+    width: 100%;
+    margin-top: 2px;
+}
+
+.row2 { 
+    display: inline-block;
+    font-size: 0;
+    width: 100%; 
+    /* margin-top: 10px; */
+    padding-top: 8px;
+    max-width: 240px;
+}
+
+.cell { 
+    font-size: 19px;
+    /* font-weight: 600; */
+    display: inline-block;
+    width: 18px;
+    height: 26px;
+    line-height: 27px;
+    vertical-align: top;
+    margin-top: 1%;
+    text-align: center;
+    cursor: default;
+}
+
+.cellres { 
+    line-height: 20px;
+}
+
+.cellcount { 
+    display: inline-block;
+
+    background-image: url(img/iconssprite.png);
+    /* box-shadow: 2px 2px 2px #222, inset 0 0 2px #222;
+        -webkit-box-shadow: 2px 2px 2px #222, inset 0 0 2px #222;
+    border-radius: 50%; */
+}
+
+.smallcell {
+    width: 28px;
+    height: 28px;
+    /* background-size: calc(554px/1.75) calc(490px/1.9); */
+    background-size: calc(674px/1.75) calc(490px/1.9);
+}
+
+.biggercell {
+    width: 40px;
+    height: 40px;
+    /* background-size: calc(554px/1.6) calc(490px/1.6); */
+    background-size: calc(674px/1.6) calc(490px/1.6);
+}
+
+.cellcount.gold { 
+    /* background-position: calc(-439px/1.6) calc(-2px/1.6); */
+    background-size: calc(674px/(80/40)) calc(490px/(80/40));  
+    background-position: calc(-555px/(80/40)) calc(-300px/(80/40));
+    font-size: 20px;
+    text-align: center;
+    margin-right: 8px;
+    font-family: fantasy;
+    line-height: 40px;
+    color: black;
+    text-shadow: 1px 1px 0 white, 1px -1px 0 white, -1px 1px 0 white, -1px -1px 0 white, 1px 0px 0 white, 0px 1px 0 white, -1px 0px 0 white, 0px -1px 0 white;
+    text-align: center;
+    -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    border-radius: 50%;
+    cursor: default;
+}
+.cellcount.handcards { 
+    height: 40px;
+    margin-right: 8px;
+    width: 28.2px;
+    background-image: url(img/treasuresprite.jpg); 
+    background-size: calc(2368px/10.5) calc(2100px/10.5);
+    font-size: 20px;
+    text-shadow: 1px 1px 0 black, 1px -1px 0 black, -1px 1px 0 black, -1px -1px 0 black, 1px 0px 0 black, 0px 1px 0 black, -1px 0px 0 black, 0px -1px 0 black;
+    text-align: center;
+    line-height: 40px;
+    color: ghostwhite;
+    font-weight: bolder;
+    cursor: default;
+}
+.cellcount.handmaxcards { background-position: calc(-441px/1.6) calc(-260px/1.6);  font-size: 20px;
+    text-align: center;
+    line-height: 40px;
+    color: ghostwhite;
+    text-shadow: 1px 1px 0 black, 1px -1px 0 black, -1px 1px 0 black, -1px -1px 0 black, 1px 0px 0 black, 0px 1px 0 black, -1px 0px 0 black, 0px -1px 0 black;
+    font-weight: bolder;
+    cursor: default;
+    width: 30px;
+    margin-right: 10px;
+}
+/* .cellcount.mage { background-position: calc(-505px/1.75) calc(-2px/1.9)}
+.cellcount.warrior {background-position: calc(-505px/1.75) calc(-118px/1.9) }
+.cellcount.rogue { background-position: calc(-502px/1.75) calc(-60px/1.9) }
+.cellcount.armor { background-position: calc(-441px/1.75) calc(-380px/1.9)}
+.cellcount.weapon {background-position: calc(-502px/1.75) calc(-176px/1.9) } */
+
+.mage { background-position: calc(-505px/1.75) calc(-2px/1.9)}
+.warrior {background-position: calc(-505px/1.75) calc(-118px/1.9) }
+.rogue { background-position: calc(-502px/1.75) calc(-60px/1.9) }
+.armor { background-position: calc(-441px/1.75) calc(-380px/1.9)}
+.weapon {background-position: calc(-502px/1.75) calc(-176px/1.9) }
+
+.cellcount.handcards.blue {
+    background-position:  calc(-296px/10.5) calc(-420px/10.5);
+}                                               
+.cellcount.handcards.red {
+    background-position:  calc(-592px/10.5) calc(-420px/10.5);
+}                                               
+.cellcount.handcards.yellow {
+    background-position:  calc(-888px/10.5) 0;
+}  
+
+.sigil {
+    background-image: url(img/iconssprite.png); 
+    background-size: calc( (674/60)*100% ) calc( (490/100)*100% ) ;
+    width: 36px;
+    height: 60px;
+    position: absolute;
+    z-index: 10;
+}
+
+.sigil.small {
+    width: 18px;
+    height: 30px;
+    position: relative;
+    display: inline-block;
+    top: 13%;
+    left: -2px;
+}
+
+.sigil.CraftCollective {
+    background-position: calc(-552px/(60/36)) 0;
+}                                               
+.sigil.ExplorersLeague {
+    background-position:  calc(-553px/(60/36)) calc(-100px/(100/60));
+}                                               
+.sigil.GreycastleGuard {
+    background-position:  calc(-552px/(60/36)) calc(-201px/(100/60));
+} 
+.sigil.MercantileTrust {
+    background-position:  calc(-613px/(60/36)) 0;
+}                                               
+.sigil.StarfallSyndicate {
+    background-position:  calc(-613px/(60/36)) calc(-100px/(100/60));
+}                                               
+.sigil.TheHolyOrder {
+    /* background-position:  calc(-551px/(60/36)) calc(-299px/(100/60)); */
+    background-position:  calc(-494px/(60/36)) calc(-305px/(100/60));
+} 
+
+.sigil.small.CraftCollective {
+    background-position: calc(-552px/(60/18)) 0;
+}                                               
+.sigil.small.ExplorersLeague {
+    background-position:  calc(-553px/(60/18)) calc(-100px/(100/30));
+}                                               
+.sigil.small.GreycastleGuard {
+    background-position:  calc(-552px/(60/18)) calc(-201px/(100/30));
+} 
+.sigil.small.MercantileTrust {
+    background-position:  calc(-613px/(60/18)) 0;
+}                                               
+.sigil.small.StarfallSyndicate {
+    background-position:  calc(-613px/(60/18)) calc(-100px/(100/30));
+}                                               
+.sigil.small.TheHolyOrder {
+    /* background-position:  calc(-551px/(60/18)) calc(-299px/(100/30)); */
+    background-position:  calc(-494px/(60/18)) calc(-305px/(100/30));
+} 
+
+.thugicon {
+    background-repeat: no-repeat;
+    position: absolute;
+    background-image: url(img/iconssprite.png);
+    background-size: calc( (674/70)*100% ) calc( (490/70)*100% ); 
+    background-position: -555px -419px;
+    width: 70px;
+    height: 70px;
+    border: 2px solid darkorange;
+    border-radius: 80%;
+}
+
+/*----------- guild background -----------*/
+
+.guildbackimage {
+    background-image: url(img/roomssprite.jpg);
+    /* background-size: 437% 768%; */
+    background-size: 415% 1250%;
+    width: 700px;
+    height: 210px;
+    position: absolute;
+    top: 4%;
+    left: 0.5%;
+    box-shadow: 4px 4px 4px #222;
+    -webkit-box-shadow: 4px 4px 4px #222;
+    opacity: 0.6;
+}
+
+.guildbackimage.bg-GuildBackCraftCollective {
+    background-position: calc(-4px*(700/790)) calc(-436px*(210/240));
+}
+
+.guildbackimage.bg-GuildBackExplorersLeague {
+    background-position: calc(-823px*(700/790)) calc(-436px*(210/240));
+}
+
+.guildbackimage.bg-GuildBackGreycastleGuard {
+    background-position: calc(-4px*(700/790)) calc(-863px*(210/240));
+}
+
+.guildbackimage.bg-GuildBackMercantileTrust {
+    background-position: calc(-823px*(700/790)) calc(-863px*(210/240));
+}
+
+.guildbackimage.bg-GuildBackStarfallSyndicate {
+    background-position: calc(-1619px*(700/790)) calc(-4px*(210/240));
+}
+
+.guildbackimage.bg-GuildBackTheHolyOrder {
+    background-position: calc(-1619px*(700/790)) calc(-436px*(210/240));
+}
+
+.guildtext {
+    text-shadow: 1px 1px 0 white, 1px -1px 0 white, -1px 1px 0 white, -1px -1px 0 white, 1px 0px 0 white, 0px 1px 0 white, -1px 0px 0 white, 0px -1px 0 white;
+    cursor: default;
+}
+
+
+/*----------------------------------------------------TOOLTIPS--------------------------------------------------------*/
+.overseer_wrap {
+    position: relative;
+    display: block;
+}
+
+.discard_wrap {
+    position: relative;
+    display: inline-block;
+    max-width:505px !important;
+}
+
+.tooltipitem {
+    position: relative !important;
+    display: inline-block;
+    margin: 4px;
+}
+
+
+
+
+/*----------------------------------------------------ROOMS--------------------------------------------------------*/
+.room {
+    background-image: url(img/roomssprite.jpg);
+    position: absolute;
+    background-repeat: no-repeat;
+
+    -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    border-radius: 4%;
+
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
+
+    z-index: 8;
+
+    pointer-events: all;
+}
+
+.room.selection {
+    border: 2px dashed aqua;
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.room.selected {
+    border: 2px solid red;
+}
+
+.singleroom {
+    width: 126px; height: 126px;
+    /* background-size: 779%; */
+    background-size: 886%;
+    border-top: 1px solid antiquewhite;
+}
+.singleroomenlarged {
+    width: 165px; height: 165px;
+    /* background-size: 779%; */
+    background-size: 886%;
+    z-index: 5;
+}
+
+.doubleroom {
+    width: 241px; height: 126px;
+    /* background-size: 410%; */
+    /* background-size: 435%;  */
+    background-size: 437% 768%;
+    border-top: 1px solid antiquewhite;
+    border-radius: 2%/3.9%;
+}
+.doubleroomenlarged {
+    width: 316px; height: 165px;
+    /* background-size: 410%; */
+    /* background-size: 435%;  */
+    background-size: 437% 768%;
+    border-radius: 2%/3.9%;
+    z-index: 5;
+}
+
+.room.roomback {
+    -webkit-transform: rotateY( 180deg );
+    transform: rotateY( 180deg );
+}
+
+.roomcontainer {
+    position: absolute;
+    -webkit-transition: -webkit-transform 2s;
+    -o-transition: -o-transform 2s;
+    transition: -webkit-transform 2s;
+    -o-transition: transform 2s;
+    transition: transform 2s;
+    transition: transform 2s, -webkit-transform 2s;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
+
+    border-top: none;
+}
+
+.roomcontainer.flipped {
+    -webkit-transform: rotateY( 180deg );
+    transform: rotateY( 180deg );
+}
+
+.rotate {
+    background-image: url(img/iconssprite.png);
+    position: absolute;
+    background-repeat: no-repeat;
+    width: 50px; height: 32px;
+    background-size: calc( (674/400)*100% ) calc( (490/255)*100% ); 
+    background-position: 0px 0px;                                                                       
+    z-index: 1;
+    pointer-events: all;
+    cursor: pointer;
+    -webkit-filter: drop-shadow(1px 1px 1px white);
+    filter: drop-shadow(1px 1px 1px white);
+}
+
+.singleroom > .rotate {
+    margin-top: 65%;
+}
+.doubleroom > .rotate {
+    margin-top: 35%;
+}
+
+.bg-Armory {
+    /* background-position: -1594px -1674px; */
+    background-position: -1619px -1699px;
+}
+
+.bg-Arsenal {
+    /* background-position: -2390px -2px; */
+    background-position: -2415px -17px;
+}
+
+.bg-Bedchamber {
+    /* background-position: -2390px -420px; */
+    background-position: -2415px -445px;
+}
+
+.bg-Depot {
+    /* background-position: -2390px -838px; */
+    background-position: -2415px -863px;
+}
+
+.bg-Gallery {
+    /* background-position: -2390px -1256px; */
+    background-position: -2415px -1281px;
+}
+
+.bg-GemWorkshop {
+    /* background-position: -2390px -1674px; */
+    background-position: -2415px -1699px;
+}
+
+.bg-HallofBuilders {
+    /* background-position: -2px -2092px; */
+    background-position: -27px -2117px;
+}
+
+.bg-HallofCunning {
+    /* background-position: -420px -2092px; */
+    background-position: -445px -2117px;
+}
+
+.bg-HallofMages {
+    /* background-position: -838px -2092px; */
+    background-position: -863px -2117px;
+}
+
+.bg-HallofRogues {
+    /* background-position: -1256px -2092px; */
+    background-position: -1281px -2117px;
+}
+
+.bg-HallofStrength {
+    /* background-position: -1674px -2092px; */
+    background-position: -1699px -2117px;
+}
+
+.bg-HallofWarriors {
+    /* background-position: -2092px -2092px; */
+    background-position: -2117px -2117px;
+}
+
+.bg-HallofWisdom {
+    /* background-position: -2808px -2px; */
+    background-position: -2833px -27px;
+}
+
+.bg-KingsStatue {
+    /* background-position: -2808px -420px; */
+    background-position: -2833px -445px;
+}
+
+.bg-Kitchen {
+    /* background-position: -2808px -838px; */
+    background-position: -2833px -863px;
+}
+
+.bg-Library {
+    /* background-position: -2808px -1256px; */
+    background-position: -2833px -1281px;
+}
+
+.bg-MagicArcaenum {
+    /* background-position: -2808px -1674px; */
+    background-position: -2833px -1699px;
+}
+
+.bg-Shrine {
+    /* background-position: -2808px -2092px; */
+    background-position: -2833px -2117px;
+}
+
+.bg-Tavern {
+    /* background-position: -2px -2510px; */
+    background-position: -27px -2535px;
+}
+
+.bg-ThroneRoom {
+    /* background-position: -420px -2510px; */
+    background-position: -445px -2535px;
+}
+
+.bg-VaultofRiches {
+    /* background-position: -838px -2510px; */
+    background-position: -863px -2535px;
+}
+
+.bg-Warehouse {
+    /* background-position: -1256px -2510px; */
+    background-position: -1281px -2535px;
+}
+
+.bg-Barracks {
+    /* background-position: -2px -2px; */
+    background-position: -27px -27px;
+}
+
+.bg-GreatHall {
+    /* background-position: -798px -2px; */
+    background-position: -823px -27px;
+}
+
+/* .bg-GuildBackCraftCollective {
+    background-position: -27px -445px;
+}
+
+.bg-GuildBackExplorersLeague {
+    background-position: -823px -445px;
+}
+
+.bg-GuildBackGreycastleGuard {
+    background-position: -27px -863px;
+}
+
+.bg-GuildBackMercantileTrust {
+    background-position: -823px -863px;
+}
+
+.bg-GuildBackStarfallSyndicate {
+    background-position: -1619px -27px;
+}
+
+.bg-GuildBackTheHolyOrder {
+    background-position: -1619px -445px;
+} */
+
+.bg-CraftCollective {
+    /* background-position: -1594px -838px; */
+    background-position: -1619px -863px;
+}
+
+.bg-ExplorersLeague {
+    /* background-position: -2px -1256px; */
+    background-position: -27px -1281px;
+}
+
+.bg-GreycastleGuard {
+    /* background-position: -798px -1256px; */
+    background-position: -823px -1281px;
+}
+
+.bg-MercantileTrust {
+    /* background-position: -1594px -1256px; */
+    background-position: -1619px -1281px;
+}
+
+.bg-StarfallSyndicate {
+    /* background-position: -2px -1674px; */
+    background-position: -27px -1699px;
+}
+
+.bg-TheHolyOrder {
+    /* background-position: -798px -1674px; */
+    background-position: -823px -1699px;
+}
+
+/*----------------------------------------------------ROOMS--------------------------------------------------------*/
+
+
+/*----------------------------------------------------SPECIALISTS--------------------------------------------------------*/
+
+.specialist {
+    background-repeat: no-repeat;
+    /* background-size: 700%; */
+    background-size: 768.4%;
+    position: absolute;
+    background-image: url('img/specialistssprite.jpg');
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+    -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    border-radius: 4%;
+    pointer-events: all;
+}
+
+.specialist.selection {
+    border: 2px dashed aqua;
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.specialist.selected {
+    border: 2px solid red;
+}
+
+.specialist.specialistback {
+    -webkit-transform: rotateY( 180deg );
+    transform: rotateY( 180deg );
+}
+
+.specialistcontainer {
+    position: absolute;
+    -webkit-transition: -webkit-transform 2s;
+    -o-transition: -o-transform 2s;
+    transition: -webkit-transform 2s;
+    -o-transition: transform 2s;
+    transition: transform 2s;
+    transition: transform 2s, -webkit-transform 2s;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
+}
+
+.specialistcontainer.flipped {
+    -webkit-transform: rotateY( 180deg );
+    transform: rotateY( 180deg );
+}
+
+.specialistenlarged{
+    width: 138px; 
+    height: 138px;
+    z-index: 6;
+}
+
+.specialistbase{
+    width: 100px; 
+    height: 100px;
+    z-index: 9;
+}
+
+
+.bg-Adventurer {  /*adventurer*/
+    /* background-position: -0 -0; */
+    background-position: -15px -15px;
+}
+.bg-Alchemist {  /*alchemist*/
+    /* background-position: -337px -0; */
+    background-position: -352px -15px;
+}
+.bg-Aristocrat {
+    /* background-position: -0 -337px;   */
+    background-position: -15px -352px;  
+}
+
+.baggage {
+    background-repeat: no-repeat;
+    position: absolute;
+    background-image: url(img/iconssprite.png);
+    /* background-size: calc( (554/67)*100% ) calc( (490/67)*100% );  */
+    background-size: calc( (674/67)*100% ) calc( (490/67)*100% ); 
+    background-position: -486px -429px;
+    width: 67px;
+    height: 67px;
+    border: 2px solid darkorange;
+    border-radius: 80%;
+    z-index: 10;
+}
+
+.bg-Auctioneer {
+    /* background-position: -337px -337px; */
+    background-position: -352px -352px;
+}
+.bg-BackA {
+    /* background-position: -674px -0; */
+    background-position: -689px -15px;
+}
+.bg-BackB {
+    /* background-position: -674px -337px; */
+    background-position: -689px -352px;
+}
+.bg-BackC {
+    /* background-position: -0 -674px; */
+    background-position: -15px -689px;
+}
+.bg-Bard {
+    /* background-position: -337px -674px; */
+    background-position: -352px -689px;
+}
+.bg-Blacksmith {
+    /* background-position: -674px -674px; */
+    background-position: -689px -689px;
+}
+.bg-Builder {
+    /* background-position: -1011px -0; */
+    background-position: -1026px -15px;
+}
+.bg-Carpenter {
+    /* background-position: -1011px -337px; */
+    background-position: -1026px -352px;
+}
+.bg-Courrier {
+    /* background-position: -1011px -674px; */
+    background-position: -1026px -689px;
+}
+.bg-Craftswoman {
+    /* background-position: -0 -1011px; */
+    background-position: -15px -1026px;
+}
+.bg-Curator {
+    /* background-position: -337px -1011px; */
+    background-position: -352px -1026px;
+}
+.bg-Dealer {
+    /* background-position: -674px -1011px; */
+    background-position: -689px -1026px;
+}
+.bg-Doppelganger {
+    /* background-position: -1011px -1011px; */
+    background-position: -1026px -1026px;
+}
+.bg-Fighter {
+    /* background-position: -1348px -0; */
+    background-position: -1363px -15px;
+}
+.bg-Inventor {
+    /* background-position: -1348px -337px; */
+    background-position: -1363px -352px;
+}
+.bg-Laborer {
+    /* background-position: -1348px -674px; */
+    background-position: -1363px -689px;
+}
+.bg-Leatherworker {
+    /* background-position: -1348px -1011px; */
+    background-position: -1363px -1026px;
+}
+.bg-Lumberjack {
+    /* background-position: -0 -1348px; */
+    background-position: -15px -1363px;
+}
+.bg-Merchant {
+    /* background-position: -337px -1348px; */
+    background-position: -352px -1363px;
+}
+.bg-Miner {
+    /* background-position: -674px -1348px; */
+    background-position: -689px -1363px;
+}
+.bg-Minstrel {
+    /* background-position: -1011px -1348px; */
+    background-position: -1026px -1363px;
+}
+.bg-Oracle {
+    /* background-position: -1348px -1348px; */
+    background-position: -1363px -1363px;
+}
+.bg-Overseer {
+    /* background-position: -1685px -0; */
+    background-position: -1700px -15px;
+}
+.bg-Peasant {
+    /* background-position: -1685px -337px; */
+    background-position: -1700px -352px;
+}
+.bg-Pirate {
+    /* background-position: -1685px -674px; */
+    background-position: -1700px -689px;
+}
+.bg-Ranger {
+    /* background-position: -1685px -1011px; */
+    background-position: -1700px -1026px;
+}
+.bg-Recruiter {
+    /* background-position: -1685px -1348px; */
+    background-position: -1700px -1363px;
+}
+.bg-Smuggler {
+    /* background-position: -0 -1685px; */
+    background-position: -15px -1700px;
+}
+.bg-Sorceress {
+    /* background-position: -337px -1685px; */
+    background-position: -352px -1700px;
+}
+.bg-Tailor {
+    /* background-position: -674px -1685px; */
+    background-position: -689px -1700px;
+}
+.bg-Tanner {
+    /* background-position: -1011px -1685px; */
+    background-position: -1026px -1700px;
+}
+.bg-Thug {
+    /* background-position: -1348px -1685px; */
+    background-position: -1363px -1700px;
+}
+.bg-Vizier {
+    /* background-position: -1685px -1685px; */
+    background-position: -1700px -1700px;
+}
+.bg-Warlock {
+    /* background-position: -2022px -0; */
+    background-position: -2037px -15px;
+}
+.bg-Weaver {
+    /* background-position: -2022px -337px; */
+    background-position: -2037px -352px;
+}
+.bg-Witch {
+    /* background-position: -2022px -674px; */
+    background-position: -2037px -689px;
+}
+.bg-Wizard {
+    /* background-position: -2022px -1011px; */
+    background-position: -2037px -1026px;
+}
+.bg-Woodworker {
+    /* background-position: -2022px -1348px; */
+    background-position: -2037px -1363px;
+}
+.bg-Appraiser { /*Appraiser */
+    /* background-position: -2022px -1685px; */
+    background-position: -2037px -1700px;
+}
+/*----------------------------------------------------SPECIALISTS--------------------------------------------------------*/
+
+
+/*----------------------------------------------------QUESTS--------------------------------------------------------*/
+
+.quest {
+    width: 126px; 
+    height: 172px;
+    background-repeat: no-repeat;
+    /* background-size: 1001%; */
+    /* background-size: 1072% 644%; */
+    background-size: 1065%;
+    position: absolute;
+    background-image: url('img/questsprite.jpg');
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+    -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    border-radius: 4%/2.9%;
+    pointer-events: all;
+}
+
+.quest.questback {
+    -webkit-transform: rotateY( 180deg );
+    transform: rotateY( 180deg );
+}
+
+.questcontainer {
+    width: 126px; 
+    height: 172px;
+    position: absolute;
+    -webkit-transition: -webkit-transform 2s;
+    -o-transition: -o-transform 2s;
+    transition: -webkit-transform 2s;
+    -o-transition: transform 2s;
+    transition: transform 2s;
+    transition: transform 2s, -webkit-transform 2s;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
+}
+
+.questcontainer.selected {
+    border: 2px solid red;
+    cursor: pointer;
+    pointer-events: all;
+    
+}
+
+.questcontainer.forSelection {
+    cursor: pointer;
+    border: 2px dashed aqua;
+    pointer-events: all;
+}
+
+.questcontainer.flipped {
+    -webkit-transform: rotateY( 180deg );
+    transform: rotateY( 180deg );
+}
+
+.bg-QuestBack1N {
+    /*  background-position: -0 -0; */ 
+    background-position: -10px -10px;
+}
+
+.bg-QuestBack1S {
+    /* background-position: -329px -0; */
+    background-position: -339px -10px;
+}
+
+.bg-QuestBack2 {
+    /* background-position: -658px -0; */
+    background-position: -668px -10px;
+}
+
+.bg-QuestBackCouncil {
+    /* background-position: -0 -449px; */
+    background-position: -10px -459px;
+}
+
+.bg-QuestBackFuneral {
+    /* background-position: -329px -449px; */
+    background-position: -339px -459px;
+}
+
+.bg-AcquiretheRodofAges {
+    /* background-position: -658px -449px; */
+    background-position: -668px -459px;
+}
+
+.bg-AssaulttheObsidianSpire {
+    /* background-position: -987px -0; */
+    background-position: -997px -10px;
+}
+
+.bg-BanishtheFruitfangTerrors {
+    /* background-position: -987px -448px; */
+    background-position: -997px -458px;
+}
+
+.bg-BrawlatGoldgrassInn {
+    /* background-position: -1315px -0; */
+    background-position: -1325px -10px;
+}
+
+.bg-BreaktheBlueveinCurse { 
+    /* background-position: -1315px -448px; */
+    background-position: -1325px -458px;
+}
+
+.bg-BurntheBriarRoots {
+    /* background-position: -0 -898px; */
+    background-position: -10px -908px;
+}
+
+.bg-CapturetheMaraudingPrince {
+    /* background-position: -328px -898px; */
+    background-position: -338px -908px;
+}
+
+.bg-CatchtheJeweltoneFox {
+    /* background-position: -656px -898px; */
+    background-position: -666px -908px;
+}
+
+.bg-ClaimtheBriareyeGemstone {
+    /* background-position: -984px -898px; */
+    background-position: -994px -908px;
+}
+
+.bg-CrushtheOrcRebellion {
+    /* background-position: -1312px -898px; */
+    background-position: -1322px -908px;
+}
+
+.bg-DestroytheDragonLord {
+    /* background-position: -1643px -0; */
+    background-position: -1653px -10px;
+}
+
+.bg-ExploreBlueveinIsle {
+    /* background-position: -1643px -448px; */
+    background-position: -1653px -458px;
+}
+
+.bg-FindthePinegroveTrolls {
+    /* background-position: -1643px -896px; */
+    background-position: -1653px -906px;
+}
+
+.bg-FortifySkullbreakerPoint {
+    /* background-position: -0 -1346px; */
+    background-position: -10px -1356px;
+}
+
+.bg-GuardtheFaerieSaplings {
+    /* background-position: -328px -1346px; */
+    background-position: -338px -1356px;
+}
+
+.bg-HelptheWhitetreeCoopers {
+    /* background-position: -656px -1346px; */
+    background-position: -666px -1356px;
+}
+
+.bg-LocatetheCavernofSecrets {
+    /* background-position: -984px -1346px; */
+    background-position: -994px -1356px;
+}
+
+.bg-PillagetheVaultoftheAncients {
+    /* background-position: -1312px -1346px; */
+    background-position: -1322px -1356px;
+}
+
+.bg-PlundertheWarlocksTower {
+    /* background-position: -1640px -1346px; */
+    background-position: -1650px -1356px;
+}
+
+.bg-ProtecttheEasternRamparts {
+    /* background-position: -1971px -0; */
+    background-position: -1981px -10px;
+}
+
+.bg-RaidtheFrostsQueenCastle {
+    /* background-position: -1971px -448px; */
+    background-position: -1981px -458px;
+}
+
+.bg-RecovertheKingsiresRemains {
+    /* background-position: -1971px -896px; */
+    background-position: -1981px -906px;
+}
+
+.bg-RetrievetheChaliceofPower {
+    /* background-position: -1971px -1344px; */
+    background-position: -1981px -1354px;
+}
+
+.bg-RevivetheFallenQueen {
+    /* background-position: -0 -1794px; */
+    background-position: -10px -1804px;
+}
+
+.bg-SailtoBloodsandBeach {
+    /* background-position: -328px -1794px; */
+    background-position: -338px -1804px;
+}
+
+.bg-SearchfortheFountainofYouth {
+    /* background-position: -656px -1794px; */
+    background-position: -666px -1804px;
+}
+
+.bg-SecuretheOldtownLibrary {
+    /* background-position: -984px -1794px; */
+    background-position: -994px -1804px;
+}
+
+.bg-SinktheZombielordsGalley {
+    /* background-position: -1312px -1794px; */
+    background-position: -1322px -1804px;
+}
+
+.bg-SneakintotheSultansPalace {
+    /* background-position: -1640px -1794px; */
+    background-position: -1650px -1804px;
+}
+
+.bg-StealtheGoldenSapling {
+    /* background-position: -1968px -1794px; */
+    background-position: -1978px -1804px;
+}
+
+.bg-ThwarttheMadWitchsPlans {
+    /* background-position: -2299px -0; */
+    background-position: -2309px -10px;
+}
+
+.bg-ToppletheMoonstoneGiant {
+    /* background-position: -2299px -448px; */
+    background-position: -2309px -458px;
+}
+
+.bg-TracktheSludgeEnts {
+    /* background-position: -2299px -896px; */
+    background-position: -2309px -906px;
+}
+
+.bg-VanquishtheGoblinHorde {
+    /* background-position: -2299px -1344px; */
+    background-position: -2309px -1354px;
+}
+
+.bg-WakethePrincessofEternalSleep {
+    /* background-position: -2299px -1792px; */
+    background-position: -2309px -1802px;
+}
+
+.bg-ClimbtheShimmeringMountain {
+    /* background-position: -2627px -0; */
+    background-position: -2637px -10px;
+}
+
+.bg-CleansetheCoalboneCemetery {
+    /* background-position: -2627px -448px; */
+    background-position: -2637px -458px;
+}
+
+.bg-DefendtheTempleofWonders {
+    /* background-position: -2627px -896px; */
+    background-position: -2637px -906px;
+}
+
+.bg-DiscovertheHiddenValley {
+    /* background-position: -2627px -1344px; */
+    background-position: -2637px -1354px;
+}
+
+.bg-FightOfftheSharkskinGnolls {
+    /* background-position: -2627px -1792px; */
+    background-position: -2637px -1802px;
+}
+
+.bg-TheKingsFuneral {
+    /* background-position: -0 -2242px; */
+    background-position: -10px -2252px;
+}
+
+.bg-OfferingtotheCouncil {
+    /* background-position: -328px -2242px; */
+    background-position: -338px -2252px;
+}
+
+.bg-RescuetheGraytopMiners {
+    /* background-position: -656px -2242px; */
+    background-position: -666px -2252px;
+}
+
+.bg-ReleasetheBriarsblightCure {
+    /* background-position: -984px -2242px; */
+    background-position: -994px -2252px;
+}
+
+.bg-SavethePlumtreeGrangers {
+    /* background-position: -1312px -2242px; */
+    background-position: -1322px -2252px;
+}
+
+.bg-SeizetheRichesofAnduar {
+    /* background-position: -1640px -2242px; */
+    background-position: -1650px -2252px;
+}
+
+.bg-SlaytheVileNecromancer {
+    /* background-position: -1968px -2242px; */
+    background-position: -1978px -2252px;
+}
+
+.bg-TakeDowntheRedDogGang {
+    /* background-position: -2296px -2242px; */
+    background-position: -2306px -2252px;
+}
+
+.bg-UncovertheSharkfangMystery {
+    /* background-position: -2624px -2242px; */
+    background-position: -2634px -2252px;
+}
+
+.bg-UnearththeKingsiresTreasure {
+    /* background-position: -2955px -0; */
+    background-position: -2965px -10px;
+}
+
+.bg-refcardback {
+    /* background-position: -2955px -448px; */
+    background-position: -2965px -458px;
+}
+
+.bg-refcardfront {
+    /* background-position: -2955px -896px; */
+    background-position: -2965px -906px;
+}
+
+.refcard {
+    width: 328px;
+    height: 448px;
+    background-size: 1004% 606%;
+}
+/*----------------------------------------------------QUESTS--------------------------------------------------------*/
+
+
+/*----------------------------------------------------TREASURE--------------------------------------------------------*/
+
+.treasure {
+    width: 90px; 
+    /* height: 128px;         296x420  */
+    height: 127.7px;
+    background-repeat: no-repeat;
+    /* background-size: 802%; */
+    background-size: 845%;
+    position: absolute;
+    background-image: url('img/treasuresprite.jpg');
+
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+    -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    border-radius: 4%/2.8%;
+    pointer-events: all;
+}
+
+.treasurelog {
+    position: relative;
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 18px; 
+    height: 25px;
+    vertical-align: middle;
+}
+
+.treasure.treasureback {
+    -webkit-transform: rotateY( 180deg );
+    transform: rotateY( 180deg );
+}
+
+.treasurecontainer {
+    position: absolute;
+    z-index: 15;
+    -webkit-transition: -webkit-transform 2s;
+    -o-transition: -o-transform 2s;
+    transition: -webkit-transform 2s;
+    -o-transition: transform 2s;
+    transition: transform 2s;
+    transition: transform 2s, -webkit-transform 2s;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
+}
+
+.treasurebase {
+    width: 90px; 
+    /* height: 128px; */
+    height: 127.7px;
+}
+
+.treasureenlarged {
+    width: 180px; 
+    /* height: 255.4px; */
+    height: 256px;
+}
+
+.treasurecontainer.flipped {
+    -webkit-transform: rotateY( 180deg );
+    transform: rotateY( 180deg );
+}
+
+/* .treasurecontainer.forSelection {
+    cursor: pointer;
+    border: 2px solid red;
+} */
+
+.treasureenlarged.forSelection {
+    cursor: pointer;
+    /* border: 2px solid red; */
+    border: 2px dashed aqua;
+}
+
+.treasurecontainer.selected {
+    border: 2px solid red;
+    cursor: pointer;
+}
+
+.treasureenlarged.selected {
+    border: 2px solid red;
+    cursor: pointer;
+}
+
+
+.bg-BagofGold {
+    /* background-position:  -0 -0; */
+    background-position:  -10px -10px;
+}
+
+.bg-BoltsofSilk {
+    /* background-position:  -296px -0; */
+    background-position:  -306px -10px;
+}
+
+.bg-BottleofFaerieDust {
+    /* background-position:  -592px -0; */
+    background-position:  -602px -0;
+}
+
+.bg-BrilliantDiamonds {
+    /* background-position:  -0 -420px; */
+    background-position:  -10px -430px;
+}
+
+.bg-CardBackblue {
+    /* background-position:  -296px -420px; */
+    background-position:  -306px -430px;
+}                                                .treasurelog.bg-CardBackblue{background-position:  -19px -27px;}
+
+.bg-CardBackred {
+    /* background-position:  -592px -420px; */
+    background-position:  -602px -430px;
+}                                               .treasurelog.bg-CardBackred{background-position:  -38px -27px;}
+
+.bg-CardBackyellow {
+    /* background-position:  -888px -0; */
+    background-position:  -898px -10px;
+}                                               .treasurelog.bg-CardBackyellow{background-position:  -57.5px -1px;}
+
+.bg-CoinPurse {
+    /* background-position:  -888px -420px; */
+    background-position:  -898px -430px;
+}
+
+.bg-Contract {
+    /* background-position:  -1184px -0; */
+    background-position:  -1194px -10px;
+}
+
+.bg-DragonHides {
+    /* background-position:  -1184px -420px; */
+    background-position:  -1194px -430px;
+}
+
+.bg-BizarreCharm {
+    /* background-position:  -0 -840px; */
+    background-position:  -10px -850px;
+}
+
+.bg-CarvedCharm {
+    /* background-position:  -296px -840px; */
+    background-position:  -306px -850px;
+}
+
+.bg-CuriousCharm {
+    /* background-position:  -592px -840px; */
+    background-position:  -592px -850px;
+}
+
+.bg-EngravedCharm {
+    /* background-position:  -888px -840px; */
+    background-position:  -898px -850px;
+}
+
+.bg-GlowingCharm {
+    /* background-position:  -1184px -840px; */
+    background-position:  -1194px -850px;
+}
+
+.bg-MysteriousCharm {
+    /* background-position:  -1480px -0; */
+    background-position:  -1490px -10px;
+}
+
+.bg-OminousCharm {
+    /* background-position:  -1480px -420px; */
+    background-position:  -1490px -430px;
+}
+
+.bg-OrnateCharm {
+    /* background-position:  -1480px -840px; */
+    background-position:  -1490px -850px;
+}
+
+.bg-SacredCharm {
+    /* background-position:  -0 -1260px; */
+    background-position:  -10px -1270px;
+}
+
+.bg-StunningCharm {
+    /* background-position:  -296px -1260px; */
+    background-position:  -306px -1270px;
+}
+
+.bg-MithrilBars {
+    /* background-position:  -592px -1260px; */
+    background-position:  -602px -1270px;
+}
+
+.bg-OakBranches {
+    /* background-position:  -888px -1260px; */
+    background-position:  -898px -1270px;
+}
+
+.bg-ScrollofRiches {
+    /* background-position:  -1184px -1260px; */
+    background-position:  -1194px -1270px;
+}
+
+.bg-SecretStash {
+    /* background-position:  -1480px -1260px; */
+    background-position:  -1490px -1270px;
+}
+
+.bg-AncientBoots {
+    /* background-position:  -1776px -0; */
+    background-position:  -1786px -10px;
+}
+
+.bg-AncientBreastplate {
+    /* background-position:  -1776px -420px; */
+    background-position:  -1786px -430px;
+}
+
+.bg-AncientGauntlets {
+    /* background-position:  -1776px -840px; */
+    background-position:  -1786px -850px;
+}
+
+.bg-AncientHelm {
+    /* background-position:  -1776px -1260px; */
+    background-position:  -1786px -1270px;
+}
+
+.bg-AncientShield {
+    /* background-position:  -2072px -0; */
+    background-position:  -2082px -10px;
+}
+
+.bg-AncientSword {
+    /* background-position:  -2072px -420px; */
+    background-position:  -2082px -430px;
+}
+
+.bg-FortunePotion {
+    /* background-position:  -2072px -840px; */
+    background-position:  -2082px -850px;
+}
+
+.bg-LuckyPotion {
+    /* background-position:  -2072px -1260px; */
+    background-position:  -2082px -1270px;
+}
+
+.bg-ScrollofPlenty {
+    /* background-position:  -0 -1680px; */
+    background-position:  -10px -1690px;
+}
+
+.bg-ScrollofWonders {
+    /* background-position:  -296px -1680px; */
+    background-position:  -306px -1690px;
+}
+
+.bg-SpoilingPotion {
+    /* background-position:  -592px -1680px; */
+    background-position:  -602px -1690px;
+}
+
+.bg-TreasureMap {
+    /* background-position:  -888px -1680px; */
+    background-position:  -898px -1690px;
+}
+
+/*----------------------------------------------------TREASURE--------------------------------------------------------*/
+
+.selection:hover {
+    border: 2px dashed red;
+}
+
+.forSelection:hover {
+    border: 2px dashed red;
+}
+
+/* ----------------- TOOLTIPS ------------------ */
+.tooltipwrap {
+    /* display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+    -webkit-box-pack: start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center; */
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
+    padding: 10px;
+}
+
+/* .tooltipwrap > * {
+    -webkit-box-flex: 0;
+        -ms-flex: 0 1 0px;
+            flex: 0 1 0;
+} */
+
+.tooltipHeader {
+    text-align: center;
+    line-height: 20px;
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+.tooltipMain {
+    width: max-content;
+    height: max-content;
+    text-align: center;
+    width: 100%;
+    margin-top: 5px;
+    /* display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex; */
+}
+
+.tooltipMain > * {
+    position: inherit;
+}
+
+.tooltipLine {
+    height: 1px;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid black;
+    position: relative;
+}
+
+.tooltipFooter {
+    /* height: 40px; */
+    /* max-width: 200px; */
+    width: 100%;
+    text-align: center;
+    line-height: 16px;
+    font-size: 16px;
+    /* margin-bottom: 10px; */
+}
+
+.underplayerpanel {
+    position: absolute;
+    top: 4%;
+    left: 1%;
+    width: 97%;
+    background-image: url("../img/layout/rounded_b.png");
+    height: 25%;
+}
+
+.tableWindow tr:nth-child(2) {
+    background: #EEB3AF;
+}
+
+.tableWindow tr:nth-child(3) {
+    background: #F4CB9D;
+}
+
+.tableWindow tr:nth-child(4) {
+    background: #C3D3A2;
+}
+
+.tableWindow tr:nth-child(5) {
+    background: #CDC8CC;
+}
+
+.tableWindow tr:nth-child(6) {
+    background: #CDB39A;
+}
+
+.tableWindow tr:nth-child(7) {
+    background:#F7E5A7;
+}
+
+.tableWindow tr:nth-child(8) {
+    background: #A6D8DF;
+}
+
+
+.refcardtext {
+    position: absolute;
+}
+
+.refcardtext.mid {
+    text-align: center;
+}
+
+.refcardtext.start {
+    text-align: start;
+}
+
+.refcardtext.end {
+    text-align: end;
+}
+
+.refcardtext.header {
+    font-weight: bold;
+    font-size: 20px;
+}
