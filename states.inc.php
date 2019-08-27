@@ -58,8 +58,8 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} can gather, craft, expand or play a treasure card'),
         "type" => "activeplayer",
         "args" => "argPlayerTurn",
-        "possibleactions" => array( "specialAction", "playTreasureCard", "bardAction", "oracleAction", "placeSpecialist", "makeOffering", "chooseResource","selectExpandItem", "craftItem",  "cancel" ),
-        "transitions" => array( "gather" => 5, "expand" => 6, "craft" => 7, "specialAction" => 10, "playTreasureNoAction" => 4 ,  "playTreasure" => 16, "makeOffering" => 30,  "cancel" => 4, "zombiePass" => 30)
+        "possibleactions" => array( "specialAction", "playTreasureCard", "bardAction", "oracleAction", "placeSpecialist", "makeOffering", "chooseResource","selectExpandItem", "craftItem", "soloFuneral", "cancel" ),
+        "transitions" => array( "gather" => 5, "expand" => 6, "craft" => 7, "specialAction" => 10, "playTreasureNoAction" => 4 ,  "playTreasure" => 16, "makeOffering" => 30,  "cancel" => 4, "zombiePass" => 30, "soloFuneral" => 20 )
     ), 
 //------------------------------------------------------------------------------------
     5 => array(                     // base actions
@@ -77,8 +77,9 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} must select room or specialist'),
         "type" => "activeplayer",
         "args" => "argPlayerExpand",
-        "possibleactions" => array( "selectExpandItem", "placeRoom",  "placeSpecialist", "cancel"),
-        "transitions" => array( "placeRoom" => 10, "placeSpecialist" => 10, "cancel" => 4,  "zombiePass" => 30)
+        "possibleactions" => array( "selectExpandItem", "placeRoom",  "placeSpecialist", "cancel", "pass"),
+        //"transitions" => array( "placeRoom" => 10, "placeSpecialist" => 10, "cancel" => 4,  "zombiePass" => 30)
+        "transitions" => array( "placeRoom" => 10, "placeSpecialist" => 10, "playTreasureNoAction" => 6 , "playTreasure" => 16, "pass" => 25,  "cancel" => 4, "cancelSolo" => 6, "zombiePass" => 30)
     ), 
     7 => array(
         "name" => "playerCraft",
@@ -116,7 +117,7 @@ $machinestates = array(
         "updateGameProgression" => false,  
         "transitions" => array(  "playerEndTurn" => 25, "nextPlayer" => 30, "buildOnly" => 8, "specialistonly" => 9, "replaceBonusRes" => 11, "specialAction" => 12, "specialCraftAction" => 13,
                                  "runAgain" => 10, "finishTreasureCardPlay" => 17, "appraiser" =>13, "sellTreasures" =>15, "funeral"=>18,
-                                 "zombiePass" => 30)
+                                 "zombiePass" => 30,  "soloPlayExpand" => 6)
     ), 
 //------------------------------------------------------------------------------------
     11 => array(                // everytime player needs to return resources because of storage limit
@@ -136,7 +137,7 @@ $machinestates = array(
         "type" => "activeplayer",
         "args" => "argPlayerSpecialistOneTimeAction",
         "possibleactions" => array(  "chooseResource", "takeResources", "takeResourcesAndReplace", "drawTreasureCard","placeSpecialist", 
-                                    "stealResource", "craftItem", "selectQuest", "selectTreasureCards", "pass"),
+                                    "stealResource", "craftItem", "selectQuest", "selectTreasureCards", "pass", "cancel"),
         "transitions" => array( "pass" => 10, "takeResources" => 10, "drawTreasureCard" => 10, "drawTreasureCardAndSell" => 15, "placeSpecialist" => 10, 
                                 "stealResource" => 10, "craftItem"=>10, "craftItemAndSell"=>15, "completeQuestShared" => 14, "selectQuest" => 10, 
                                 "selectTreasureForDiscard"=> 12,"discardTreasures"=> 10, "zombiePass" => 30)
@@ -235,7 +236,7 @@ $machinestates = array(
         "type" => "game",
         "action" => "stNextPlayer",
         "updateGameProgression" => true,   
-        "transitions" => array( "nextPlayer" => 4, "endGame" => 40 )
+        "transitions" => array( "nextPlayer" => 4, "endGame" => 40, "zobiePass" => 4 )
     ),
 
     40 => array( 

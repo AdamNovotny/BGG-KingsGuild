@@ -55,6 +55,8 @@ class kingsguild extends Table
             "playerPlayLast" => 28,
             "playerEndPhase" => 29,
             "startPhase" => 30,
+            "soloExpandSecondPart" => 31,
+            "soloKingsFuneral" => 32
         ) );        
 	}
 	
@@ -157,6 +159,23 @@ class kingsguild extends Table
             $keys = array_keys ( $specialists );
             shuffle($keys);
 
+            if ($players_nbr == 1 ) {       // for solo game remove Thug, Recruiter, Smuggler
+                if (($key = array_search(9, $keys)) !== false) {
+                    unset($keys[$key]);
+                }
+
+                if (($key = array_search(11, $keys)) !== false) {
+                    unset($keys[$key]);
+                }
+
+                if (($key = array_search(34, $keys)) !== false) {
+                    unset($keys[$key]);
+                }
+
+                $keys = array_values( $keys );
+            }
+
+
             for($j=0;$j<($this->tokens_number['specialists'][$players_nbr]);$j++ ) {
                 $values[] = "('specialist', '$keys[$j]', 'board','5')";
             }
@@ -172,7 +191,12 @@ class kingsguild extends Table
         // Create quests
         $types = array('1N','1S','Funeral','2','Council');
         $age1cards = array();
-        $quest_start_location = $players_nbr > 4 ? 6:5;                 // location !!!!!!!!!!!!!
+
+        if ($players_nbr == 1) {
+            $quest_start_location = 6;
+        } else {
+            $quest_start_location = $players_nbr > 4 ? 6:5;                 // location !!!!!!!!!!!!!
+        }
         for($i=0;$i<count($types);$i++ ) {
             $values = array();
             $sql = "INSERT INTO specialistandquest (specialistandquest_type, specialistandquest_type_arg, specialistandquest_location, specialistandquest_location_arg) VALUES ";
@@ -214,8 +238,15 @@ class kingsguild extends Table
             $deck = array();
 
             foreach($keys as $key) {
-                $addition = array_fill(0, $this->treasures[$key]['count'], $key);
-                $deck = array_merge($deck, $addition);
+                if ($players_nbr != 1) {
+                    $addition = array_fill(0, $this->treasures[$key]['count'], $key);
+                    $deck = array_merge($deck, $addition);
+                } else {
+                    if ($key != 2) {            // ommit spoiling potions for solo
+                        $addition = array_fill(0, $this->treasures[$key]['count'], $key);
+                        $deck = array_merge($deck, $addition); 
+                    }
+                }
             }
 
             shuffle($deck);
@@ -281,6 +312,8 @@ class kingsguild extends Table
         self::setGameStateInitialValue('playerPlayLast',-1 );
         self::setGameStateInitialValue('playerEndPhase', 0);
         self::setGameStateInitialValue('startPhase', 0);
+        self::setGameStateInitialValue('soloExpandSecondPart', 0);
+        self::setGameStateInitialValue('soloKingsFuneral', 0);
 
         // Init game statistics
         self::initStat( 'table', 'table_turnsNumber', 0 );    
@@ -314,7 +347,12 @@ class kingsguild extends Table
             $this->drawNewCard('specialist',null, $i);
         }
         // initial draw of quests
-        $quest_nbr = self::getPlayersNumber() > 4 ? 6:5 ;
+        if ($players_nbr == 1) {
+            $quest_nbr = 6;
+        } else {
+            $quest_nbr = self::getPlayersNumber() > 4 ? 6:5 ;
+        }
+        
         for($i=0;$i<$quest_nbr;$i++) {
             $this->drawNewCard('quest', null, $i);
         }
@@ -382,7 +420,7 @@ class kingsguild extends Table
         $result['treasure'] = self::getCollectionFromDb( $sql );
         $additionalInfo = array('name', 'cathegory', 'effect', 'sellcost', 'text', 'nameTr');
         $result['treasure'] = $this->getAdditionInfoFromType('treasures', $result['treasure'], $additionalInfo, array('visible', 1) );
-        $result['treasure'] = $this->filterTreasure( $result['treasure'], $current_player_id, array('type','name', 'cathegory', 'effect', 'sellcost', 'text') );
+        $result['treasure'] = $this->filterTreasure( $result['treasure'], $current_player_id, array('type','name', 'cathegory', 'effect', 'sellcost', 'text', 'nameTr') );
 
         // rest tokens
         $sql = "SELECT token_id id, token_type type, token_type_arg type_arg, token_location location, token_location_arg location_arg FROM tokens ";
@@ -390,6 +428,10 @@ class kingsguild extends Table
 
         // player mat and mat bonuses
         $result['mat'] = $this->playermats[$result['players'][$current_player_id]['mat']];
+
+        //for solo game
+        $result['soloExpandSecondPart'] = self::getGameStateValue('soloExpandSecondPart');
+        $result['soloKingsFuneral'] = self::getGameStateValue('soloKingsFuneral');
 
         return $result;
     }
@@ -444,7 +486,7 @@ class kingsguild extends Table
         // self::dbQuery($sql);
         // var_dump( $obj->getCraftSpecialistAtions() );
         // $this->takeResourceByPlayer(array('leather', 'leather', 'wood', 'iron'), '2306536', false);
-        // $this->takeResourceByPlayer(array('cloth', 'cloth', 'cloth'), '2306538', false);
+        $this->takeResourceByPlayer(array('iron', 'iron', 'iron', 'leather'), '2306538', false);
         // $this->takeResourceByPlayer(array('iron', 'cloth', 'cloth'), '2306537', false);
         // $this->takeResourceByPlayer(array('magic', 'wood'), '2306536', false);
         // $this->expandHandsize(self::getCurrentPlayerId(), 1);
@@ -455,7 +497,7 @@ class kingsguild extends Table
         // $sql = "DELETE FROM tokens WHERE token_type = 'thug' ";
         // self::dbQuery($sql);
 
-        $this->updatePlayerGold(self::getCurrentPlayerId(), 80);
+        // $this->updatePlayerGold(self::getCurrentPlayerId(), 80);
 
         // $this->drawNewCard('treasure', 'red', 5, self::getCurrentPlayerId());
 
@@ -991,6 +1033,56 @@ class kingsguild extends Table
         }
     }
 
+    function soloGameExpandActionEnd() {
+        $sql = "SELECT specialistandquest_id id, specialistandquest_location_arg loc FROM specialistandquest WHERE specialistandquest_type = 'specialist' AND specialistandquest_location = 'board' AND specialistandquest_visible = '1' ";
+        $specialists = self::getObjectListFromDB( $sql); 
+        $specialistsToMove = array();
+        $occupiedLocations = array();
+        $allLocations = array(0,1,2,3,4);
+
+        foreach($specialists as $specialist) {
+            $spec_id = $specialist['id'];
+            if (intval($specialist['loc']) == 4 ) { // discard rightmost specialist
+                $sql = "UPDATE specialistandquest SET specialistandquest_location= 'removed' WHERE specialistandquest_id = '$spec_id' ";
+                self::dbQuery( $sql ); 
+    
+                self::notifyAllPlayers( "moveSpecialist",  '', array(
+                    'specialist_id' => $spec_id,
+                    'destination' => 'main_board',
+                    'destroy' => true,
+                ) );
+            } else {
+                $occupiedLocations[] = intval($specialist['loc']);
+                $specialistsToMove[] = $specialist;
+            }
+        }
+
+        $freelocations = array_values(array_diff($allLocations, $occupiedLocations));
+
+        foreach($specialistsToMove as $specialist) {
+            $tilesToMove = 0;
+            $id = $specialist['id'];
+            foreach ($freelocations as $value) {
+                if ($value > intval($specialist['loc']) ) {
+                    $tilesToMove++;
+                }
+            }
+            $destination = $tilesToMove+intval($specialist['loc']); 
+            $sql = "UPDATE specialistandquest SET specialistandquest_location_arg = '$destination' WHERE specialistandquest_id = '$id' ";
+            self::dbQuery( $sql );      
+
+            self::notifyAllPlayers( "moveSpecialist",  '', array(
+                    'specialist_id' => $id,
+                    'destination' => $destination,
+                    'destroy' => false,
+            ) );
+        }
+
+        for ($i=count($freelocations)-1;$i>-1;$i--) {
+            $this->drawNewCard('specialist', null, $i);
+        }
+    }
+
     function takeResourceByPlayer($resource_type, $player_id, $takeAsBonus, $resource_id = null) {  
         if ($resource_id === null) {
             $id = array();
@@ -1419,10 +1511,16 @@ class kingsguild extends Table
                         $this->updatePlayerGold($player_id, $effect["gain"][2], true);
 
                     } else {
-                        $this->playerSellTreasure($treasure_id, $player_id, $treasure_info, false);
-                        $this->updatePlayerGold($player_id, $effect["gain"][1], true);
-                        $this->updatePlayerGold(self::getPlayerAfter( $player_id ), $effect["gain"][2], true);
+                        if (self::getPlayersNumber() == 1) {
+                            $this->playerSellTreasure($treasure_id, $player_id, $treasure_info, false);
+                            $this->updatePlayerGold($player_id, $effect["gain"][1], true);
+                        } else {
+                            $this->playerSellTreasure($treasure_id, $player_id, $treasure_info, false);
+                            $this->updatePlayerGold($player_id, $effect["gain"][1], true);
+                            $this->updatePlayerGold(self::getPlayerAfter( $player_id ), $effect["gain"][2], true);
+                        }
                     }
+
                     self::giveExtraTime( $player_id);
                     $this->gamestate->nextState( 'playTreasureNoAction' );
                 } else {
@@ -1486,7 +1584,9 @@ class kingsguild extends Table
                     self::setGameStateValue( 'second_player_treasurePlay', $player_id );
                     self::setGameStateValue( 'warlock_active', 1);
                 } else {
-                    self::setGameStateValue( 'second_player_treasurePlay', self::getPlayerAfter( $player_id ) );
+                    if (self::getPlayersNumber() != 1) {
+                        self::setGameStateValue( 'second_player_treasurePlay', self::getPlayerAfter( $player_id ) );
+                    }
                 }
 
                 $this->gamestate->nextState( 'playTreasure' );
@@ -1499,7 +1599,9 @@ class kingsguild extends Table
                     self::setGameStateValue( 'second_player_treasurePlay', $player_id );
                     self::setGameStateValue( 'warlock_active', 1);
                 } else {
-                    self::setGameStateValue( 'second_player_treasurePlay', self::getPlayerAfter( $player_id ) );
+                    if (self::getPlayersNumber() != 1) {
+                        self::setGameStateValue( 'second_player_treasurePlay', self::getPlayerAfter( $player_id ) );
+                    }
                 }
                 $this->gamestate->nextState( 'playTreasure' );
             break;
@@ -1660,6 +1762,101 @@ class kingsguild extends Table
         }
     }
 
+    function recalculateQuestPositionsSoloGame() {
+        $lookup = array( 0 => 'discard', 1 => 0, 2 => 1, 5 => 2, 4 => 5, 3 => 4, 6 => 3);
+        $allPositions = array(0,1,2,5,4,3);
+
+        $sql = "SELECT specialistandquest_location_arg loc, specialistandquest_id id FROM specialistandquest WHERE specialistandquest_type = 'quest' AND specialistandquest_location = 'board' AND specialistandquest_visible = 1 ";
+        $quests = self::getCollectionFromDB( $sql, true); 
+
+        if (count($quests) > 5) { // remove quest
+            $sql = "SELECT token_location loc FROM tokens WHERE token_type = 'sigil' AND token_location != 'free'  ";
+            $sigils = self::getObjectListFromDB( $sql, true); 
+            $posititionToRemove = 0;
+
+            if (count($sigils) > 0 ) {
+                $ids =  array();
+                $sigilPositions = array();
+                for ($i=0; $i<count($sigils) ; $i++) { 
+                    $ids[] = explode("_", $sigils[$i])[1];
+                    $sigilPositions[] =  array_search ($ids[$i], $quests);
+                }
+                
+                $posititionToRemove = in_array("0", $sigilPositions) ? ( in_array("1", $sigilPositions) ? 2 : 1 ) : 0;
+            }
+            
+            $id = $quests[$posititionToRemove];
+
+            $sql = "UPDATE specialistandquest SET specialistandquest_location = 'removed'  WHERE specialistandquest_type = 'quest' AND specialistandquest_id = '$id' ";
+            self::dbQuery( $sql); 
+
+            if( $this->quest[ $this->getItemTypeById('quest', $id) ]['name'] == "The King's Funeral"  ) {
+                self::setGameStateValue('soloKingsFuneral', 0);
+            }
+
+            self::notifyAllPlayers( "moveQuest",  '', array(
+                'quest_id' => $id,
+                'destination' => 'destroy',
+            ) );
+
+            for ($i=$posititionToRemove; $i>-1; $i--) { 
+                unset($quests[$i]);
+            }
+        } else {
+            $occupied = array_keys($quests);
+
+            $free = array_values(array_diff($allPositions, $occupied))[0];
+            
+            foreach ($quests as $position => $id) { 
+                if ( array_search($position,$allPositions) <  array_search($free,$allPositions) ) {
+                    unset($quests[$position]);
+                }
+            }
+        }
+
+        // foreach ($quests as $position => $id) {
+        //     $new_position = $lookup[$position];
+        //     $sql = "UPDATE specialistandquest SET specialistandquest_location_arg = '$new_position'  WHERE specialistandquest_type = 'quest' AND specialistandquest_id = '$id' ";
+        //     self::dbQuery( $sql);  
+
+        //     self::notifyAllPlayers( "moveQuest",  '', array(
+        //         'quest_id' => $id,
+        //         'destination' => $new_position,
+        //     ) );
+        // }
+
+        foreach($allPositions as $position) {
+            if (key_exists($position, $quests) ) {
+                $new_position = $lookup[$position];
+                $id = $quests[$position];
+                $sql = "UPDATE specialistandquest SET specialistandquest_location_arg = '$new_position'  WHERE specialistandquest_type = 'quest' AND specialistandquest_id = '$id' ";
+                self::dbQuery( $sql);  
+
+                self::notifyAllPlayers( "moveQuest",  '', array(
+                    'quest_id' => $id,
+                    'destination' => $new_position,
+                ) );
+            }
+        }
+
+        // draw new one
+        $result = $this->drawNewCard('quest', null, 3);
+
+        if ( $result == 'kingsFuneral') {
+            self::setGameStateValue('soloKingsFuneral', 1 );
+            self::notifyAllPlayers( "soloKingsFuneral",  '', array(
+            ) );
+
+            $this->soloGameExpandActionEnd();
+        }
+
+        if ( $result == 'offering') {
+            // mark game end
+            self::setGameStateValue('offeringActive', 1);
+        }
+    }
+    
+
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
@@ -1677,7 +1874,16 @@ class kingsguild extends Table
 
     function cancelAction() {
         self::checkAction( 'cancel');
-        $this->gamestate->nextState( 'cancel');
+        $player_id = self::getActivePlayerId();
+        if ($this->gamestate->state()['name'] == 'playerSpecialistOneTimeAction') {
+            self::notifyPlayer($player_id, "cancelClientState", '', array(
+            ) );
+        }
+        else if ( self::getGameStateValue('soloExpandSecondPart') == 1 && self::getPLayersNumber() == 1 ) {
+            $this->gamestate->nextState( 'cancelSolo');
+        } else {
+            $this->gamestate->nextState( 'cancel');
+        }
     }
 
     function chooseResource($resource_list) {
@@ -1732,7 +1938,7 @@ class kingsguild extends Table
                     throw new BgaUserException( self::_("You can only select 3 resources of the same type or 2 resources of different types") );
                 }
             } else {
-                if ( $this->gamestate->state()['name'] != 'playerGather') {
+                if ( $this->gamestate->state()['name'] != 'playerGather' &&  $this->gamestate->state()['name'] != 'playerSpecialistOneTimeAction' ) {
                     $this->gamestate->nextState( "gather" );
                 }
 
@@ -1837,6 +2043,7 @@ class kingsguild extends Table
                     // $this->takeResourceByPlayer($this->getResTypeById($resource), $player_id, false, $resource );
                     $res_types[] = $this->getResTypeById($resource);
                     self::incStat( 1, 'player_resourceGathered',  $player_id);  
+                    self::incStat( 1, 'table_resourceGathered'); 
                 }
 
                 if ( !empty($resource_list_take)) {
@@ -2046,7 +2253,11 @@ class kingsguild extends Table
         if ($this->gamestate->state()['name'] == 'playerGuildTurn') {
             self::giveExtraTime( $player_id);
             $this->gamestate->nextState( "nextPlayer" );
-        } elseif ($this->gamestate->state()['name'] == 'playerPlaceKingStatue') { 
+        } elseif ($this->gamestate->state()['name'] == 'playerPlaceKingStatue') {
+            if (self::getPlayersNumber() == 1) {
+                $state_id = $this->getKeyByValueMultidim( $this->gamestate->states,'name', $this->gamestate->state()['name']);
+                self::setGameStateValue("transition_from_state", $state_id);
+            } 
             if ($statueTriggerReplace) {
                 $this->gamestate->nextState( "placeRoomAndReplace" );
             } else {
@@ -2157,12 +2368,16 @@ class kingsguild extends Table
         $this->placeSpecialistToPlayerGuild($specialist_id, $destination, $player_id, $discount, $mapper);
 
         // update rest specialist on board
-        if ( $specialist_type != 37 ) {
-            $number_to_draw = $this->updateSpecialistsOnBoard($specialist_info['loc'], $specialist_info['discount'], 1);
-            // and draw new specialists
-            for ($i=$number_to_draw-1;$i>-1;$i--) {
-                $this->drawNewCard('specialist', null, $i);
-            }
+        if ( $specialist_type != 37 ) { // not in case of baggage
+            if (self::getPlayersNumber() == 1 ) {                                                     // solo game
+                
+            } else {
+                $number_to_draw = $this->updateSpecialistsOnBoard($specialist_info['loc'], $specialist_info['discount'], 1);
+                // and draw new specialists
+                for ($i=$number_to_draw-1;$i>-1;$i--) {
+                    $this->drawNewCard('specialist', null, $i);
+                }
+            } 
         }
 
         // if Curator prepare menu and update discard cards
@@ -2200,6 +2415,12 @@ class kingsguild extends Table
             self::setGameStateValue("expandAction_specialistPlayed", 1);
             self::setGameStateValue("placed_specialist_type", $specialist_info['t']);
         } else {
+            if (self::getGameStateValue("playerEndPhase")) {        //play treasure card on end with specialist action
+                self::setGameStateValue("transition_from_state", 25);
+                if(self::getPlayersNumber() == 1 ) {
+                    $this->soloGameExpandActionEnd();
+                }
+            }
             if ( key($this->specialist[$specialist_type]['ability']) == 'onetimeaction' || key($this->specialist[$specialist_type]['ability']) == 'onetimebonus') {
                 self::setGameStateValue("placed_specialist_type", $specialist_type);                // chain of specialists actions
             } else {
@@ -2321,15 +2542,15 @@ class kingsguild extends Table
             }
             $this->drawNewCard('treasure', $card_color, $draw_result['positions'][0], $player_id);
             if ( self::getGameStateValue("transition_from_state") == 7 || self::getGameStateValue("specialist_craft_action_played") == 1 ) {
+                // update FRW bonus of given quest
+                $quest_pos = self::getGameStateValue('newQuestCardPosition');
+                $sql = "UPDATE specialistandquest SET specialistandquest_discount = 1 WHERE specialistandquest_type = 'quest' AND specialistandquest_location = 'board' AND specialistandquest_location_arg='$quest_pos' ";
+                self::dbQuery( $sql );
+
                 // update player gold for 
                 $this->updatePlayerGold($player_id,-1);
                 // update after craft actions
                 $this->updateAfterCraftActions($player_id);
-                // $sql = "SELECT player_specialist_craftaction speccraft FROM player WHERE player_id = '$player_id' ";
-                // $specialist_craftaction = array_slice(explode("_", self::getUniqueValueFromDB($sql)), 1);
-                // $specialist_craftaction = implode("_", $specialist_craftaction);
-                // $sql = "UPDATE player SET player_specialist_craftaction = '$specialist_craftaction' WHERE player_id = '$player_id' ";
-                // self::dbQuery($sql);
             } else {
                 self::setGameStateValue("placed_specialist_type", 0);          
             }
@@ -2447,7 +2668,7 @@ class kingsguild extends Table
         self::checkAction( 'craftItem' );
 
         // check
-        $sql = "SELECT specialistandquest_location loc, specialistandquest_location_arg pos, specialistandquest_visible vis FROM specialistandquest WHERE specialistandquest_id = '$quest_id' ";
+        $sql = "SELECT specialistandquest_location loc, specialistandquest_location_arg pos, specialistandquest_visible vis, specialistandquest_discount frw FROM specialistandquest WHERE specialistandquest_id = '$quest_id' ";
         $quest_info= self::getObjectFromDB( $sql );
 
         if ( $quest_info['loc'] != 'board' || $quest_info['vis'] != 1  ) {
@@ -2487,7 +2708,7 @@ class kingsguild extends Table
         }
 
         $hero = $this->quest[$quest_type]["hero"][0];
-        if (  $craft_result['player_alsoCrafted'] != $player_id ) {         // exclude playing the effect twice
+        if (  $craft_result['player_alsoCrafted'] != $player_id || $quest_info['frw'] == 0  ) {         // exclude playing the effect twice, discount field in DB marks already used bonues (1)
             switch ($hero) {
                 case 'warrior':
                     self::setGameStateValue( 'craft_action_hero', 1);
@@ -2989,6 +3210,9 @@ class kingsguild extends Table
             // $specialist_craftaction = implode("_", $specialist_craftaction);
             // $sql = "UPDATE player SET player_specialist_craftaction = '$specialist_craftaction' WHERE player_id = '$player_id' ";
             // self::dbQuery($sql);
+        } elseif ($this->gamestate->state()['name'] == 'playerExpand' && self::getPlayersNumber() == 1) {
+            self::setGameStateValue('soloExpandSecondPart', 0);
+            $this->soloGameExpandActionEnd();
         } else {
             self::setGameStateValue('placed_specialist_type', 0);
         }
@@ -3057,6 +3281,16 @@ class kingsguild extends Table
         self::checkAction( 'endTurn' );
         $player_id = self::getActivePlayerId();
         $this->gamestate->nextState( "endTurn" ); 
+    }
+
+    function soloFuneral() {
+        self::checkAction( 'soloFuneral' );
+        if (self::getGameStateValue('soloKingsFuneral') != 1) {
+            throw new BgaUserException( self::_("Not possible move, hit F5 to update") );
+        }
+
+        self::setGameStateValue('soloKingsFuneral', 0);
+        $this->gamestate->nextState( "soloFuneral" ); 
     }
     
 //////////////////////////////////////////////////////////////////////////////
@@ -3135,6 +3369,9 @@ class kingsguild extends Table
         // get players action bonuses
         $result['bonuses'] = $mapper->getActionBonuses();
 
+        // solo game kings funeral
+        $result['soloKingsFuneral'] =  self::getGameStateValue('soloKingsFuneral');
+
         return $result;
     }
 
@@ -3145,7 +3382,10 @@ class kingsguild extends Table
     }
 
     function argPlayerExpand() {
-    
+        if (self::getGameStateValue('soloExpandSecondPart') == 1 && self::getPlayersNumber() == 1 ) {
+            self::notifyAllPlayers( "soloExpand",'', array(
+            ) );
+        }
     }
 
     function argPlayerSelectTreasureCard() {
@@ -3555,23 +3795,25 @@ class kingsguild extends Table
             return;
         }
 
-        // check for quest card draw  
-        if (self::getGameStateValue('offeringActive') != 1) {
-            if (self::getGameStateValue( 'newQuestCardPosition') > -1 ) {
-                $questResult = $this->drawNewCard('quest', null, self::getGameStateValue( 'newQuestCardPosition') );
-                if ($questResult === null) {
-                    self::setGameStateValue( 'newQuestCardPosition', -1);
-                } else {        // transition to Funeral/Offering
-                    if ( $questResult == 'kingsFuneral') {
-                        self::setGameStateValue('activePlayerAfterBidding', $player_id);
-                        // $this->gamestate->setAllPlayersMultiactive(  );
-                        $this->gamestate->nextState( 'funeral' );
-                        return;
-                    }
-
-                    if ( $questResult == 'offering') {
-                        // mark game end
-                        self::setGameStateValue('offeringActive', 1);
+        if (self::getPlayersNumber() > 1) {                     // solo game
+            // check for quest card draw  
+            if (self::getGameStateValue('offeringActive') != 1) {
+                if (self::getGameStateValue( 'newQuestCardPosition') > -1 ) {
+                    $questResult = $this->drawNewCard('quest', null, self::getGameStateValue( 'newQuestCardPosition') );
+                    if ($questResult === null) {
+                        self::setGameStateValue( 'newQuestCardPosition', -1);
+                    } else {        // transition to Funeral/Offering
+                        if ( $questResult == 'kingsFuneral') {
+                            self::setGameStateValue('activePlayerAfterBidding', $player_id);
+                            // $this->gamestate->setAllPlayersMultiactive(  );
+                            $this->gamestate->nextState( 'funeral' );
+                            return;
+                        }
+    
+                        if ( $questResult == 'offering') {
+                            // mark game end
+                            self::setGameStateValue('offeringActive', 1);
+                        }
                     }
                 }
             }
@@ -3667,16 +3909,46 @@ class kingsguild extends Table
                 if ( $replace != null && $replace != '__') {
                     $this->gamestate->nextState( 'replaceBonusRes' );
                 } else {
-                    $this->gamestate->nextState( 'specialistonly' );
+                    if (self::getPlayersNumber() > 1) {         // solo game
+                        $this->gamestate->nextState( 'specialistonly' );
+                    } else {
+                        if (self::getGameStateValue('soloExpandSecondPart') == 0 ) {
+                            self::setGameStateValue('expandAction_roomPlayed', 0);
+                            self::setGameStateValue('expandAction_specialistPlayed', 0);
+                            self::setGameStateValue('soloExpandSecondPart', 1);
+                            $this->gamestate->nextState( 'soloPlayExpand');
+                        } else {
+                            self::setGameStateValue('soloExpandSecondPart', 0);
+                            self::setGameStateValue('playerEndPhase', 1); 
+                            $this->soloGameExpandActionEnd();
+                            $this->gamestate->nextState( 'playerEndTurn');
+                        }
+                    }
                 }
             }
+
             if (self::getGameStateValue('expandAction_specialistPlayed') == 1 ) {
                 // check specialist action and one time bonuses                                          
                 if ( $placed_specialist  != 0) {
                     if ( key($this->specialist[$placed_specialist]['ability']) == 'onetimebonus' ) { // adventurer check
                         $resolveresult = $this->resolveOneTimeBonus($player_id, $this->specialist[$placed_specialist]['ability']['onetimebonus'], $mapper );
                         if ($resolveresult) {
-                            $this->gamestate->nextState( 'buildOnly' );
+                            if (self::getPlayersNumber() > 1) {         // solo game
+                                $this->gamestate->nextState( 'buildOnly' );
+                            } else {
+                                if (self::getGameStateValue('soloExpandSecondPart') == 0 ) {
+                                    self::setGameStateValue('expandAction_roomPlayed', 0);
+                                    self::setGameStateValue('expandAction_specialistPlayed', 0);
+                                    self::setGameStateValue('soloExpandSecondPart', 1);
+                                    $this->gamestate->nextState( 'soloPlayExpand');
+                                } else {
+                                    self::setGameStateValue('soloExpandSecondPart', 0);
+                                    self::setGameStateValue('playerEndPhase', 1); 
+                                    $this->soloGameExpandActionEnd();
+                                    $this->gamestate->nextState( 'playerEndTurn');
+                                }
+                                
+                            }
                         } else {
                             $this->gamestate->setPlayersMultiactive( array($player_id), "sellTreasures", true );
                             $this->gamestate->nextState( 'sellTreasures' );
@@ -3684,13 +3956,43 @@ class kingsguild extends Table
                     } elseif ( key($this->specialist[$placed_specialist]['ability']) == 'onetimeaction' ) {
                         $this->gamestate->nextState( 'specialAction' );
                     } else {
-                        $this->gamestate->nextState( 'buildOnly' );
+                        if (self::getPlayersNumber() > 1) {         // solo game
+                            $this->gamestate->nextState( 'buildOnly' );
+                        } else {
+                            if (self::getGameStateValue('soloExpandSecondPart') == 0 ) {
+                                self::setGameStateValue('expandAction_roomPlayed', 0);
+                                self::setGameStateValue('expandAction_specialistPlayed', 0);
+                                self::setGameStateValue('soloExpandSecondPart', 1);
+                                $this->gamestate->nextState( 'soloPlayExpand');
+                            } else {
+                                self::setGameStateValue('soloExpandSecondPart', 0);
+                                self::setGameStateValue('playerEndPhase', 1); 
+                                $this->soloGameExpandActionEnd();
+                                $this->gamestate->nextState( 'playerEndTurn');
+                            }
+                            
+                        }
                     }
                 } else {
                     if ( $replace != null && $replace != '__') {
                         $this->gamestate->nextState( 'replaceBonusRes' );
                     } else {
-                        $this->gamestate->nextState( 'buildOnly' );
+                        if (self::getPlayersNumber() > 1) {         // solo game
+                            $this->gamestate->nextState( 'buildOnly' );
+                        } else {
+                            if (self::getGameStateValue('soloExpandSecondPart') == 0 ) {
+                                self::setGameStateValue('expandAction_roomPlayed', 0);
+                                self::setGameStateValue('expandAction_specialistPlayed', 0);
+                                self::setGameStateValue('soloExpandSecondPart', 1);
+                                $this->gamestate->nextState( 'soloPlayExpand');
+                            } else {
+                                self::setGameStateValue('soloExpandSecondPart', 0);
+                                self::setGameStateValue('playerEndPhase', 1); 
+                                $this->soloGameExpandActionEnd();
+                                $this->gamestate->nextState( 'playerEndTurn');
+                            }
+                            
+                        }
                     }
                 }  
                 
@@ -3755,7 +4057,7 @@ class kingsguild extends Table
             return;            
         }
 
-        if ( $transition_from == 0 ) {                  // played treasure card Contract -> hire specialist -> one time action
+        if ( $transition_from == 0 || $transition_from == 25) {               // played treasure card Contract -> hire specialist -> one time action
             if ( $placed_specialist  != 0) {
                 if ( key($this->specialist[$placed_specialist]['ability']) == 'onetimebonus' ) {  // adventurer check
                     $resolveresult = $this->resolveOneTimeBonus($player_id, $this->specialist[$placed_specialist]['ability']['onetimebonus'], $mapper );
@@ -3779,9 +4081,8 @@ class kingsguild extends Table
             }
             return;
         }
-
+        
         if ($transition_from == 7 || $specialist_craft_action_played == 1) {                    // craft action
-
             if ($specialist_craftaction === null ) {
                 // look for specialist craftactions
                 $specialists_with_action = $mapper->getCraftSpecialistAtions(self::getGameStateValue( 'craft_action_hero') );
@@ -3825,8 +4126,21 @@ class kingsguild extends Table
             return;
         }
 
+        if ($transition_from == 20) {                    // solo play King statue placement
+            $sql = "UPDATE specialistandquest SET specialistandquest_location = 'discard', specialistandquest_location_arg = '' WHERE specialistandquest_type = 'quest' AND specialistandquest_type_arg = '49'  ";
+            self::dbQuery( $sql); 
 
+            $sql = "SELECT specialistandquest_id id FROM specialistandquest WHERE specialistandquest_type = 'quest' AND specialistandquest_type_arg = '49'  ";
+            $id = self::getUniqueValueFromDB( $sql);
 
+            self::notifyAllPlayers( "moveQuest",  '', array(
+                'quest_id' => $id,
+                'destination' => 'destroy',
+            ) );
+
+            $this->gamestate->nextState( 'nextPlayer' );
+            return;
+        }
     }
 
     function stKingsFuneralBidding() {
@@ -3907,7 +4221,7 @@ class kingsguild extends Table
         // self::getUniqueValueFromDB( $sql); 
         self::notifyAllPlayers( "discardFuneral", '' , array(
             'funeral_id' => self::getUniqueValueFromDB( $sql),
-            ) );
+        ) );
 
         if ($player_id === null) {
             // $this->gamestate->changeActivePlayer(  self::getGameStateValue('activePlayerAfterBidding')) ;
@@ -3938,6 +4252,7 @@ class kingsguild extends Table
         self::setGameStateValue( 'newQuestCardPosition', -1);
         self::setGameStateValue('activePlayerAfterBidding',-1 );
         self::setGameStateValue('playerEndPhase', 0);
+        self::incStat( 1, "table_turnsNumber");
 
         $sql = "UPDATE player SET player_replace_res = null, player_active_potions = null WHERE player_id = '$player_id' ";
         self::dbQuery( $sql); 
@@ -3950,12 +4265,25 @@ class kingsguild extends Table
             }
         }
 
+        if (self::getGameStateValue( 'offeringActive') == 1 && self::getPlayersNumber() == 1) {
+            self::setGameStateValue( 'offeringActive', 2);
+        }
+
+        if (self::getGameStateValue( 'offeringActive') == 2 && self::getPlayersNumber() == 1) {
+            $this->gamestate->nextState("endGame" );
+            return;
+        }
+
+
         // last quest card played - mark last player
         if ( self::getGameStateValue( 'offeringActive') == 1 && self::getGameStateValue( 'playerPlayLast')  == -1 ) {
             self::setGameStateInitialValue('playerPlayLast', $player_id );
         }
 
-        self::incStat( 1, "table_turnsNumber");
+
+        if (self::getPlayersNumber() == 1 ) {
+            $this->recalculateQuestPositionsSoloGame();
+        }
 
         $this->activeNextPlayer();
         $this->gamestate->nextState("nextPlayer" );
@@ -4016,13 +4344,15 @@ class kingsguild extends Table
                 'inc' => false,
             ) );
 
-            // chamr bonus update
-            if (  $final_score[$player_id]['charmNumber'] == $maxCharm ) {
-                $charmBonus[] = $player_id;
-            }
-            if (  $final_score[$player_id]['charmNumber'] > $maxCharm ) {
-                $maxCharm =  $final_score[$player_id]['charmNumber'];
-                $charmBonus = array($player_id);
+            // charm bonus update
+            if (self::getPlayersNumber() != 1) {
+                if (  $final_score[$player_id]['charmNumber'] == $maxCharm ) {
+                    $charmBonus[] = $player_id;
+                }
+                if (  $final_score[$player_id]['charmNumber'] > $maxCharm ) {
+                    $maxCharm =  $final_score[$player_id]['charmNumber'];
+                    $charmBonus = array($player_id);
+                }
             }
 
             // points stats

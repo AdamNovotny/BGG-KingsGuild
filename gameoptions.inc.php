@@ -50,6 +50,37 @@ $game_options = array(
 
     */
 
+    100 => array(
+        'name' => totranslate('Solo Game'),
+        'values' => array(
+           1 => array( 'name' => totranslate('Off')),
+           2 => array( 'name' => totranslate('On'))
+       ),
+       'startcondition' => array(
+         1 => array(
+           array(
+             'type' => 'minplayers',
+                      'value' => 2,
+                      'message' => totranslate('2 players or more are required if Solo Game is OFF.'),
+                      'gamestartonly' => true
+           )
+         ),
+         2 => array( 
+           array(
+             'type' => 'maxplayers',
+                      'value' => 1,
+                      'message' => totranslate('Solo Game is only for one player.')
+           ),
+           array(
+                'type' => 'otheroption',
+                'id' => 201,
+                'value' => 1,
+                'message' => totranslate('Training mode is required to play a Solo Game')
+            )
+         )
+       )
+     )
+
 );
 
 

@@ -233,6 +233,12 @@
       self::ajaxResponse( );
     }
 
+    public function soloFuneral() {
+      self::setAjaxMode();     
+        $this->game->soloFuneral( );
+      self::ajaxResponse( );
+    }
+
 }
   
 

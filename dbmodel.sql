@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `specialistandquest` (
   `specialistandquest_visible` TINYINT UNSIGNED NOT NULL DEFAULT '0',
   `specialistandquest_discount` TINYINT UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`specialistandquest_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `treasure` (
   `treasure_id` SMALLINT unsigned NOT NULL AUTO_INCREMENT,

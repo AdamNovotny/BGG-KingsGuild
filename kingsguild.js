@@ -264,7 +264,12 @@ function (dojo, declare) {
             }
 
             if (this.gamedatas.gamestate.name == 'playerGather' || this.gamedatas.gamestate.name == 'playerExpand' || this.gamedatas.gamestate.name == 'playerCraft'  ) {
-                this.cancelAction();
+
+                if (this.gamedatas.playerorder.length == 1 && this.gamedatas.soloExpandSecondPart == "1") {
+                    //
+                } else {
+                    this.cancelAction();
+                }
             }
             console.log( "Ending game setup" );
         },
@@ -336,125 +341,11 @@ function (dojo, declare) {
                     break;
 
                     case 'playerTurn':
-                        // update actionbar items
-                        // dojo.empty($('bonusholder_gather'));
                         this.roomPosition = 0;
                         this.specialistPosition = '0';
 
                         dojo.addClass('masterroomtoggler', 'glowing');
 
-                        // if (args.args.bonuses.gather.gems && typeof args.args.bonuses.gather.magic == 'undefined') {
-                        //     var txt = this.format_string_recursive( _('gather ${gems}'), {'gems': 'gems_gemlog'} );
-                        //     dojo.place( this.format_block('jstpl_actionbaritem', {'item': txt}), 'bonusholder_gather' );
-                        // }
-                        // if (args.args.bonuses.gather.magic && typeof args.args.bonuses.gather.gems == 'undefined') {
-                        //     var txt = this.format_string_recursive( _('gather ${magic}'), {'magic': 'magic_magiclog'} );
-                        //     dojo.place( this.format_block('jstpl_actionbaritem', {'item': txt}), 'bonusholder_gather' );
-                        // }
-                        // if (args.args.bonuses.gather.magic && args.args.bonuses.gather.gems) {
-                        //     var txt = this.format_string_recursive( _('gather ${gems} and ${magic}'), {'gems': 'gems_gems', 'magic': 'magic_magic'} );
-                        //     dojo.place( this.format_block('jstpl_actionbaritem', {'item': txt}), 'bonusholder_gather' );
-                        // }
-                        
-                        // if ( args.args.bonuses.gather.bonus ) {
-                        //     var txt = '';
-                        //     var param = {};
-                        //     for (var i=0;i<args.args.bonuses.gather.bonus.length;i++) {
-                        //         txt += '+ ${resource'+i+'}  ';
-                        //         param['resource'+i] =  'resource_'+args.args.bonuses.gather.bonus[i];
-                        //     }
-                        //     txt = this.format_string_recursive(txt, param);
-                        //     dojo.place( this.format_block('jstpl_actionbaritem', {'item': txt}), 'bonusholder_gather' );
-
-                        // }
-                        // if (args.args.bonuses.gather.laborer) {
-                        //     var txt = _('Take any ${resource}${resource}${resource}');
-                        //     txt = this.format_string_recursive(txt, {'resource': 'resource_plain'});
-                        //     // dojo.place( this.format_block('jstpl_actionbaritem', {'item': txt}), 'gatherspan' );
-                        // } else {
-                        //     var txt = _('Take any ${resource}${resource} / same ${resource}${resource}${resource}');
-                        //     txt = this.format_string_recursive(txt, {'resource': 'resource_plain'});
-                        //     // dojo.place( this.format_block('jstpl_actionbaritem', {'item': txt}), 'gatherspan' );
-                        // }
-                        // dojo.place( '<div>'+txt+'</div>', 'gatherspan' ); 
-                        // this.removeTooltip( 'actionbtn_gather' );
-                        // this.addTooltip('actionbtn_gather', _('Gather action'), txt);   
-                        // this.addTooltip('bonusholder_gather', _('Your gather action bonuses'), '');   
-                        
-                        // this.addTooltip('gatherAB_gather', _('Gather action'), txt);   
-
-                        // dojo.empty($('bonusholder_craft'));
-                        // dojo.empty($('craftspan'));
-
-                        // if (args.args.bonuses.craft.discounts.Armor && args.args.bonuses.craft.discounts.Armor.length > 0) {
-                        //     var txt = '- ';
-                        //     var param = {};
-                        //     for (var i=0;i<args.args.bonuses.craft.discounts.Armor.length;i++) {
-                        //         txt += '${resource'+i+'}  ';
-                        //         param['resource'+i] =  'resource_'+args.args.bonuses.craft.discounts.Armor[i];
-                        //         if (i< (args.args.bonuses.craft.discounts.Weapon.length-1)) {
-                        //             txt += ', ';
-                        //         }
-                        //     }
-                        //     txt += '/ ${armor}';
-                        //     param['armor'] = 'armor_armor'; 
-                        //     txt = this.format_string_recursive(txt, param);
-                        //     dojo.place( this.format_block('jstpl_actionbaritem', {'item': txt}), 'bonusholder_craft' );
-                        // }
-                        // if (args.args.bonuses.craft.discounts.Weapon && args.args.bonuses.craft.discounts.Weapon.length > 0) {
-                        //     var txt = '- ';
-                        //     var param = {};
-                        //     for (var i=0;i<args.args.bonuses.craft.discounts.Weapon.length;i++) {
-                        //         txt += '${resource'+i+'}  ';
-                        //         param['resource'+i] =  'resource_'+args.args.bonuses.craft.discounts.Weapon[i];
-                        //         if (i< (args.args.bonuses.craft.discounts.Weapon.length-1)) {
-                        //             txt += ', ';
-                        //         }
-                        //     }
-                        //     txt += '/ ${weapon}';
-                        //     param['weapon'] = 'weapon_weapon'; 
-                        //     txt = this.format_string_recursive(txt, param);
-                        //     dojo.place( this.format_block('jstpl_actionbaritem', {'item': txt}), 'bonusholder_craft' );
-                        // }
-
-
-
-                        // txt = _('Pay ${resource} cost and craft item(s)');
-                        // txt = this.format_string_recursive(txt, {'resource': 'resource_plain'});
-                        // // this.removeTooltip( 'actionbtn_craft' );
-                        // // this.addTooltip('actionbtn_craft', _('Craft action'), txt);   
-                        // this.addTooltip('bonusholder_craft', _('Your craft action bonuses'), ''); 
-
-
-                        // this.addTooltip('craftAB_craft', _('Craft action'), txt);   
-                        // this.addTooltip('buildAB_expand', _('Expand action'), _('Build ONE room and/or hire ONE specialist') );  
-
-                        // dojo.empty($('bonusholder_expand'));
-                        // dojo.empty($('expandspan'));
-
-                        // this.removeTooltip( 'actionbtn_expand' );
-                        // this.addTooltip('actionbtn_expand', _('Expand action'), _('Build ONE room and/or hire ONE specialist') );   
-                        // this.addTooltip('bonusholder_expand', _('Your expand action bonuses'), ''); 
-
-                        // if (args.args.bonuses.expand.Builder) {
-                        //     txt = _('build anywhere');
-                        //     dojo.place( this.format_block('jstpl_actionbaritem', {'item': txt}), 'bonusholder_expand' );
-                        // }
-                        // if (args.args.bonuses.expand.Recruiter) {
-                        //     txt = _('double discounts');
-                        //     dojo.place( this.format_block('jstpl_actionbaritem', {'item': txt}), 'bonusholder_expand' );
-                        // }
-
-
-                        // dojo.removeClass('actionpanel', 'closed');
-                        // dojo.addClass('actionpanel', 'opened');
-
-                        // this.handlers.push( dojo.connect($('actionbtn_gather'),  'click',this, 'selectAction'  ));
-                        // this.handlers.push( dojo.connect($('actionbtn_craft'),  'click', this,  'selectAction'  ));
-                        // this.handlers.push( dojo.connect($('actionbtn_expand'),  'click', this, 'selectAction' ));
-                        
-
-                        // var cards = dojo.query('#player_cards .treasurecontainer').addClass('forSelection');
                         var cards = dojo.query('#player_cards .treasure.treasureenlarged').addClass('forSelection');
                         for(var i=0;i<cards.length;i++) {
                             this.handlers.push( dojo.connect(cards[i],'click',this, 'playTreasureCard') );
@@ -557,14 +448,27 @@ function (dojo, declare) {
                     break;
 
                     case 'playerExpand':
-                        // var selection = dojo.query('#main_board .tile > .room:last-child').addClass('selection');
-                        // selection = selection.concat(dojo.query('#main_board .tile > .roomcontainer:last-child > .room').addClass('selection'));
-                        // selection = selection.concat(dojo.query('#main_board .tile > .specialistcontainer > .specialist:not(.specialistback)').addClass('selection'));
-                        // for(var i=0;i<selection.length;i++) {
-                        //     var id = selection[i].id.split('_')[1];
-                        //     var type = selection[i].id.split('_')[0];
-                        //     this.handlers.push( dojo.connect(selection[i],'click',this, dojo.partial(this.selectExpandItem, id, type )) );
-                        // }
+                        if (this.gamedatas.playerorder.length == 1 && this.gamedatas.soloExpandSecondPart == "1") {
+                            this.roomPosition = 0;
+                            this.specialistPosition = '0';
+
+                            dojo.addClass('masterroomtoggler', 'glowing');
+
+                            var cards = dojo.query('#player_cards .treasure.treasureenlarged').addClass('forSelection');
+                            for(var i=0;i<cards.length;i++) {
+                                this.handlers.push( dojo.connect(cards[i],'click',this, 'playTreasureCard') );
+                            }
+
+                            // Expand items
+                            var selection = dojo.query('#main_board .tile > .room:last-child').addClass('selection');
+                            selection = selection.concat(dojo.query('#main_board .tile > .roomcontainer:last-child > .room').addClass('selection'));
+                            selection = selection.concat(dojo.query('#main_board .tile > .specialistcontainer > .specialist:not(.specialistback)').addClass('selection'));
+                            for(var i=0;i<selection.length;i++) {
+                                var id = selection[i].id.split('_')[1];
+                                var type = selection[i].id.split('_')[0];
+                                this.handlers.push( dojo.connect(selection[i],'click',this, dojo.partial(this.selectExpandItem, id, type )) );
+                            }
+                        }
                     break;
 
                     case 'client_hireSpecialist':
@@ -577,8 +481,8 @@ function (dojo, declare) {
                     break;
 
                     case 'playerBuildRoomOnly':
-                        // var selection = dojo.query('#main_board .tile > .room:last-child').addClass('selection');
-                        var selection = dojo.query('#main_board .tile > .room:last-child').addClass('selected');
+                        var selection = dojo.query('#main_board .tile > .room:last-child').addClass('selection');
+                        // var selection = dojo.query('#main_board .tile > .room:last-child').addClass('selected');
                         selection = selection.concat(dojo.query('#main_board .tile > .roomcontainer:last-child > .room').addClass('selection'));
                         for(var i=0;i<selection.length;i++) {
                             var id = selection[i].id.split('_')[1];
@@ -832,8 +736,8 @@ function (dojo, declare) {
                 break;
 
                 case 'playerExpand':
-                    // dojo.query('.room.selection').removeClass('selection');
-                    // dojo.query('.specialist.selection').removeClass('selection');
+                    dojo.query('.forSelection').removeClass('forSelection');
+                    dojo.query('.selection').removeClass('selection');
                     dojo.query('.room.selection').removeClass('selected');
                     dojo.query('.specialist.selection').removeClass('selected');
                     dojo.forEach(this.handlers,dojo.disconnect);
@@ -1233,7 +1137,9 @@ function (dojo, declare) {
                     break;
 
                     case 'playerExpand':
-                        this.addActionButton( 'cancel', _('Cancel'), 'cancelAction'  );
+                        if (this.gamedatas.playerorder.length == 1 && this.gamedatas.soloExpandSecondPart == "1") {
+                            this.addActionButton( 'pass', _('Pass'), 'passAction'  );
+                        }
                     break;
 
                     case 'playerBuildRoomOnly':
@@ -1334,18 +1240,6 @@ function (dojo, declare) {
                     break;
 
                     case 'playerTurn':
-                        // var action1 = this.format_string_recursive('${actionicon}',  {'actionicon': 'actionicon_gather'});
-                        // var action2 = this.format_string_recursive('${actionicon}',  {'actionicon': 'actionicon_craft'});
-                        // var action3 = this.format_string_recursive('${actionicon}',  {'actionicon': 'actionicon_build'});
-
-                        // this.addActionButton( 'gatherAB_gather', action1, 'selectAction'  );
-                        // this.addActionButton( 'craftAB_craft', action2, 'selectAction'  );
-                        // this.addActionButton( 'buildAB_expand', action3, 'selectAction'  );
-
-                        // dojo.addClass('gatherAB_gather', 'actioncustombutton');
-                        // dojo.addClass('craftAB_craft', 'actioncustombutton');
-                        // dojo.addClass('buildAB_expand', 'actioncustombutton');
-
                         if(args != null && args.bardActionActive ) {
                             this.addActionButton( 'bard', _('Move specialist (Bard action)'), 'bardAction'  );
                         }
@@ -1358,6 +1252,10 @@ function (dojo, declare) {
                             } else {
                                 this.addActionButton( 'offering', _('Make offering to the Council'), 'offeringAction'  );
                             }
+                        }
+
+                        if (args.soloKingsFuneral == 1) {
+                            this.addActionButton( 'soloFuneral', _("Build King's Statue"), 'soloFuneral'  );
                         }
 
                         this.addActionButton( 'hint', _('Show hint') , 'showHint'  );
@@ -1569,7 +1467,7 @@ function (dojo, declare) {
             }
 
             if (deckType == 'quest') {
-                if (Object.keys(this.gamedatas.players).length > 4) {
+                if (Object.keys(this.gamedatas.players).length > 4 || Object.keys(this.gamedatas.players).length == 1) {
                     var questcount1 = dojo.query('#tile_quest_6 .bg-QuestBack1N').length + dojo.query('#tile_quest_6 .bg-QuestBack1S').length;
                     var questcount2 = dojo.query('#tile_quest_6 .bg-QuestBack2').length;
                     if (questcount2 > 0) {
@@ -2015,6 +1913,8 @@ function (dojo, declare) {
                     resizeNode('quest_'+id, this.sizeRatio,1);
                     this.placeOnObject( 'quest_'+id, tile);
                 }
+            } else if (location == 'removed') {
+
             } else {
                 // player panel
                 if (location != 'discard') {
@@ -2139,7 +2039,7 @@ function (dojo, declare) {
             // this.attachToNewParent( card_type+'_'+card_id, 'tile_'+card_type+'_'+location_to);                                       
 
             // exclude Kings Funeral and Offering
-            if (location_to != null && card_name != 'TheKingsFuneral' && card_name != 'OfferingtotheCouncil' ) {
+            if (location_to != null && ( card_name != 'TheKingsFuneral' || this.gamedatas.playerorder.length == 1) && card_name != 'OfferingtotheCouncil' ) {
                 var anim = this.slideToObject( card_type+'_'+card_id, 'tile_'+card_type+'_'+location_to, 700,800 );
                 dojo.connect(anim, 'onEnd', dojo.hitch(this, function() {
                     //update tooltip
@@ -2148,6 +2048,9 @@ function (dojo, declare) {
                         this.constructTooltip(card_type+'_'+card_id+'_front', _(this.gamedatas.specialist[card_id]['nameTr']), this.gamedatas.specialist[card_id]['text'],0);  
                     } else {
                         this.constructTooltip(card_type+'_'+card_id+'_front', _(this.gamedatas.quest[card_id]['nameTr']), this.gamedatas.quest[card_id]['text'], null); 
+                        for (var index = 0; index <  this.gamedatas.quest[card_id]['reward'].length; index++) {
+                            this.constructTooltip('tile_quest_'+card_id+'_'+index, _(this.gamedatas.quest[card_id]['nameTr']), this.gamedatas.quest[card_id]['text'], null);
+                        }
                     }
                     this.makeTooltipForDeck(card_type );
                 } ));
@@ -2206,9 +2109,7 @@ function (dojo, declare) {
             }
         },
 
-        // moveItemOnBoard: function(item_id, location_to, destroy = false) {
-        moveItemOnBoard: function(item_id, location_to, destroy) {  
-            console.log(item_id, location_to);  
+        moveItemOnBoard: function(item_id, location_to, destroy) {   
             this.attachToNewParent(item_id, location_to);
             if (destroy) {
                 this.slideToObjectAndDestroy( item_id, location_to, 1000 );
@@ -3128,9 +3029,14 @@ function (dojo, declare) {
                 }
             }
 
-            this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/cancelAction.html", {lock : true}, 
-                this, function(result) {}, function(is_error) {
-            });
+            if (this.gamedatas.gamestate.name == "client_playTreasureCard") {
+                this.restoreServerGameState();
+            } else {
+                this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/cancelAction.html", {lock : true}, 
+                    this, function(result) {}, function(is_error) {
+                });
+            }
+            
 
         },
 
@@ -3594,6 +3500,14 @@ function (dojo, declare) {
             this, function(result) {}, function(is_error) {});
         },
 
+        soloFuneral: function(evt) {
+            dojo.stopEvent(evt);
+            if (!this.checkAction( "soloFuneral" )) { return;};
+
+            this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/soloFuneral.html", {lock : true}, 
+            this, function(result) {}, function(is_error) {});
+        },
+
         
         ///////////////////////////////////////////////////
         //// Reaction to cometD notifications
@@ -3662,6 +3576,12 @@ function (dojo, declare) {
             dojo.subscribe( 'updateBard', this, "notif_updateBard" );
             dojo.subscribe( 'resetPotions', this, "notif_resetPotions" );
 
+
+            dojo.subscribe( 'soloExpand', this, "notif_soloExpand" );
+            dojo.subscribe( 'soloKingsFuneral', this, "notif_soloKingsFuneral" );
+            dojo.subscribe( 'moveQuest', this, "notif_moveQuest" );
+            this.notifqueue.setSynchronous( 'moveQuest', 500 );
+
         },  
         
         // TODO: from this point and below, you can write your game notifications handling methods
@@ -3688,7 +3608,7 @@ function (dojo, declare) {
            if (notif.args.card_type != 'treasure') {
                 this.updateGamedatas(notif.args.card_type,notif.args.card_id, notif.args.card_info);
                 // check if the card is Kings Funeral or Offering -> do not move card and do not apply
-                    this.drawAndMoveCard(notif.args.card_type, notif.args.card_id, notif.args.card_name.replace(/ /g, '').replace(/'/g, ''), notif.args.card_back, notif.args.location_from, notif.args.location_to);
+                this.drawAndMoveCard(notif.args.card_type, notif.args.card_id, notif.args.card_name.replace(/ /g, '').replace(/'/g, ''), notif.args.card_back, notif.args.location_from, notif.args.location_to);
             } else {
                if (notif.args.player_id == this.player_id) {
                     if ( notif.args.card_name) {
@@ -3757,11 +3677,39 @@ function (dojo, declare) {
         },
 
        notif_moveSpecialist: function(notif) {
-           this.moveItemOnBoard('specialist_'+notif.args.specialist_id,  'tile_specialist_'+notif.args.destination, notif.args.destroy);
+           if (notif.args.destination == 'main_board') {
+                this.moveItemOnBoard('specialist_'+notif.args.specialist_id, notif.args.destination, notif.args.destroy);
+           } else {
+                this.moveItemOnBoard('specialist_'+notif.args.specialist_id,  'tile_specialist_'+notif.args.destination, notif.args.destroy);
+           }
            // update pos in gamedatas
-           this.gamedatas.specialist[notif.args.specialist_id]['location_arg'] = notif.args.destination;
-           this.constructTooltip('specialist_'+notif.args.specialist_id+'_front', _(this.gamedatas.specialist[notif.args.specialist_id]['nameTr']), this.gamedatas.specialist[notif.args.specialist_id]['text'], this.gamedatas.specialist[notif.args.specialist_id]['discount']);
-       },
+           if (! notif.args.destroy) {
+                this.gamedatas.specialist[notif.args.specialist_id]['location_arg'] = notif.args.destination;
+                this.constructTooltip('specialist_'+notif.args.specialist_id+'_front', _(this.gamedatas.specialist[notif.args.specialist_id]['nameTr']), this.gamedatas.specialist[notif.args.specialist_id]['text'], this.gamedatas.specialist[notif.args.specialist_id]['discount']);
+           } else {
+                this.gamedatas.specialist[notif.args.specialist_id]['location'] = 'removed';
+           }
+        },
+
+        notif_moveQuest: function(notif) {
+            if (notif.args.destination == 'destroy') {
+                this.moveItemOnBoard('quest_'+notif.args.quest_id, 'main_board', true);
+           } else {
+                this.moveItemOnBoard('quest_'+notif.args.quest_id,  'tile_quest_'+notif.args.destination, false);
+           }
+           // update pos in gamedatas
+           if (notif.args.destination != 'destroy') {
+                this.gamedatas.quest[notif.args.quest_id]['location_arg'] = notif.args.destination;
+                this.constructTooltip('quest_'+notif.args.quest_id+'_front', _(this.gamedatas.quest[notif.args.quest_id]['nameTr']), this.gamedatas.quest[notif.args.quest_id]['text'], null);
+                if (this.gamedatas.quest[notif.args.quest_id]['name'] != "The King's Funeral") {
+                    for (var index = 0; index <  this.gamedatas.quest[notif.args.quest_id]['reward'].length; index++) {
+                        this.constructTooltip('tile_quest_'+notif.args.quest_id+'_'+index, _(this.gamedatas.quest[notif.args.quest_id]['nameTr']), this.gamedatas.quest[notif.args.quest_id]['text'], null);
+                    }
+                }
+            } else {
+                this.gamedatas.quest[notif.args.quest_id]['location'] = 'removed';
+           }
+        },
 
        notif_updateSpecDiscount: function(notif) {
 
@@ -4119,6 +4067,14 @@ function (dojo, declare) {
             this.fortunePotionActive = false;
             this.luckyPotionActive = false;
         },
+
+        notif_soloExpand: function(notif) {
+            this.gamedatas.soloExpandSecondPart = "1";
+        },
+
+        notif_soloKingsFuneral: function(notif) {
+            this.gamedatas.soloKingsFuneral = "1";
+        }
 
    });   
 });

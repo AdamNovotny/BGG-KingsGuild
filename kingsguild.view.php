@@ -98,7 +98,7 @@
             }
         }
 
-        if ($players_nbr > 4) {     // add 6th quest card slot in case of 5/6 players
+        if ($players_nbr > 4 || $players_nbr == 1) {     // add 6th quest card slot in case of 5/6 players and solo mode
             $this->page->insert_block( "mainBoardTiles", array( 
                 "TYPE" => 'quest',
                 "POSITION" => 6,
