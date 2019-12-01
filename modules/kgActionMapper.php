@@ -660,6 +660,8 @@ class kgActionMapper {
             }
         }
 
+        $result['quests'] = count($this->getQuests()); 
+
         return $result;
     }
 
@@ -803,7 +805,7 @@ class kgActionMapper {
         $scoreDuringGame = $this->calculateScore(true);
         $result['score']['specialists'] = $scoreDuringGame['specialists'];
         $result['score']['rooms'] = $scoreDuringGame['rooms'];
-        $result['score']['quests'] = count($this->getQuests()); 
+        $result['score']['quests'] =  $scoreDuringGame['quests']; 
         $treasures = $this->getTreasureCards();
         $relics = array();
 

@@ -388,7 +388,8 @@ class kingsguild extends Table
         $result = array();
     
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
-    
+        $spectator = $this->isSpectator($current_player_id);
+
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score, player_mat mat, player_gold gold, player_hand_size handsize, player_guild guild FROM player ";
@@ -427,7 +428,9 @@ class kingsguild extends Table
         $result['tokens'] = self::getCollectionFromDb( $sql );
 
         // player mat and mat bonuses
-        $result['mat'] = $this->playermats[$result['players'][$current_player_id]['mat']];
+        if (!$spectator) {
+            $result['mat'] = $this->playermats[$result['players'][$current_player_id]['mat']];
+        }
 
         //for solo game
         $result['soloExpandSecondPart'] = self::getGameStateValue('soloExpandSecondPart');
@@ -471,60 +474,16 @@ class kingsguild extends Table
     */
 
     function test() {
-        // $mapper = new kgActionMapper(self::getCurrentPlayerId(), $this);
-        // $score = $mapper->calculateScore(true);
-        // var_dump($score);
+    }
 
-        // self::setGameStateValue('playerPlayLast',-1 );
-        //$this->stEndCalculations();
+    function isSpectator($current_player_id) {
+        $players = self::getObjectListFromDB( "SELECT player_id id FROM player", true );;
 
-        // $sql = "UPDATE specialistandquest SET specialistandquest_type_arg = '11' WHERE specialistandquest_type = 'specialist' AND specialistandquest_location = 'board' AND specialistandquest_location_arg = '2' ";
-        // self::dbQuery($sql);
-        // $sql = "UPDATE specialistandquest SET specialistandquest_type_arg = '2' WHERE specialistandquest_id = '1'  ";
-        // self::dbQuery($sql);
-        // $sql = "UPDATE treasure SET treasure_location = 'discard', treasure_location_arg = '0', treasure_visible = '1' WHERE treasure_color = 'red' AND treasure_location = 'board' ";
-        // self::dbQuery($sql);
-        // var_dump( $obj->getCraftSpecialistAtions() );
-        // $this->takeResourceByPlayer(array('leather', 'leather', 'wood', 'iron'), '2306536', false);
-        $this->takeResourceByPlayer(array('iron', 'iron', 'iron', 'leather'), '2306538', false);
-        // $this->takeResourceByPlayer(array('iron', 'cloth', 'cloth'), '2306537', false);
-        // $this->takeResourceByPlayer(array('magic', 'wood'), '2306536', false);
-        // $this->expandHandsize(self::getCurrentPlayerId(), 1);
+        if (! in_array($current_player_id, $players)) {
+            return true;
+        }
 
-        // $sql = "INSERT INTO tokens (token_type, token_type_arg, token_location, token_location_arg) VALUES ('thug', '', 'none', 'none') ";
-        // self::dbQuery($sql);
-
-        // $sql = "DELETE FROM tokens WHERE token_type = 'thug' ";
-        // self::dbQuery($sql);
-
-        // $this->updatePlayerGold(self::getCurrentPlayerId(), 80);
-
-        // $this->drawNewCard('treasure', 'red', 5, self::getCurrentPlayerId());
-
-        // var_dump ($mapper->isSpecificSpecialistPresent('Auctioneer') );
-
-        // var_dump(self::getGameStateValue( 'newQuestCardPosition') );
-        // var_dump(self::getGameStateValue('activePlayerAfterBidding'));
-
-        // self::setGameStateValue('player_play_appraiser', -1); 
-
-
-        //calculate score
-        // $players = self::getCollectionFromDB( "SELECT player_id id, player_name name, player_score score, player_offering offering FROM player" );
-        // $final_score = array();
-        // foreach($players as $player) {
-        //     $player_id = $player['id'];
-        //     $mapper = new kgActionMapper($player_id, $this);
-        //     $final_score[$player['id']] = $mapper->finalScoring( $player['offering']);
-
-        //     $player_score = array_sum( $final_score[$player_id]['score'] );
-        //     $final_score[$player['id']]['score']['total'] = $player_score;
-        //     $player_aux_score = $final_score[$player_id]['gold'];
-        // }
-
-        // $this->createScoreTable($final_score, $players);
-
-        // $this->stEndCalculations();
+        return false;
     }
 
     function getKeyByValueMultidim($array, $field, $value) {  //returns key by specific value in specific filed in multidimension (assoc) array
@@ -909,7 +868,7 @@ class kingsguild extends Table
 
         // update Score
         $score = $mapper->calculateScore();
-        $scoreN = $score['specialists']+$score['rooms'];
+        $scoreN = $score['specialists']+$score['rooms']+$score['quests'];
         self::DbQuery( "UPDATE player SET player_score='$scoreN' WHERE player_id= '$player_id'  " );
         self::notifyAllPlayers( "updateScore",'', array(
             'player_id' => $player_id,
@@ -965,7 +924,7 @@ class kingsguild extends Table
 
         // update Score
         $score = $mapper->calculateScore();
-        $scoreN = $score['specialists']+$score['rooms'];
+        $scoreN = $score['specialists']+$score['rooms']+$score['quests'];
         self::DbQuery( "UPDATE player SET player_score='$scoreN' WHERE player_id= '$player_id'  " );
         self::notifyAllPlayers( "updateScore",'', array(
             'player_id' => $player_id,
@@ -2381,6 +2340,7 @@ class kingsguild extends Table
         }
 
         // if Curator prepare menu and update discard cards
+        $skip = false;
         if ($specialist_type == 29)  {
             $sql = "SELECT treasure_id id, treasure_type t FROM treasure WHERE treasure_location = 'discard' ";
             $discarded_treasures = self::getObjectListFromDB($sql);
@@ -2406,6 +2366,7 @@ class kingsguild extends Table
             } else {
                 //notify about relics
                 self::notifyAllPlayers("logInfo", clienttranslate( 'No relics in discard pile, Curator action skipped' ), array() );
+                $skip = true;
             }
         }
 
@@ -2413,7 +2374,9 @@ class kingsguild extends Table
             $state_id = $this->getKeyByValueMultidim( $this->gamestate->states,'name', $this->gamestate->state()['name']);
             self::setGameStateValue("transition_from_state", $state_id);
             self::setGameStateValue("expandAction_specialistPlayed", 1);
-            self::setGameStateValue("placed_specialist_type", $specialist_info['t']);
+            if (!$skip) {
+                self::setGameStateValue("placed_specialist_type", $specialist_info['t']);
+            }
         } else {
             if (self::getGameStateValue("playerEndPhase")) {        //play treasure card on end with specialist action
                 self::setGameStateValue("transition_from_state", 25);
@@ -2422,9 +2385,11 @@ class kingsguild extends Table
                 }
             }
             if ( key($this->specialist[$specialist_type]['ability']) == 'onetimeaction' || key($this->specialist[$specialist_type]['ability']) == 'onetimebonus') {
-                self::setGameStateValue("placed_specialist_type", $specialist_type);                // chain of specialists actions
+                if (!$skip) {
+                    self::setGameStateValue("placed_specialist_type", $specialist_type);                // chain of specialists actions
+                }
             } else {
-                self::setGameStateValue("placed_specialist_type",0);
+                    self::setGameStateValue("placed_specialist_type",0);
             }
         }
 
@@ -3026,6 +2991,7 @@ class kingsguild extends Table
                             'player_id_give' => $player_id_other,
                             'treasure_location' => 'tile_card_'.$position_active["positions"][$i],
                             'destroy_menu' => $destroy,
+                            'You'=>'You'
                         ) );
                     } elseif ($player == $player_id_other) {
                         // $card_info =  $this->treasures[$this->getItemTypeById('treasure', $id)];
@@ -3042,6 +3008,7 @@ class kingsguild extends Table
                             'treasure_id2' => $treasure_ids_selected[$i],
                             'treasure_location' => $position_other["positions"][$i],
                             'card_info' => $card_info,
+                            'You'=>'You'
                         ) );
                     } else {
                         self::notifyPlayer($player, "treasureHandle", clienttranslate('${player_name_id} chooses to keep ${card1} and ${player2_name_id} gets ${card2}'), array(
@@ -3149,7 +3116,8 @@ class kingsguild extends Table
             //notify
             self::notifyAllPlayers( "craftItem", clienttranslate('${player_name_id} takes ${questName}'), array(
                 'player_id' => $player_id,
-                'player_name_id' => $player_id,                         
+                'player_name_id' => $player_id,   
+                'quest_completed' => true,                     
                 'quest_id' => $quest_id,
                 'questName' => $this->quest[$quest_type]['nameTr'],
                 'i18n' => array('questName'),
@@ -3301,23 +3269,6 @@ class kingsguild extends Table
         Here, you can create methods defined as "game state arguments" (see "args" property in states.inc.php).
         These methods function is to return some additional information that is specific to the current
         game state.
-    */
-
-    /*
-    
-    Example for game state "MyGameState":
-    
-    function argMyGameState()
-    {
-        // Get some values from the current game situation in database...
-    
-        // return values:
-        return array(
-            'variable1' => $value1,
-            'variable2' => $value2,
-            ...
-        );
-    }    
     */
 
     function argPlayerGuildTurn() {
@@ -4190,18 +4141,22 @@ class kingsguild extends Table
     }
 
     function stResolveFuneralBidding() {
-        $sql = "SELECT player_id id, player_funeralbid bid FROM player ";
-        $playerbids = self::getCollectionFromDB($sql, true);
-        $max = max($playerbids);
+        $sql = "SELECT player_id id, player_funeralbid bid, player_name names FROM player ";
+        $playerbids = self::getCollectionFromDB($sql);
+
+        $playerbidvalues = array_column($playerbids, 'bid');
+        $playernames = array_column($playerbids, 'names');
+        $playerids = array_column($playerbids, 'id');
+        $max = max($playerbidvalues);
         $player_id = null;
 
         // check if only 1p has max
-        if (array_count_values($playerbids)[$max] == 1) {
-            $player_id = array_search($max, $playerbids);
+        if (array_count_values($playerbidvalues)[$max] == 1) {
+            $index =  array_search ($max, $playerbidvalues);
+            $player_id = $playerids[$index];
             self::notifyAllPlayers( "logInfo",clienttranslate( '${player_name_id} wins the bidding: ${gold}' ), array(
                 'player_name_id' => $player_id,
                 'gold' => 'gold_'.$max,
-                'wholetable' => $playerbids
                 ) );
             $this->updatePlayerGold($player_id, -$max, true);
 
@@ -4213,18 +4168,35 @@ class kingsguild extends Table
             self::setStat( $max+1, 'table_kingsStatue' ); 
         }
 
+        $firstRow = array( '' );
+        foreach( $playernames as $name ) {
+            $firstRow[] = array( 'str' => '${player_name}',
+                                 'args' => array( 'player_name' => $name ),
+                                 'type' => 'header'
+                               );
+        }
+        
+        $table = array();
+        $table[] = $firstRow;
+        $table[] = array_merge( array( clienttranslate("Gold")), $playerbidvalues);
+
+        $this->notifyAllPlayers( "tableWindow", '', array(
+            "id" => 'kingStatueBidding',
+            "title" => clienttranslate("The King's Funeral bidding result"),
+            "table" => $table, 
+            "closing" => clienttranslate( "Close" )
+        ) ); 
+
         //update quest card and notify to destroy
         $sql = "UPDATE specialistandquest SET specialistandquest_location = 'discard', specialistandquest_location_arg = '' WHERE specialistandquest_type = 'quest' AND specialistandquest_type_arg = '49'  ";
         self::dbQuery( $sql); 
 
         $sql = "SELECT specialistandquest_id id FROM specialistandquest WHERE specialistandquest_type = 'quest' AND specialistandquest_type_arg = '49'  ";
-        // self::getUniqueValueFromDB( $sql); 
         self::notifyAllPlayers( "discardFuneral", '' , array(
             'funeral_id' => self::getUniqueValueFromDB( $sql),
         ) );
 
         if ($player_id === null) {
-            // $this->gamestate->changeActivePlayer(  self::getGameStateValue('activePlayerAfterBidding')) ;
             $this->gamestate->nextState( "nowinner" ); 
         } else {
             $this->gamestate->changeActivePlayer( $player_id );
@@ -4256,6 +4228,17 @@ class kingsguild extends Table
 
         $sql = "UPDATE player SET player_replace_res = null, player_active_potions = null WHERE player_id = '$player_id' ";
         self::dbQuery( $sql); 
+
+        // score adjust 
+        $mapper = new kgActionMapper($player_id, $this);
+        $score = $mapper->calculateScore();
+        $scoreN = $score['specialists']+$score['rooms']+$score['quests'];
+        self::DbQuery( "UPDATE player SET player_score='$scoreN' WHERE player_id= '$player_id'  " );
+        self::notifyAllPlayers( "updateScore",'', array(
+            'player_id' => $player_id,
+            'value' => $scoreN,
+            'inc' => false,
+        ) );
 
         // end game check
         if ( self::getGameStateValue( 'offeringActive') == 1 && self::getGameStateValue( 'playerPlayLast')  != -1 ) {

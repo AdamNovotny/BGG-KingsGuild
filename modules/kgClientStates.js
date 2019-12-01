@@ -474,7 +474,7 @@ function constructClientState(name, args) {
         case 'buydiscardrelics':
             clientState['name'] = 'client_playerSellTreasure';
             clientState['parameters']["descriptionmyturn"] = _('${you}  can buy relics for ${gold} ');
-            clientState['parameters']["possibleactions"] = [ "selectTreasureCards", "confirm"];
+            clientState['parameters']["possibleactions"] = [ "selectTreasureCards", "confirm", "pass"];
             clientState['parameters']["args"] = {"you": '', "gold": 'gold_3', "possible_treasures": args.possible_treasures, "pass": true, "dontdestroy": true }  ;
         break;
 
@@ -509,7 +509,7 @@ function constructClientState(name, args) {
         case 'treasureCardPlay':           
             clientState['name'] = 'client_playTreasureCard';
             clientState['parameters']["descriptionmyturn"] = _('Play card effect or sell for gold?');
-            clientState['parameters']["possibleactions"] = [ "playTreasureCard", "cancel"];
+            clientState['parameters']["possibleactions"] = [ "playTreasureCard", "cancel", "pass"];
             clientState['parameters']["args"] = {'selectedCard': args.selectedCard }  ;
         break;
 

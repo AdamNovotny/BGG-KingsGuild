@@ -57,6 +57,7 @@ function (dojo, declare) {
             this.playerHasAuctioneer = false;
             this.fortunePotionActive = false;
             this.luckyPotionActive = false;
+            this.endPhaseActive = false;
         },
         
         /*
@@ -75,11 +76,6 @@ function (dojo, declare) {
         setup: function( gamedatas )
         {
             console.log( "Starting game setup" );
-            
-            // this.interface_min_width = 740;
-            // this.interface_max_width = 1400;
-
-            console.log(gamedatas);
             
             // Setting up player boards
             for( var player_id in gamedatas.players )
@@ -113,17 +109,19 @@ function (dojo, declare) {
                 $(player_id+'_maxhand').innerText = player.handsize;
             }
 
-            for(var i=0;i<gamedatas.players[this.player_id].handsize;i++) {
-                if (gamedatas.players[this.player_id].handsize < 8) {
-                    this.addCardTileOnBoard(i, 180, 255.4);
-                } else if (gamedatas.players[this.player_id].handsize < 11) {
-                    this.addCardTileOnBoard(i, 180*0.9, 255.4*0.9);
-                } else {
-                    this.addCardTileOnBoard(i, 180*0.8, 255.4*0.8);
+            if (!this.isSpectator) {
+                for(var i=0;i<gamedatas.players[this.player_id].handsize;i++) {
+                    if (gamedatas.players[this.player_id].handsize < 8) {
+                        this.addCardTileOnBoard(i, 180, 255.4);
+                    } else if (gamedatas.players[this.player_id].handsize < 11) {
+                        this.addCardTileOnBoard(i, 180*0.9, 255.4*0.9);
+                    } else {
+                        this.addCardTileOnBoard(i, 180*0.8, 255.4*0.8);
+                    }
                 }
+                dojo.style('player_cards', 'width', dojo.style('player_cards', 'width')+dojo.style('tile_card_0', 'width')+'px'  );     // !!!!!!!!!!!!!!!
             }
 
-            dojo.style('player_cards', 'width', dojo.style('player_cards', 'width')+dojo.style('tile_card_0', 'width')+'px'  );     // !!!!!!!!!!!!!!!
 
             // Add rooms
             var doublerooms_side_up = [];
@@ -343,6 +341,7 @@ function (dojo, declare) {
                     case 'playerTurn':
                         this.roomPosition = 0;
                         this.specialistPosition = '0';
+                        this.endPhaseActive = false;
 
                         dojo.addClass('masterroomtoggler', 'glowing');
 
@@ -358,13 +357,20 @@ function (dojo, declare) {
                                 var text = _('The end of game has been triggered, you can either make an offering to the council or take a last usual action');
                             }
 
+                            var btntxt = _('OK');
+                            var closebtn = '<div style= "text-align: center;"><div id="infoclose" class="bgabutton bgabutton_blue"><span>'+btntxt+'</span></div></div>';
                             this.myDlg = new ebg.popindialog();
                             this.myDlg.create( 'lastturninfo' );
                             this.myDlg.setTitle( "" );
                             this.myDlg.setMaxWidth( 350 ); 
-                            var html = '<div style="font-size: 20px;">'+text+'</div>';
+                            var html = '<div style="font-size: 20px;">'+text+'</div>'+closebtn;
                             this.myDlg.setContent( html ); 
                             this.myDlg.show();
+
+                            dojo.connect( $('infoclose'), 'onclick', this, function(evt){
+                                evt.preventDefault();
+                                this.myDlg.destroy();
+                            } );
                         }
 
                         // new verison items -------------------------------------------------------------------------------------
@@ -398,6 +404,7 @@ function (dojo, declare) {
                     break;
 
                     case 'playerEndTurn':
+                        this.endPhaseActive = true;
                         // this.toggleCards(true, false);
                         // var cards = dojo.query('#player_cards .treasurecontainer').addClass('forSelection');
                         var cards = dojo.query('#player_cards .treasure.treasureenlarged').addClass('forSelection');
@@ -839,11 +846,6 @@ function (dojo, declare) {
                     dojo.query('.selected').removeClass('selected');
                 break;
 
-                // case 'client_playTreasureCard':
-                //     this.selectedTreasureForPlay = 0;
-                //     dojo.query('.selected').removeClass('selected');
-                // break;
-
                 case 'playerPlayTreasureEffect':
                     // dojo.query('.selected').removeClass('selected');
                 break;
@@ -875,6 +877,9 @@ function (dojo, declare) {
                     this.handlers = [];
                 break;
 
+                case 'client_takeTreasure' :
+                    this.gamedatas.gamestate.descriptionmyturn = '';
+                    this.gamedatas.gamestate.acive_player = null;
                 case 'dummmy':
                 break;
             }               
@@ -1074,9 +1079,6 @@ function (dojo, declare) {
                                     }
                                 }
                             }
-                            // console.log(endcount);
-                            // console.log(arrayOfPermutations);
-                            // arrayOfPermutations.push(args.selectedResources);
 
                             for(var k=0;k<arrayOfPermutations.length;k++) {
                                 var text = txt;
@@ -1133,7 +1135,7 @@ function (dojo, declare) {
                         if (str .length > 3 ) {
                             this.addActionButton( 'trade', str, dojo.partial(this.takeResourcesAndReplace, [args.forBuy], [args.forSell], 1, true), null, null, 'gray' );
                         }
-                        this.addActionButton( 'pass', _('Stop trading'), 'passAction');
+                        this.addActionButton( 'stoptrading', _('Stop trading'), 'passAction');
                     break;
 
                     case 'playerExpand':
@@ -1259,7 +1261,7 @@ function (dojo, declare) {
                         }
 
                         this.addActionButton( 'hint', _('Show hint') , 'showHint'  );
-                        dojo.addClass('hint', 'actioncustombutton');
+                        // dojo.addClass('hint', 'actioncustombutton');
 
                     break;
 
@@ -1502,7 +1504,6 @@ function (dojo, declare) {
             for(var i =0;i<discards.length;i++) {
                 var clone = dojo.clone(discards[i]);
                 dojo.setAttr(clone, "id", 'clone'+i);
-                // console.log(dojo.getStyle(clone, 'width'));
                 dojo.setStyle(clone, "position", 'relative');
                 dojo.setStyle(clone, "display", 'inherit');
 
@@ -1608,6 +1609,11 @@ function (dojo, declare) {
                 } ) , location );
 
                 this.placeOnObject( 'sigil_'+player+'_'+id,  location);
+
+                // sigilhere
+                var sigilCount = dojo.query('#'+location+' .sigil').length;
+
+                dojo.addClass('sigil_'+player+'_'+id, 'sigil'+sigilCount);
             }
         },
 
@@ -1994,7 +2000,7 @@ function (dojo, declare) {
                         adjustBackgroundPosition('treasure_'+id+'_back', this.treasureSizeCoef);
                         resizeNode('treasure_'+id, this.sizeRatio,1);
 
-                        if (position > 19) {
+                        if (position > 19 && this.isCurrentPlayerActive()) {
                             this.attachToNewParent('treasure_'+id, 'tile_card_'+position);
 
                             this.enlargeTreasure(id);
@@ -2442,11 +2448,19 @@ function (dojo, declare) {
             }
 
             if (id.split("_")[0] == 'sigil' ) {    
-                dojo.toggleClass(id, 'small');
+                //dojo.toggleClass(id, 'small');
                 if (newparent.split("_")[1] == 'quest' || newparent.split("_")[0] == 'quest') {
+                    //sigilhere
+                    if (dojo.hasClass(newparent, 'questcontainer')) {
+                        var sigilCount = dojo.query('#'+newparent+' .sigil').length;
+                        dojo.addClass(id, 'sigil'+sigilCount);
+                    } else {
+                        dojo.toggleClass(id, 'small');
+                    }
                     resizeChildNode(id, this.sizeRatio,1);
                 }
                 if (newparent.split("_")[1] == 'sigilplace') {
+                    dojo.toggleClass(id, 'small');
                     dojo.style(id, 'left', '');
                     dojo.style(id, 'top', '');
                     dojo.style(id, 'width', '');
@@ -2535,7 +2549,13 @@ function (dojo, declare) {
             if (offering) {
                 // count nbr of sigils
                 var sigilCount = dojo.query('#'+destination+' .sigil').length -1 ;
-                var anim = this.slideToObjectPos(sigil_id, destination, -(dojo.style('tile_quest_0', 'width'))+sigilCount*(dojo.style('tile_quest_0', 'width')/6), dojo.style('tile_quest_0', 'height')/1.1 );
+                var x = -(dojo.style('tile_quest_0', 'width'))+sigilCount*(dojo.style('tile_quest_0', 'width')/6);
+                var y =  dojo.style('tile_quest_0', 'height')/1.1;
+
+                dojo.toggleClass(sigil_id, 'small');
+                var anim = this.slideToObject(sigil_id, destination);
+
+                //sigilhere
             } else {
                 var anim = this.slideToObject( sigil_id, destination ); 
                 // dojo.connect(anim, 'onEnd', dojo.hitch(this, 'attachToNewParentOnEnd', sigil_id, destination ));
@@ -2576,17 +2596,17 @@ function (dojo, declare) {
                     args.processed = true;
                     
                     if (!this.isSpectator){
-                        args.You = this.divYou(); // will replace ${You} with colored version
-                    }
+                        args.You = this.divYou(); // will replace ${You} with coloreill replace ${You} with colored version
+                    
+                        if (args.player_name_id) {
+                            args.player_name_id = this.divColoredName(args.player_name_id);
+                        }
 
-                    if (args.player_name_id) {
-                        args.player_name_id = this.divColoredName(args.player_name_id);
+                        if (args.player2_name_id) {
+                            args.player2_name_id = this.divColoredName(args.player2_name_id);
+                        }
                     }
-
-                    if (args.player2_name_id) {
-                        args.player2_name_id = this.divColoredName(args.player2_name_id);
-                    }
-
+                    
                     if (args.resourceList) {
                         args.resourceList = this.divResourceList(args.resourceList);
                     }
@@ -2621,23 +2641,29 @@ function (dojo, declare) {
         },
 
         divYou : function() {
-            var color = this.gamedatas.players[this.player_id].color;
-            var color_bg = "";
-            if (this.gamedatas.players[this.player_id] && this.gamedatas.players[this.player_id].color_back) {
-                color_bg = "background-color:#" + this.gamedatas.players[this.player_id].color_back + ";";
-            }
-            var you = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + __("lang_mainsite", "You") + "</span>";
-            return you;
+            if (this.gamedatas.players[this.player_id] != null) {
+                var color = this.gamedatas.players[this.player_id].color;
+                var color_bg = "";
+                if (this.gamedatas.players[this.player_id] && this.gamedatas.players[this.player_id].color_back) {
+                    color_bg = "background-color:#" + this.gamedatas.players[this.player_id].color_back + ";";
+                }
+                var you = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + __("lang_mainsite", "You") + "</span>";
+                return you;
+            } 
+            return __("lang_mainsite", "You");
         },
 
         divColoredName : function(player_name_id) {
-            var color = this.gamedatas.players[player_name_id].color;
-            var color_bg = "";
-            if (this.gamedatas.players[player_name_id] && this.gamedatas.players[player_name_id].color_back) {
-                color_bg = "background-color:#" + this.gamedatas.players[player_name_id].color_back + ";";
-            }
-            var name = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + this.gamedatas.players[player_name_id].name + "</span>";
-            return name;
+            if (this.gamedatas.players != null) {
+                var color = this.gamedatas.players[player_name_id].color;
+                var color_bg = "";
+                if (this.gamedatas.players[player_name_id] && this.gamedatas.players[player_name_id].color_back) {
+                    color_bg = "background-color:#" + this.gamedatas.players[player_name_id].color_back + ";";
+                }
+                var name = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + this.gamedatas.players[player_name_id].name + "</span>";
+                return name;
+            } 
+            return player_name_id;
         },
 
         divResourceList : function(resourceList) {
@@ -3415,9 +3441,12 @@ function (dojo, declare) {
                 if (!sell && this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Fortune Potion' && this.fortunePotionActive) {
                     var txt = _('Fortune Potion will have no effect for the 2nd time, are you sure?');
                 } 
-                if (!sell && this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Fortune Potion' && this.luckyPotionActive) {
+                if (!sell && this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Lucky Potion' && this.luckyPotionActive) {
                     var txt = _('Lucky Potion will have no effect for the 2nd time, are you sure?');
-                } 
+                }
+                if (!sell && (this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Fortune Potion' || this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Lucky Potion') && this.endPhaseActive){
+                    var txt = _('Lucky potion and Fortune potion have no effect at the end phase of your turn, are you sure?');
+                }
                 
                 if (txt != null) {
                     this.confirmationDialog( txt, dojo.hitch( this, function() {
@@ -3461,7 +3490,17 @@ function (dojo, declare) {
 
         passAction: function(evt) {
             dojo.stopEvent(evt);
-            if (!this.checkAction( "pass" )) { return;};
+            if (!this.checkAction( "pass")) { return;};
+
+            var src = evt.target || evt.srcElement;
+
+            if (src.id == 'stoptrading') {
+                this.confirmationDialog( _('Are you sure you want to stop with trading resources?'), dojo.hitch( this, function() {
+                    this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/passAction.html", {lock : true}, 
+                    this, function(result) {  }, function(is_error) {});
+                } )  ); 
+                return;
+            }
 
             this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/passAction.html", {lock : true}, 
             this, function(result) {}, function(is_error) {});
@@ -3527,7 +3566,7 @@ function (dojo, declare) {
             
             // TODO: here, associate your game notifications with local methods
             dojo.subscribe( 'pause', this, "notif_pause" );
-            // this.notifqueue.setSynchronous( 'pause', 5000 );
+            this.notifqueue.setSynchronous( 'pause', 5000 );
             dojo.subscribe( 'drawCard', this, "notif_drawCard" );
             this.notifqueue.setSynchronous( 'drawCard', 1200 );
             dojo.subscribe( 'placeRoom', this, "notif_placeRoom" );
@@ -3585,21 +3624,6 @@ function (dojo, declare) {
         },  
         
         // TODO: from this point and below, you can write your game notifications handling methods
-        
-        /*
-        Example:
-        
-        notif_cardPlayed: function( notif )
-        {
-            console.log( 'notif_cardPlayed' );
-            console.log( notif );
-            
-            // Note: notif.args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
-            
-            // TODO: play the card in the user interface.
-        },    
-        
-        */
        notif_pause: function(notif) {
 
        },
@@ -3626,10 +3650,9 @@ function (dojo, declare) {
        },
 
        notif_placeRoom: function(notif) {
-            if (notif.args.player_id == this.player_id) {
-                // console.log(notif);
-                // this.restoreServerGameState();
-            } else {
+           var isReplay = document.getElementById('previously_on').style.display == 'block' || document.getElementById("archivecontrol").style.display == 'block';
+
+            if (notif.args.player_id != this.player_id || isReplay) {
                 // flip dual sided room to correct side
                 if (notif.args.dual_id != null) {
                     var cont_id = (parseInt(notif.args.dual_id) > parseInt(notif.args.room_id)) ? 'room_'+notif.args.room_id+'_'+notif.args.dual_id : 'room_'+notif.args.dual_id+'_'+notif.args.room_id;
@@ -3647,10 +3670,13 @@ function (dojo, declare) {
        },
 
        notif_placeSpecialist: function(notif) {
-            if (notif.args.player_id != this.player_id) { 
+            var isReplay = document.getElementById('previously_on').style.display == 'block' || document.getElementById("archivecontrol").style.display == 'block';
+
+            if (notif.args.player_id != this.player_id || isReplay) {
                 this.moveSpecialistToPlayer('specialist_'+notif.args.specialist_id, notif.args.destination );
             }
 
+            dojo.query('#specialist_'+notif.args.specialist_id+' > .specialistdiscount').forEach(dojo.destroy);
             // add storage tiles if exists!!!
             var info = this.gamedatas.specialist[notif.args.specialist_id];
             if (info['ability'] != null) {
@@ -3712,7 +3738,6 @@ function (dojo, declare) {
         },
 
        notif_updateSpecDiscount: function(notif) {
-
             if ( $('specialistdiscount_'+notif.args.specialist_id) ) {
                 $('specialistdiscount_'+notif.args.specialist_id).innerText = parseInt($('specialistdiscount_'+notif.args.specialist_id).innerText)+1;
             } else {
@@ -3792,7 +3817,6 @@ function (dojo, declare) {
        },
 
        notif_itemToPlace: function(notif) {
-
            if (notif.args.item_type == 'room') {
                 if( this.gamedatas.rooms[notif.args.item_id].doubleroom) {
                     var room_size = 'doubleroom';
@@ -3889,7 +3913,6 @@ function (dojo, declare) {
         },
 
         notif_thisPlayerChooseRelics: function(notif) {
-            
             for (var i = 0; i<notif.args.relics_keep.length;i++) {
                 if ( notif.args.relics_positions[i] >= 20 && $('card_menu0')) {
                     this.moveItemOnBoard('treasure_'+notif.args.relics_keep[i], 'tile_card_'+parseInt(notif.args.relics_positions[i]+20), false);

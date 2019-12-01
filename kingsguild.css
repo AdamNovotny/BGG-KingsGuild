@@ -2180,3 +2180,41 @@
     font-weight: bold;
     font-size: 20px;
 }
+
+
+.spectatorMode #playerboardwrap_\{THISID\} {
+    visibility: hidden;
+    width: 0;
+    height: 0;
+}
+
+.spectatorMode #main_board {
+    margin: 0 auto;
+    display: block;
+}
+
+.sigil1 {
+    margin-left: -30%;
+}
+
+.sigil2 {
+    margin-left: -15%;
+}
+
+.sigil3 {
+    margin-left: 0%;
+}
+
+.sigil4 {
+    margin-left: 15%;
+}
+
+.sigil5 {
+    margin-left: 30%;
+}
+
+.sigil6 {
+    margin-left: 45%;
+}
+
+

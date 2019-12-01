@@ -38,18 +38,20 @@
         $players_nbr = count( $players );
 
         /*********** Place your code below:  ************/
-
         global $g_user;
         $current_player_id = $g_user->get_id();
+        $spectator =  $this->game->isSpectator($current_player_id);
 
-        $this->tpl['THISID'] = $current_player_id;
-        $this->tpl['THISCOLOR'] = $players[$current_player_id]['player_color'];
-        $this->tpl['THISNAME'] = $players[$current_player_id]['player_name'];
-        $this->tpl['THISMAT'] = $this->game->getPlayerMat($current_player_id);
-        $this->tpl['HAND'] = self::_("My treasure cards");
+        if (!$spectator) {
+            $this->tpl['THISID'] = $current_player_id;
+            $this->tpl['THISCOLOR'] = $players[$current_player_id]['player_color'];
+            $this->tpl['THISNAME'] = $players[$current_player_id]['player_name'];
+            $this->tpl['THISMAT'] = $this->game->getPlayerMat($current_player_id);
+            $this->tpl['THISGUILD'] = $this->game->getPlayerGuild($current_player_id, true);
+            $this->tpl['SHOWTREASURETEXT'] = self::_("▽ Show my treasure cards");
+            $this->tpl['HAND'] = self::_("My treasure cards");
+        }
         $this->tpl['MASTERROOMS'] = self::_("<< SHOW MASTER ROOMS");
-        $this->tpl['SHOWTREASURETEXT'] = self::_("▽ Show my treasure cards");
-        $this->tpl['THISGUILD'] = $this->game->getPlayerGuild($current_player_id, true);
 
         $X_OFFSET = 50;
         $Y_OFFSET = 50;
@@ -110,58 +112,60 @@
         }
 
 
-        $this->page->begin_block( "kingsguild_kingsguild", "playerBoardTiles" );
+        if (!$spectator) {
+            $this->page->begin_block( "kingsguild_kingsguild", "playerBoardTiles" );
 
-        $group = $this->game->playertiles[1];
-        for($i=0;$i<4;$i++) {
-            $this->page->insert_block( "playerBoardTiles", array( 
-                // "TYPE" => 'player_specialist',
-                "TYPE" => 'specialist',
-                "POSITIONX" => $i,
-                "POSITIONY" => -1,
-                "TILETYPE" => 'specialist',
-                "ID" => $current_player_id,
-                "LEFT" => $group['start'][0]+ $i*$group['x_spaces'][0] -$X_OFFSET + $i*$group['size'][0],
-                "TOP" => $group['start'][1] - $Y_OFFSET,
-                "WIDTH" => $group['size'][0],
-                "HEIGHT" => $group['size'][1],
-            ) );
-        }
-
-        $group = $this->game->playertiles[2];
-        for($i=0;$i<4;$i++) {
-            for($j=0;$j<3;$j++) { 
-                    $this->page->insert_block( "playerBoardTiles", array( 
-                        // "TYPE" => 'player_'.$group['name'],
-                        "TYPE" => $group['name'],
-                        "POSITIONX" => $i,
-                        "POSITIONY" => $j,
-                        "TILETYPE" => 'room',
-                        "ID" => $current_player_id,
-                        "LEFT" => $group['start'][0]+ $i*$group['x_spaces'][0] -$X_OFFSET+ $i*$group['size'][0],
-                        "TOP" => $group['start'][1]+ $j*$group['y_spaces'][0][0]- $Y_OFFSET + $j*$group['size'][1] ,
-                        "WIDTH" => $group['size'][0],
-                        "HEIGHT" => $group['size'][1],
-                    ) );
-            }
-        }
-
-        $this->page->begin_block( "kingsguild_kingsguild", "playerBoardDoubleTiles" );
-        $group = $this->game->playertiles[2];
-        for($i=0;$i<3;$i++) {
-            for($j=0;$j<3;$j++) {
-                $this->page->insert_block( "playerBoardDoubleTiles", array( 
-                    // "TYPE" => 'player_'.$group['name'],
-                    "TYPE" => $group['name'],
-                    "POSITION" => $i,
-                    "POSITION2" => $j,
-                    "TILETYPE" => 'room',
+            $group = $this->game->playertiles[1];
+            for($i=0;$i<4;$i++) {
+                $this->page->insert_block( "playerBoardTiles", array( 
+                    // "TYPE" => 'player_specialist',
+                    "TYPE" => 'specialist',
+                    "POSITIONX" => $i,
+                    "POSITIONY" => -1,
+                    "TILETYPE" => 'specialist',
                     "ID" => $current_player_id,
-                    "LEFT" => $group['start'][0]+ array_sum(array_slice($group['x_spaces'],0,$i)) -$X_OFFSET+ $i*$group['size'][0] + $group['x_spaces'][$i]/2,
-                    "TOP" => $group['start'][1]+$j*$group["y_spaces"][0][0]- $Y_OFFSET + $j*$group['size'][1] ,
-                    "WIDTH" => $group['size'][0]*2,
+                    "LEFT" => $group['start'][0]+ $i*$group['x_spaces'][0] -$X_OFFSET + $i*$group['size'][0],
+                    "TOP" => $group['start'][1] - $Y_OFFSET,
+                    "WIDTH" => $group['size'][0],
                     "HEIGHT" => $group['size'][1],
                 ) );
+            }
+
+            $group = $this->game->playertiles[2];
+            for($i=0;$i<4;$i++) {
+                for($j=0;$j<3;$j++) { 
+                        $this->page->insert_block( "playerBoardTiles", array( 
+                            // "TYPE" => 'player_'.$group['name'],
+                            "TYPE" => $group['name'],
+                            "POSITIONX" => $i,
+                            "POSITIONY" => $j,
+                            "TILETYPE" => 'room',
+                            "ID" => $current_player_id,
+                            "LEFT" => $group['start'][0]+ $i*$group['x_spaces'][0] -$X_OFFSET+ $i*$group['size'][0],
+                            "TOP" => $group['start'][1]+ $j*$group['y_spaces'][0][0]- $Y_OFFSET + $j*$group['size'][1] ,
+                            "WIDTH" => $group['size'][0],
+                            "HEIGHT" => $group['size'][1],
+                        ) );
+                }
+            }
+
+            $this->page->begin_block( "kingsguild_kingsguild", "playerBoardDoubleTiles" );
+            $group = $this->game->playertiles[2];
+            for($i=0;$i<3;$i++) {
+                for($j=0;$j<3;$j++) {
+                    $this->page->insert_block( "playerBoardDoubleTiles", array( 
+                        // "TYPE" => 'player_'.$group['name'],
+                        "TYPE" => $group['name'],
+                        "POSITION" => $i,
+                        "POSITION2" => $j,
+                        "TILETYPE" => 'room',
+                        "ID" => $current_player_id,
+                        "LEFT" => $group['start'][0]+ array_sum(array_slice($group['x_spaces'],0,$i)) -$X_OFFSET+ $i*$group['size'][0] + $group['x_spaces'][$i]/2,
+                        "TOP" => $group['start'][1]+$j*$group["y_spaces"][0][0]- $Y_OFFSET + $j*$group['size'][1] ,
+                        "WIDTH" => $group['size'][0]*2,
+                        "HEIGHT" => $group['size'][1],
+                    ) );
+                }
             }
         }
 
