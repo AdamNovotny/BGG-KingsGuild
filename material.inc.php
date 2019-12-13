@@ -1551,7 +1551,7 @@ $this->quest = array(
         "cathegory" => "1S",
         "items" => array(1 => array(clienttranslate("Jeweled Cloak"), "Armor"), 2 => array(clienttranslate("Staff"), "Weapon"), ),
         "cost" => array(1 => array('cloth' => 1, 'gem' => 1, ), 2=> array('wood' => 3, 'leather' => 1) ),
-        "gold" => array(1 => 6, 2 => 4),
+        "gold" => array(1 => 5, 2 => 4),
         "reward" => array('yellow', 'red'),
         "hero" => array('warrior'),
         "nameTr" => clienttranslate('Retrieve the Chalice of Power'),

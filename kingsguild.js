@@ -334,7 +334,9 @@ function (dojo, declare) {
                             var destination_id = 'tile_specialist_'+tiles[i]+'_'+this.player_id;
 
                             dojo.addClass(destination_id, 'selection');
-                            this.handlers.push( dojo.connect($(destination_id),  'click',  this, dojo.partial(this.moveSpecialistToPlayer, 'specialist_'+args.args.specialist_id, destination_id ) ));
+                            if (args.args.specialist_id != null) {
+                                this.handlers.push( dojo.connect($(destination_id),  'click',  this, dojo.partial(this.moveSpecialistToPlayer, 'specialist_'+args.args.specialist_id, destination_id ) ));
+                            }
                         }
                     break;
 
@@ -974,7 +976,9 @@ function (dojo, declare) {
                     
                     case 'client_placeSpecialist': 
                         this.addActionButton( 'confirm', _('Confirm'), dojo.partial(this.confirmSpecialistPlacement,args.specialist_id) );
-                        this.addActionButton( 'cancelspecialist', _('Cancel'), 'cancelClientState'  );
+                        if (args.cancel) {
+                            this.addActionButton( 'cancelspecialist', _('Cancel'), 'cancelClientState'  );
+                        }
                     break;
 
                     case 'playerGather':
@@ -1021,6 +1025,7 @@ function (dojo, declare) {
                             var str = this.format_string_recursive(txt,paramObject );
                             this.addActionButton( 'takeres'+i, str, dojo.partial(this.takeResourcesAndReplace, args.selectedResources, args.alreadySelected, args.number, false), null, null, 'gray');
                             dojo.addClass('takeres'+i, 'actioncustombutton resbutton');
+                            this.addActionButton( 'cancel', _('Cancel'), 'cancelClientState'  );
                         } else {
                             var txt1 = _('Take only ');
                             var txt2 = _('Do not take any ');
@@ -1036,27 +1041,6 @@ function (dojo, declare) {
                                 var txt = txt3;
                                 var endcount = args.selectedResources.length - number_deduct;
                             }
-                                // var paramObject = {};
-                                // for(var i=0;i<endcount;i++) {
-                                //     txt += '${resource'+i+'}';
-                                //     if (args.selectedResources[i].length < 3)  {
-                                //         paramObject['resource'+i] = 'resource_'+this.gamedatas.tokens[args.selectedResources[i]].type_arg;
-                                //     } else {
-                                //         paramObject['resource'+i] = 'resource_'+args.selectedResources[i];
-                                //     }
-                                // }
-
-                                // if (args.alreadySelected.length>0) {
-                                //     txt += _(' and return ');
-                                //     for(var j=i+1;j<(args.alreadySelected.length+i+1);j++) {
-                                //         txt += '${resource'+j+'}';
-                                //         paramObject['resource'+j] = 'resource_'+this.gamedatas.tokens[args.alreadySelected[j-i-1]].type_arg;
-                                //     }
-                                // }
-                                // var str = this.format_string_recursive(txt,paramObject );
-                                // this.addActionButton( 'takeres'+i, str, dojo.partial(this.takeResourcesAndReplace, args.selectedResources, args.alreadySelected, args.number), null, null, 'gray');
-
-                            // add permutations of resources that can be first etc..
                             var arrayOfPermutations = [];
                             var permutes = this.permute(args.selectedResources) ;
                             arrayOfPermutations.push(permutes[0]);
@@ -1103,17 +1087,10 @@ function (dojo, declare) {
                                 var str = this.format_string_recursive(text,paramObject );
                                 this.addActionButton( 'takeres'+k, str, dojo.partial(this.takeResourcesAndReplace, actualSet, args.alreadySelected, args.number, false), null, null, 'gray');
                                 dojo.addClass('takeres'+k, 'actioncustombutton resbutton');
+
                             }
+                            this.addActionButton( 'cancel', _('Cancel'), dojo.partial(this.cancelReplaceResource, args.number, args.alreadySelected, args.selectedResources, args.bonusVariant, args.treasureVariant ) );
                         }
-
-                        // if (args.bonusVariant) {
-                        //     // this.addActionButton( 'cancel', _('cancel selection'), 'cancelClientState'  );
-                        //     // this.addActionButton( 'notchoose', _('do not take bonus resource'), dojo.partial(this.takeResources, null, null, 0, true) );
-                        // } else {
-                        //     this.addActionButton( 'cancel', _('cancel'), 'cancelClientState'  );
-                        // }
-
-                        this.addActionButton( 'cancel', _('Cancel'), 'cancelClientState'  );
                     break;
 
                     case 'client_tradeResources':
@@ -1266,6 +1243,12 @@ function (dojo, declare) {
                     break;
 
                     case 'playerEndTurn':
+                        if(args != null && args.bardActionActive ) {
+                            this.addActionButton( 'bard', _('Move specialist (Bard action)'), 'bardAction'  );
+                        }
+                        if(args != null && args.oracleActionActive ) {
+                            this.addActionButton( 'oracle', _('Look at top 2 quests (Oracle action)'), 'oracleAction'  );
+                        }
                         this.addActionButton( 'endturn', _('End turn'), 'endTurn'  );
                     break;
 
@@ -3039,8 +3022,7 @@ function (dojo, declare) {
                 }
             }
 
-            if (src.id == 'cancelspecialist') {
-
+            if (src.id == 'cancelspecialist' && this.gamedatas.gamestate.args.specialist_id != null) {
                 var specialist_id = this.gamedatas.gamestate.args.specialist_id;
                 var tile = this.gamedatas.gamestate.args.tile_from;
                 var parent = dojo.query('#specialist_'+specialist_id)[0].parentNode.id;
@@ -3171,6 +3153,19 @@ function (dojo, declare) {
             }
         },
 
+        cancelReplaceResource: function(numberToSelect, alreadySelected, selectedNew, bonusVariant, treasureVariant, evt) {
+            dojo.stopEvent( evt );
+            if (!this.checkAction( "cancel" )) { return;};
+
+            if (bonusVariant) {
+                var cs = constructClientState('replaceBonus', {'number': numberToSelect, 'alreadySelected': [], 'selectedResources': selectedNew, });
+                this.setClientState(cs['name'], cs['parameters']);
+            } else if (treasureVariant) {
+                var cs = constructClientState('replaceRes', {'number': numberToSelect, 'alreadySelected': [], 'selectedResources': selectedNew, });
+                this.setClientState(cs['name'], cs['parameters']);
+            }
+        },
+
         takeResources: function(i, resources, replaceCount, maxReached, evt) {
             dojo.stopEvent( evt );
             if (!this.checkAction( "takeResources" )) { return;};
@@ -3210,6 +3205,7 @@ function (dojo, declare) {
         takeResourcesAndReplace: function( resourcesToGather, resourcesToReturn, numberToReplace, trade, evt) {
             dojo.stopEvent( evt );
             if (!this.checkAction( "takeResourcesAndReplace" )) { return;};
+            
             if (numberToReplace > resourcesToReturn.length && !this.gamedatas.gamestate.args.treasureVariant) {
                 this.showMessage( _('You must select more resources to return'), "error" );
                 return;
@@ -3301,6 +3297,7 @@ function (dojo, declare) {
         confirmSpecialistPlacement: function(specialist_id, evt) {
             dojo.stopEvent(evt);
             if (!this.checkAction( "placeSpecialist" )) { return;};
+            if (specialist_id == null) { return;};
 
             var  pos = this.specialistPosition.replace("-", "z");
             this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/placeSpecialist.html", {specialist_id: specialist_id, destination : pos, lock : true}, 
@@ -3568,7 +3565,7 @@ function (dojo, declare) {
             dojo.subscribe( 'pause', this, "notif_pause" );
             this.notifqueue.setSynchronous( 'pause', 5000 );
             dojo.subscribe( 'drawCard', this, "notif_drawCard" );
-            this.notifqueue.setSynchronous( 'drawCard', 1200 );
+            this.notifqueue.setSynchronous( 'drawCard', 1600 );
             dojo.subscribe( 'placeRoom', this, "notif_placeRoom" );
             this.notifqueue.setSynchronous( 'placeRoom', 600 );
             dojo.subscribe( 'takeResource', this, "notif_takeResource" );
@@ -3620,7 +3617,6 @@ function (dojo, declare) {
             dojo.subscribe( 'soloKingsFuneral', this, "notif_soloKingsFuneral" );
             dojo.subscribe( 'moveQuest', this, "notif_moveQuest" );
             this.notifqueue.setSynchronous( 'moveQuest', 500 );
-
         },  
         
         // TODO: from this point and below, you can write your game notifications handling methods
@@ -3829,7 +3825,7 @@ function (dojo, declare) {
                 this.setClientState(cs['name'], cs['parameters']);
            } else {
                 var tile_from = 'tile_specialist_'+this.gamedatas.specialist[notif.args.item_id].location_arg;
-                var cs = constructClientState('placeSpecialist', { "possibleTiles": notif.args.possible_tiles, "item_id": notif.args.item_id, "tile_from": tile_from });
+                var cs = constructClientState('placeSpecialist', { "possibleTiles": notif.args.possible_tiles, "item_id": notif.args.item_id, "tile_from": tile_from, "cancel" : true });
                 this.setClientState(cs['name'], cs['parameters']);
            }
 

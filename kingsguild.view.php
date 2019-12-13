@@ -41,6 +41,11 @@
         global $g_user;
         $current_player_id = $g_user->get_id();
         $spectator =  $this->game->isSpectator($current_player_id);
+        if ($spectator) {
+            $this->tpl['SPECTATOR'] = 'spectatoritem';
+        } else {
+            $this->tpl['SPECTATOR'] = '';
+        }
 
         if (!$spectator) {
             $this->tpl['THISID'] = $current_player_id;

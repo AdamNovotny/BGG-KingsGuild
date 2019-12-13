@@ -28,13 +28,18 @@ $gameinfos = array(
 'publisher' => 'Mirror Box Games',                     
 
 // Url of game publisher website
-'publisher_website' => 'http://www.mirrorboxgames.com/',   
+'publisher_website' => 'https://squareup.com/store/mirror-box-llc',   
 
 // Board Game Geek ID of the publisher
 'publisher_bgg_id' => 25191,
 
 // Board game geek ID of the game
 'bgg_id' => 206327,
+
+'custom_buy_button' => array(
+    'url' => 'https://squareup.com/store/mirror-box-llc',
+    'label' => 'Mirror Box'
+),
 
 
 // Players configuration that can be played (ex: 2 to 4 players)

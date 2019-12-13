@@ -312,7 +312,7 @@ function constructClientState(name, args) {
             clientState['name'] = 'client_placeSpecialist';
             clientState['parameters']["descriptionmyturn"] = _('${You} must place Aristocrat\'s baggage');
             clientState['parameters']["possibleactions"] = ["placeSpecialist"];
-            clientState['parameters']["args"] = {"You": '', "possibleTiles": args.possibleTiles, "specialist_id": args.item_id }
+            clientState['parameters']["args"] = {"You": '', "possibleTiles": args.possibleTiles, "specialist_id": args.item_id,  "cancel" : false}
         break;
 
         case 'takeTreasure':
@@ -362,22 +362,22 @@ function constructClientState(name, args) {
             clientState['name'] = 'client_playerGatherAndReplace';
             // clientState['parameters']["descriptionmyturn"] = _('${You} can replace one of your resources by bonus resource ${resource} or pass');
             clientState['parameters']["descriptionmyturn"] = _('${You} need to replace resources to take all bonus resources');
-            clientState['parameters']["possibleactions"] = ["chooseResource", "takeResourcesAndReplace", "takeResources" , "cancel"];
+            clientState['parameters']["possibleactions"] = ["chooseResource", "takeResourcesAndReplace", "takeResources", 'cancel'];
             clientState['parameters']["args"] = {"You": '',  "number": args.number, "alreadySelected": args.alreadySelected, "selectedResources": args.selectedResources, "treasureVariant": true, "bonusVariant": true}  ;
         break;
 
         case 'replaceRes':
             clientState['name'] = 'client_playerGatherAndReplace';
             clientState['parameters']["descriptionmyturn"] = _('${You} need to replace resources to take all treasure card resources');
-            clientState['parameters']["possibleactions"] = ["chooseResource", "takeResourcesAndReplace" , "cancel"];
+            clientState['parameters']["possibleactions"] = ["chooseResource", "takeResourcesAndReplace", 'cancel'];
             clientState['parameters']["args"] = {"You": '',  "number": args.number, "alreadySelected": args.alreadySelected, "selectedResources": args.selectedResources, "treasureVariant": true}  ;
         break;
 
         case 'gatherAndReplace':
             clientState['name'] = 'client_playerGatherAndReplace';
             clientState['parameters']["descriptionmyturn"] =_('${You} must choose ${number} resources to return');
-            clientState['parameters']["possibleactions"] = ["chooseResource", "takeResourcesAndReplace", "cancel"];
-            clientState['parameters']["args"] = {"You": '', "number": args.number, "alreadySelected": args.alreadySelected, "selectedResources": args.selectedResources }  ;
+            clientState['parameters']["possibleactions"] = ["chooseResource", "takeResourcesAndReplace", 'cancel'];
+            clientState['parameters']["args"] = {"You": '', "number": args.number, "alreadySelected": args.alreadySelected, "selectedResources": args.selectedResources}  ;
         break;
 
         case 'gather':
@@ -405,7 +405,7 @@ function constructClientState(name, args) {
             clientState['name'] = 'client_placeSpecialist';
             clientState['parameters']["descriptionmyturn"] = _('${You} must place specialist to your guild');
             clientState['parameters']["possibleactions"] = ["placeSpecialist", "cancel"];
-            clientState['parameters']["args"] = {"You": '', "possibleTiles": args.possibleTiles, "specialist_id": args.item_id, "tile_from": args.tile_from }  ;
+            clientState['parameters']["args"] = {"You": '', "possibleTiles": args.possibleTiles, "specialist_id": args.item_id, "tile_from": args.tile_from,  "cancel" : args.cancel }  ;
         break;
 
         case 'selectSpecialistBardAction':
@@ -419,7 +419,7 @@ function constructClientState(name, args) {
             clientState['name'] = 'client_placeSpecialist';
             clientState['parameters']["descriptionmyturn"] = _('${You} must replace specialist');
             clientState['parameters']["possibleactions"] = ["placeSpecialist", "cancel"];
-            clientState['parameters']["args"] = {"You": '', "possibleTiles": args.possibleTiles, "specialist_id": args.specialist_id, "tile_from": args.tile_from, "bard": true }  ;
+            clientState['parameters']["args"] = {"You": '', "possibleTiles": args.possibleTiles, "specialist_id": args.specialist_id, "tile_from": args.tile_from, "bard": true,  "cancel" : true }  ;
         break;
 
         case 'traderesources':

@@ -8,50 +8,10 @@
 -- This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
 -- See http://en.boardgamearena.com/#!doc/Studio for more information.
 -------
-
-    kingsguild_kingsguild.tpl
-    
-    This is the HTML template of your game.
-    
-    Everything you are writing in this file will be displayed in the HTML page of your game user interface,
-    in the "main game zone" of the screen.
-    
-    You can use in this template:
-    _ variables, with the format {MY_VARIABLE_ELEMENT}.
-    _ HTML block, with the BEGIN/END format
-    
-    See your "view" PHP file to check how to set variables and control blocks
-    
-    Please REMOVE this comment before publishing your game on BGA
 -->
 
 
 <div id="overall_game_content" style=" transform-origin: left top 0px;">
-    <!-- <div class="actionpanel closed" id= "actionpanel">
-        <div class="actioncell" style="background: rgb(169,169,169,0.8);">
-
-            <div class="iconholder">
-                <div id="actionbtn_gather" class="actionicon gather"></div>
-            </div>
-            <div id="bonusholder_gather" class="bonusholder"></div>
-
-        </div>
-        <div class="actioncell" style="background: rgb(194,195,186,0.8);">
-
-            <div class="iconholder">
-                <div id="actionbtn_craft" class="actionicon craft"></div>
-            </div>
-            <div id="bonusholder_craft" class="bonusholder"></div>
-
-        </div>
-        <div class="actioncell" style="background: rgb(205,205,180,0.8);">
-            <div class="iconholder">
-                <div id="actionbtn_expand" class="actionicon build"></div>
-            </div>
-            <div id="bonusholder_expand" class="bonusholder"></div>
-        </div>
-    </div> -->
-
     <div id="main_board" class="mainboard">
 
             <div id="masterroomtoggler" class="masterroomtoggler">{MASTERROOMS}</div>
@@ -69,10 +29,7 @@
             <div id="discard" class="discardtile"></div>
     </div>
 
-    <div id="playerboardwrap_{THISID}" class="playerboardwrap">
-       <!-- <div class="underplayerpanel">
-            <div class="whiteblock "  style="height: 100%"></div>
-        </div> -->
+    <div id="playerboardwrap_{THISID}" class="playerboardwrap {SPECTATOR}">
 
         <div class="guildbackimage {THISGUILD}" id="guildbackimage_{THISID}">
         </div>
@@ -81,9 +38,7 @@
             <div  class="guildtext" style="position: relative; color: #{THISCOLOR}; font-size: 20px;">{THISNAME}</div>
         </div>
 
-        <!-- <div class="showtreasure" id="showtreasure">{SHOWTREASURETEXT}</div> -->
         <div class="showtreasure" id="showcompquests">Show my completed quests</div>
-        <!-- <div class="hinttoggler" id="hinttoggler"></div> -->
 
         <div id="player_mat_{THISID}" class="playerboard playerboard{THISMAT}">
             <!-- BEGIN playerBoardTiles -->
@@ -107,10 +62,6 @@
     <div id="rest_boards_wrap" class="restboardswrap">
         <!-- BEGIN playerBoards -->
         <div id="playerboardwrap_{OTHERID}" class="playerboardwrap">
-            <!-- <div class="underplayerpanel">
-            <div class="whiteblock "  style="height: 100%"></div>
-            </div> -->
-
             <div class="guildbackimage {OTHERGUILD}" id="guildbackimage_{OTHERID}">
             </div>
             <div style="position: absolute; left: 5%; top: 5%">
@@ -136,12 +87,6 @@
 <script type="text/javascript">
 
 // Javascript HTML templates
-
-/*
-// Example:
-var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${id}"></div>';
-*/
-
 var jstpl_resource = '<div class="resource ${type}" id="resource_${id}" style="left: ${left}px; top: ${top}px;"></div>';
 var jstpl_room = '<div class="room ${cssType} ${size}" id="room_${id}"></div>';
 var jstpl_room_dual ='<div class="roomcontainer ${size}" id="room_${id}">\

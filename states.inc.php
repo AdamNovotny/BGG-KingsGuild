@@ -140,7 +140,7 @@ $machinestates = array(
                                     "stealResource", "craftItem", "selectQuest", "selectTreasureCards", "pass", "cancel"),
         "transitions" => array( "pass" => 10, "takeResources" => 10, "drawTreasureCard" => 10, "drawTreasureCardAndSell" => 15, "placeSpecialist" => 10, 
                                 "stealResource" => 10, "craftItem"=>10, "craftItemAndSell"=>15, "completeQuestShared" => 14, "selectQuest" => 10, 
-                                "selectTreasureForDiscard"=> 12,"discardTreasures"=> 10, "zombiePass" => 30)
+                                "selectTreasureForDiscard"=> 12,"discardTreasures"=> 10, "zombiePass" => 30, "cancel" => 10)
     ), 
 
     13 => array(                // specialist action (after crafting item)
@@ -180,8 +180,8 @@ $machinestates = array(
         "descriptionmyturn" => '',
         "type" => "activeplayer",
         "args" => "argPlayerPlayTreasureEffect",
-        "possibleactions" => array( "confirm", "takeResourcesAndReplace", "drawTreasureCard", "chooseResource", "selectExpandItem", "placeSpecialist", "selectTreasureCards", "pass"),
-        "transitions" => array( "confirm" => 17, "drawTreasureCardAndSell" => 15, "cancel" => 4, "cancelBetween" => 10, "pass"=>17, "placeSpecialist"=> 10, "selectTreasureDiscard" =>16,  "zombiePass" => 30)
+        "possibleactions" => array( "confirm", "takeResourcesAndReplace", "drawTreasureCard", "chooseResource", "selectExpandItem", "placeSpecialist", "selectTreasureCards", "pass", "cancel"),
+        "transitions" => array( "confirm" => 17, "drawTreasureCardAndSell" => 15, "cancelBetween" => 10, "pass"=>17, "placeSpecialist"=> 10, "selectTreasureDiscard" =>16,  "zombiePass" => 30, "cancel" => 16)
     ),
 
     17 => array(                // next player resolve treasure effect
@@ -227,8 +227,8 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may play treasure card(s) or end turn'),
         "type" => "activeplayer",
         "args" => "argPlayerEndTurn",
-        "possibleactions" => array( "endTurn", "playTreasureCard"),
-        "transitions" => array("playTreasureNoAction" => 25 ,  "playTreasure" => 16, "endTurn" => 30, "zombiePass" => 30)
+        "possibleactions" => array( "endTurn", "playTreasureCard", "bardAction", "oracleAction", 'cancel', 'placeSpecialist'),
+        "transitions" => array("playTreasureNoAction" => 25 ,  "playTreasure" => 16, "endTurn" => 30, "zombiePass" => 30, 'cancel' => 25)
     ),
 
     30 => array(                // transition to next player

@@ -1589,9 +1589,16 @@ class kingsguild extends Table
                 $this->gamestate->nextState( 'playTreasureNoAction' );
             break;
 
-            case "hireSpecialist":                         
-                // check if hire is possible (enough money for at least one specialist)
+            case "hireSpecialist":   
                 $mapper = new kgActionMapper($player_id, $this);
+                
+                // check space for specialist hiring
+                $positions = $mapper->getPossiblePositionsForSpecialist();
+                if ( empty($positions) ) {
+                    throw new BgaUserException( self::_("You need at least 1 free specialist place to play Contract") );
+                }
+
+                // check if hire is possible (enough money for at least one specialist)
                 $canbuild = false;
                 $sql = "SELECT specialistandquest_id id FROM specialistandquest  WHERE specialistandquest_type = 'specialist' AND specialistandquest_location = 'board' AND specialistandquest_visible = '1' ";
                 $specialistOnBoard= self::getObjectListFromDB( $sql, true );
@@ -1835,8 +1842,14 @@ class kingsguild extends Table
         self::checkAction( 'cancel');
         $player_id = self::getActivePlayerId();
         if ($this->gamestate->state()['name'] == 'playerSpecialistOneTimeAction') {
-            self::notifyPlayer($player_id, "cancelClientState", '', array(
-            ) );
+            if (self::getGameStateValue('placed_specialist_type') == 33 ) {
+                self::setGameStateValue('placed_specialist_type', 0);
+                $this->gamestate->nextState( 'cancel');
+            } else {
+                self::notifyPlayer($player_id, "cancelClientState", '', array(
+                ) );
+            }
+            
         }
         else if ( self::getGameStateValue('soloExpandSecondPart') == 1 && self::getPLayersNumber() == 1 ) {
             $this->gamestate->nextState( 'cancelSolo');
@@ -1913,9 +1926,14 @@ class kingsguild extends Table
 
     function takeResourcesAndReplace($resource_list_take, $resource_list_return) {         
         self::checkAction( 'takeResourcesAndReplace' );
+        $player_id = self::getActivePlayerId();
+
+        $mapper = new kgActionMapper($player_id, $this);
+        $freeSpaces = count($mapper->getPositionForResource());
+        $returnNumber = count($resource_list_return);
+        $gainNumber = count($resource_list_take);
 
         if ($this->gamestate->state()['name'] == 'playerGuildTurn') {
-            $player_id = self::getActivePlayerId();
             $this->takeResourceByPlayer($resource_list_take, $player_id, false);
             self::giveExtraTime( $player_id);
             $this->gamestate->nextState( "nextPlayer" );
@@ -1924,8 +1942,6 @@ class kingsguild extends Table
                 // treasure card played and replace res action
                 // first update card and than resolve return/gain resources
                 $treasure_id = self::getGameStateValue('played_treasure_card');
-                $player_id = self::getActivePlayerId(); 
-                $mapper = new kgActionMapper($player_id, $this);
                 $maxres = $mapper->checkGather($resource_list_take, true)['triggerReplace'];
 
                 if ($player_id != self::getGameStateValue( 'second_player_treasurePlay') ||  self::getGameStateValue("warlock_active") == 1 ) {
@@ -1963,24 +1979,27 @@ class kingsguild extends Table
                 }
                 $this->gamestate->nextState( "confirm" );
         }   else {
-            $player_id = self::getActivePlayerId();
+            if ($this->gamestate->state()['name'] != 'playerReplaceBonusResource') {
+
+                if ( ($freeSpaces - $gainNumber + $returnNumber) < 0) {
+                    throw new BgaUserException( self::_("Incorrect number of gain/return resources, hit F5 to reload game situation") );
+                }
+            } else {
+                if (  $returnNumber > $gainNumber) {
+                    throw new BgaUserException( self::_("Incorrect number of gain/return resources, hit F5 to reload game situation") );
+                }
+            }
 
             if ( !empty($resource_list_return)) {
                 $res_t = array();
                 foreach($resource_list_return as $resource){
-                    // $this->returnResourceByPlayer($this->getResTypeById($resource), $player_id, $resource );
                     $res_t[] = $this->getResTypeById($resource);
                 }
                 $this->returnResourceByPlayer($res_t, $player_id, $resource_list_return, 'return' );
             }
 
-            if ($this->gamestate->state()['name'] == 'playerReplaceBonusResource') {                
-                $mapper = new kgActionMapper($player_id, $this);
+            if ($this->gamestate->state()['name'] == 'playerReplaceBonusResource') {               
                 $maxres = $mapper->checkGather($resource_list_take, true)['triggerReplace'];
-
-                // for ($i=0;$i<$maxres;$i++) {
-                //     unset($resource_list_take[$i]);
-                // }
 
                 $highindex = count($resource_list_take)-1;
                 $lowindex =  count($resource_list_take)-$maxres-1;
@@ -1988,13 +2007,14 @@ class kingsguild extends Table
                     unset($resource_list_take[$i]);
                 }
 
+                if (  count($resource_list_take) > $returnNumber) {
+                    throw new BgaUserException( self::_("Incorrect number of gain/return resources, hit F5 to reload game situation") );
+                }
+
                 if ( !empty($resource_list_take)) {
                     $this->takeResourceByPlayer($resource_list_take, $player_id, true );
                 }
 
-                // self::setGameStateValue("bonus_res_replace", 6);
-                $sql = "UPDATE player SET player_replace_res = '__' WHERE player_id = '$player_id' ";
-                $res_string = self::dbQuery($sql);
                 $this->updateReplaceRes($player_id);
             } else {
                 $res_types = array();
@@ -2023,7 +2043,6 @@ class kingsguild extends Table
             if ($this->gamestate->state()['name'] == 'playerSpecialistOneTimeAction' && self::getGameStateValue( 'placed_specialist_type' ) != 26 ) {
                 self::setGameStateValue( 'placed_specialist_type',0 );
                 //check bonus resources
-                $mapper = new kgActionMapper($player_id, $this);
                 $bonus_res = $mapper->getGatherBonus();
 
                 if (empty($bonus_res) ) {
@@ -2101,7 +2120,7 @@ class kingsguild extends Table
             }
         }
 
-        if ($this->gamestate->state()['name'] == 'playerTurn') {                                              // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if ($this->gamestate->state()['name'] == 'playerTurn') {                                         
             $this->gamestate->nextState( "expand" );
         }
 
@@ -2278,8 +2297,10 @@ class kingsguild extends Table
         }
 
         // check if expand is possible
-        if( !$mapper->canBuildItem('specialist', $specialist_id) ) {
-            throw new BgaUserException( self::_("You don't have enough gold") );
+        if (self::getGameStateValue("placed_specialist_type") != 33) {
+            if( !$mapper->canBuildItem('specialist', $specialist_id)  ) {
+                throw new BgaUserException( self::_("You don't have enough gold") );
+            }
         }
 
         // Aristocrat check
@@ -3427,8 +3448,22 @@ class kingsguild extends Table
 
         if ( $result['action_name'] == 'placeSpecialist') {
             $result['parameters']['possibleTiles'] = $mapper->getPossiblePositionsForSpecialist();
-            $sql = "SELECT specialistandquest_id id FROM specialistandquest WHERE specialistandquest_type = 'specialist' AND specialistandquest_location = 'board' AND specialistandquest_location_arg = 4 ";
-            $result['parameters']['item_id'] =   self::getUniqueValueFromDB($sql);
+            $sql = "SELECT specialistandquest_id id, specialistandquest_type_arg arg FROM specialistandquest WHERE specialistandquest_type = 'specialist' AND specialistandquest_location = 'board' AND specialistandquest_location_arg = 4 ";
+            $specialist = self::getObjectFromDB($sql);
+            $result['parameters']['tile_from'] =  'tile_specialist_4';
+            if ($specialist === null) {
+                $sql = "SELECT specialistandquest_id id FROM specialistandquest WHERE specialistandquest_type = 'specialist' AND specialistandquest_location = 'board' AND specialistandquest_location_arg = 3 ";
+                $specialist = self::getUniqueValueFromDB($sql);
+                $result['parameters']['tile_from'] =  'tile_specialist_3';
+            }
+            
+            if ($specialist === null || $specialist['arg'] == 27 ) {
+                $result['parameters']['cancel'] = true;
+            } else {
+                $result['parameters']['cancel'] = false;
+            }
+
+            $result['parameters']['item_id'] =  $specialist['id'];
         }
 
         if ( $result['action_name'] == 'steal') {
@@ -3442,7 +3477,7 @@ class kingsguild extends Table
         }
 
         if ( $result['action_name'] == 'select_questcard') {
-            $sql = "SELECT specialistandquest_id id, specialistandquest_type_arg t FROM specialistandquest WHERE specialistandquest_type = 'quest' AND specialistandquest_location = 'board' AND specialistandquest_visible = 1 ";
+            $sql = "SELECT specialistandquest_id id, specialistandquest_type_arg t FROM specialistandquest WHERE specialistandquest_type = 'quest' AND specialistandquest_location = 'board' AND specialistandquest_visible = 1 AND specialistandquest_type_arg <> 50";
             $questOnBoard = self::getCollectionFromDB($sql, true);
             $possibleQuests = array();
             foreach($questOnBoard as $id => $type) {
@@ -3690,7 +3725,19 @@ class kingsguild extends Table
     }
 
     function argPlayerEndTurn() {
+        $player_id = self::getActivePLayerId();
+        $mapper = new kgActionMapper($player_id, $this);
+        $result = array();
+        if ( $mapper->isSpecificSpecialistPresent('Bard') ) {
+            $result['bardActionActive'] = true;
+            $result['possibleTiles'] = $mapper->getPossiblePositionsForSpecialist();
+        }
+        //Oracle is present
+        if ( $mapper->isSpecificSpecialistPresent('Oracle') ) {
+            $result['oracleActionActive'] = true;
+        }
 
+        return $result;
     }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -3780,7 +3827,7 @@ class kingsguild extends Table
         $specialist_craftaction = $playerState['speccraft'];
 
         $mapper = new kgActionMapper($player_id, $this);
-        $transitionToPlayerEnd = $mapper->canPlayTreasureEnd(); 
+        $transitionToPlayerEnd = $mapper->willPlayOnEnd(); 
 
         if ($transition_from == 5 ) {                   // gather action
             // check for bonus resources, check for res replacement
@@ -4351,6 +4398,8 @@ class kingsguild extends Table
             $final_score[$player_id]['score']['charms'] += 3;
             $final_score[$player_id]['score']['total'] += 3;
             self::incStat( 3, "player_charmsSpoints", $player_id);
+
+            self::DbQuery( "UPDATE player SET player_score= player_score + 3 WHERE player_id= '$player_id'  " );
 
             self::notifyAllPlayers( "updateScore",'', array(
                 'player_id' => $player_id,

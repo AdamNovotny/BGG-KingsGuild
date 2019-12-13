@@ -627,13 +627,25 @@ class kgActionMapper {
         return $scrolls;
     }
 
-    public function canPlayTreasureEnd() {
+    private function canPlayTreasureEnd() {
         $cards = $this->getTreasureCards();
 
         foreach($cards as $card) {
             if (  $this->game->treasures[$card['treasure_type']]['effect'] != null ) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    public function willPlayOnEnd() {
+        if ($this->isSpecificSpecialistPresent('Oracle') || $this->isSpecificSpecialistPresent('Bard')) {
+            return true;
+        }
+
+        if ($this->canPlayTreasureEnd()) {
+            return true;
         }
 
         return false;

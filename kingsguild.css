@@ -205,11 +205,13 @@
 }
 
 .questcontainer .selection {
-    border: 2px dashed aqua;
+    /* border: 2px dashed aqua; */
+    border: 2px dashed red;
 }
 
 .questcontainer .selected {
-    border: 2px solid red;
+    /* border: 2px solid red; */
+    border: 2px solid aqua;
 }
 
 .tile.selection:hover {
@@ -332,14 +334,16 @@
 }
 
 .resource.selection {
-    border: 2px dashed aqua;
+    /* border: 2px dashed aqua; */
+    border: 2px dashed red;
     border-radius: 60%;
     cursor: pointer;
     pointer-events: all;
 }
 
 .resource.selected {
-    border: 2px solid red;
+    /* border: 2px solid red; */
+    border: 2px solid aqua;
     border-radius: 60%;
     cursor: pointer;
     pointer-events: all;
@@ -817,8 +821,9 @@
 
 .guildbackimage {
     background-image: url(img/roomssprite.jpg);
-    /* background-size: 437% 768%; */
-    background-size: 415% 1250%;
+    /* background-size: 437% 768%; 
+    background-size: 415% 1250%; */
+    background-size: 415% 1460%;
     width: 700px;
     height: 210px;
     position: absolute;
@@ -830,27 +835,33 @@
 }
 
 .guildbackimage.bg-GuildBackCraftCollective {
-    background-position: calc(-4px*(700/790)) calc(-436px*(210/240));
+    /* background-position: calc(-4px*(700/790)) calc(-436px*(210/240)); */
+    background-position: calc(-4px*(700/790)) calc(-500px*(210/240));
 }
 
 .guildbackimage.bg-GuildBackExplorersLeague {
-    background-position: calc(-823px*(700/790)) calc(-436px*(210/240));
+    /* background-position: calc(-823px*(700/790)) calc(-436px*(210/240)); */
+    background-position: calc(-823px*(700/790)) calc(-500px*(210/240));
 }
 
 .guildbackimage.bg-GuildBackGreycastleGuard {
-    background-position: calc(-4px*(700/790)) calc(-863px*(210/240));
+    /* background-position: calc(-4px*(700/790)) calc(-863px*(210/240)); */
+    background-position: calc(-4px*(700/790)) calc(-1004px*(210/240));
 }
 
 .guildbackimage.bg-GuildBackMercantileTrust {
-    background-position: calc(-823px*(700/790)) calc(-863px*(210/240));
+    /* background-position: calc(-823px*(700/790)) calc(-863px*(210/240)); */
+    background-position: calc(-823px*(700/790)) calc(-1004px*(210/240));
 }
 
 .guildbackimage.bg-GuildBackStarfallSyndicate {
-    background-position: calc(-1619px*(700/790)) calc(-4px*(210/240));
+    /* background-position: calc(-1619px*(700/790)) calc(-4px*(210/240)); */
+    background-position: calc(-1619px*(700/790)) calc(-1px*(210/240));
 }
 
 .guildbackimage.bg-GuildBackTheHolyOrder {
-    background-position: calc(-1619px*(700/790)) calc(-436px*(210/240));
+    /* background-position: calc(-1619px*(700/790)) calc(-436px*(210/240)); */
+    background-position: calc(-1619px*(700/790)) calc(-500px*(210/240));
 }
 
 .guildtext {
@@ -904,13 +915,15 @@
 }
 
 .room.selection {
-    border: 2px dashed aqua;
+    /* border: 2px dashed aqua; */
+    border: 2px dashed red;
     cursor: pointer;
     pointer-events: all;
 }
 
 .room.selected {
-    border: 2px solid red;
+    /* border: 2px solid red; */
+    border: 2px solid aqua;
 }
 
 .singleroom {
@@ -1186,13 +1199,15 @@
 }
 
 .specialist.selection {
-    border: 2px dashed aqua;
+    /* border: 2px dashed aqua; */
+    border: 2px dashed red;
     cursor: pointer;
     pointer-events: all;
 }
 
 .specialist.selected {
-    border: 2px solid red;
+    /* border: 2px solid red; */
+    border: 2px solid aqua;
 }
 
 .specialist.specialistback {
@@ -1462,7 +1477,8 @@
 }
 
 .questcontainer.selected {
-    border: 2px solid red;
+    /* border: 2px solid red; */
+    border: 2px solid aqua;
     cursor: pointer;
     pointer-events: all;
     
@@ -1470,7 +1486,8 @@
 
 .questcontainer.forSelection {
     cursor: pointer;
-    border: 2px dashed aqua;
+    /* border: 2px dashed aqua; */
+    border: 2px dashed red;
     pointer-events: all;
 }
 
@@ -1848,16 +1865,19 @@
 .treasureenlarged.forSelection {
     cursor: pointer;
     /* border: 2px solid red; */
-    border: 2px dashed aqua;
+    border: 2px dashed red;
+    /* border: 2px dashed aqua; */
 }
 
 .treasurecontainer.selected {
-    border: 2px solid red;
+    /* border: 2px solid red; */
+    border: 2px solid aqua;
     cursor: pointer;
 }
 
 .treasureenlarged.selected {
-    border: 2px solid red;
+    /* border: 2px solid red; */
+    border: 2px solid aqua;
     cursor: pointer;
 }
 
@@ -2045,11 +2065,13 @@
 /*----------------------------------------------------TREASURE--------------------------------------------------------*/
 
 .selection:hover {
-    border: 2px dashed red;
+    /* border: 2px dashed red; */
+    border: 2px dashed aqua;
 }
 
 .forSelection:hover {
-    border: 2px dashed red;
+    /* border: 2px dashed red; */
+    border: 2px dashed aqua;
 }
 
 /* ----------------- TOOLTIPS ------------------ */
@@ -2215,6 +2237,14 @@
 
 .sigil6 {
     margin-left: 45%;
+}
+
+
+.spectatoritem {
+    visibility: hidden;
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 
