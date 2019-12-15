@@ -3201,12 +3201,25 @@ class kingsguild extends Table
             // self::dbQuery($sql);
         } elseif ($this->gamestate->state()['name'] == 'playerExpand' && self::getPlayersNumber() == 1) {
             self::setGameStateValue('soloExpandSecondPart', 0);
+            self::setGameStateValue('playerEndPhase', 1);
             $this->soloGameExpandActionEnd();
         } else {
             self::setGameStateValue('placed_specialist_type', 0);
         }
         self::giveExtraTime( $player_id);
-        $this->gamestate->nextState( "pass" );  
+
+        if ($this->gamestate->state()['name'] == 'playerBuildRoomOnly' || $this->gamestate->state()['name'] == 'playerHireSpecialistOnly') {
+            $player_id = self::getActivePlayerId();
+            $mapper = new kgActionMapper($player_id, $this);
+
+            if ($mapper->willPlayOnEnd()) {
+                $this->gamestate->nextState( "passEnd" ); 
+            } else {
+                $this->gamestate->nextState( "pass" ); 
+            }
+        } else {
+            $this->gamestate->nextState( "pass" );  
+        }
     }
 
     function makeBid($bid) {
@@ -3732,9 +3745,15 @@ class kingsguild extends Table
             $result['bardActionActive'] = true;
             $result['possibleTiles'] = $mapper->getPossiblePositionsForSpecialist();
         }
-        //Oracle is present
+
         if ( $mapper->isSpecificSpecialistPresent('Oracle') ) {
             $result['oracleActionActive'] = true;
+        }
+
+        if ( self::getGameStateValue( 'offeringActive') == 1) {
+            if ( $mapper->isSpecificSpecialistPresent('Vizier') ) {
+                $result['vizierActionActive'] = true;
+            }
         }
 
         return $result;

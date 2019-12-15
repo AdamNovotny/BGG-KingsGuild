@@ -648,6 +648,10 @@ class kgActionMapper {
             return true;
         }
 
+        if ( $this->isSpecificSpecialistPresent('Vizier') && $this->game->getGameStateValue( 'offeringActive') == 1 ) {
+            return true;
+        }
+
         return false;
     }
 
@@ -834,14 +838,14 @@ class kgActionMapper {
                 }
             }
         }
-        $relicPoints = array(0,2,5,9,13,17,22);
-        $result['score']['relics'] = $relicPoints[count( array_values(array_unique($relics)) )];
+
+        $result['score']['relics'] = $this->countRelicPoints($relics);
 
         if ($offering) {
             $res = $this->getResourceCount('all');
             $points = 2;    // base 2 pts
             if ( !$this->isSpecificRoomTypePresent(null, 9) ) {  // exclude vault of riches
-                $points += ($result['gold'] - ( $result['gold'] % 3) ) / 3;     // 1pt per 3 gold
+                $points +=  floor($result['gold'] / 3);     // 1pt per 3 gold
             }
             $points += ($res - ( $res % 2) ) / 2;                           // 1pt per 2 resource
             $result['score']['offering'] = $points;
@@ -850,5 +854,43 @@ class kgActionMapper {
         return $result;
     }
 
+    private function countRelicPoints($relics) {
+        $relicPoints = array(0,2,5,9,13,17,22);
+        $points = 0;
+        $sets = array();
+        $duplicatesPresent = true;
+        $actual = $relics;
 
+        while ($duplicatesPresent) {
+            $sets[] = array_values(array_unique($actual));
+            $new = $actual;
+            foreach (end($sets) as $value) {
+                $key = array_search($value, $actual);
+                unset($new[$key]);
+            }
+
+            $actual = array_values($new);
+            if(!$this->haveDuplicates($actual)) {
+                $duplicatesPresent = false;
+            }
+        }
+
+        if (!empty($actual)) {
+            $sets[] = $actual;
+        }
+
+        foreach ($sets as $set) {
+            $points += $relicPoints[count($set)];
+        }
+
+        return $points;
+    }
+
+    private function haveDuplicates($arr) {
+        foreach(array_count_values($arr) as $val => $c) {
+            if($c > 1) return true;
+        }
+
+        return false;
+    }
 }

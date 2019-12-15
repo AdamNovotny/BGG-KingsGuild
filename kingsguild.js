@@ -1249,6 +1249,9 @@ function (dojo, declare) {
                         if(args != null && args.oracleActionActive ) {
                             this.addActionButton( 'oracle', _('Look at top 2 quests (Oracle action)'), 'oracleAction'  );
                         }
+                        if (args.vizierActionActive) {
+                            this.addActionButton( 'offering', _('Make offering to the Council for free - Vizier'), 'offeringAction'  );
+                        }
                         this.addActionButton( 'endturn', _('End turn'), 'endTurn'  );
                     break;
 
@@ -3943,8 +3946,8 @@ function (dojo, declare) {
             // move card back from one player to another and destroy
             this.addTreasureOnBoard(notif.args.treasure_id2, null, this.gamedatas.treasure[notif.args.treasure_id2].color, 'overall_player_board', notif.args.player_from, 0) 
             this.moveItemOnBoard('treasureback_'+notif.args.treasure_id2, 'overall_player_board_'+notif.args.player_id, true);
-            $(this.player_id+'_cards'+this.gamedatas.treasure[notif.args.treasure_id2].color).innerText = parseInt($(this.player_id+'_cards'+this.gamedatas.treasure[notif.args.treasure_id2].color).innerText) +1;
-            $(notif.args.player_from+'_cards'+this.gamedatas.treasure[notif.args.treasure_id1].color).innerText =  parseInt($(notif.args.player_from+'_cards'+this.gamedatas.treasure[notif.args.treasure_id1].color).innerText) -1;
+            $(notif.args.player_id+'_cards'+this.gamedatas.treasure[notif.args.treasure_id2].color).innerText = parseInt($(notif.args.player_id+'_cards'+this.gamedatas.treasure[notif.args.treasure_id2].color).innerText) +1;
+            $(notif.args.player_from+'_cards'+this.gamedatas.treasure[notif.args.treasure_id2].color).innerText =  parseInt($(notif.args.player_from+'_cards'+this.gamedatas.treasure[notif.args.treasure_id2].color).innerText) -1;
         },
 
 
@@ -3967,7 +3970,7 @@ function (dojo, declare) {
                 // move to discard
                 dojo.removeClass('treasure_'+notif.args.treasure_id, 'flipped');
                 this.moveItemOnBoard('treasure_'+notif.args.treasure_id, 'discard', false);
-                $(notif.args.player_id+'_cards'+this.gamedatas.treasure[notif.args.treasure_id].color).innerText =  parseInt($(notif.args.player_id+'_cards'+this.gamedatas.treasure[notif.args.treasure_id].color).innerText) -1;
+                $(notif.args.player_id+'_cards'+this.gamedatas.treasure[notif.args.treasure_id].color).innerText =  parseInt($(notif.args.player_id+'_cards'+this.gamedatas.treasure[notif.args.treasure_id].color).innerText) - 1;
                 // add tooltip
                 this.constructTooltipTreasure(notif.args.treasure_id, true, false);
             }

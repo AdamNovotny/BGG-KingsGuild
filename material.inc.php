@@ -1134,7 +1134,7 @@ $this->treasures = array(
         "color" => "red",
         "cathegory" => clienttranslate("Charm"),
         "count" => 1,
-        "points" => 4,
+        "points" => 2,
         "effect" => null,
         "sellcost" => 0,
         "nameTr" => clienttranslate('Engraved Charm'),
@@ -1573,7 +1573,7 @@ $this->quest = array(
     25 => array(
         "name" => "Banish the Fruitfang Terrors",
         "cathegory" => "2",
-        "items" => array(1 => array(clienttranslate("Wand"), "Armor"), 2 => array(clienttranslate("Sword"), "Weapon"),  ),
+        "items" => array(1 => array(clienttranslate("Wand"), "Weapon"), 2 => array(clienttranslate("Sword"), "Weapon"),  ),
         "cost" => array(1 => array('wood' => 2, ), 2=> array('iron' => 2, 'cloth' => 1) ),
         "gold" => array(1 => 4, 2 => 5),
         "reward" => array('red', 'blue'),
@@ -1609,7 +1609,7 @@ $this->quest = array(
     28 => array(
         "name" => "Plunder the Warlock's Tower",
         "cathegory" => "2",
-        "items" => array(1 => array(clienttranslate("Pants"), "Weapon"), ),
+        "items" => array(1 => array(clienttranslate("Pants"), "Armor"), ),
         "cost" => array(1 => array('leather' => 3,) ),
         "gold" => array(1 => 4),
         "reward" => array('blue'),

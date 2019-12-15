@@ -98,7 +98,7 @@ $machinestates = array(
         "type" => "activeplayer",
         "args" => "argPlayerExpand",
         "possibleactions" => array( "selectExpandItem", "placeRoom",  "playTreasureCard", "pass",  "cancel"),
-        "transitions" => array( "placeRoom" => 10, "playTreasureNoAction" => 8 , "playTreasure" => 16, "pass" => 30,  "cancel" => 8, "zombiePass" => 30)
+        "transitions" => array( "placeRoom" => 10, "playTreasureNoAction" => 8 , "playTreasure" => 16, "pass" => 30, "passEnd" => 25,  "cancel" => 8, "zombiePass" => 30)
     ), 
     9 => array(
         "name" => "playerHireSpecialistOnly",
@@ -107,7 +107,7 @@ $machinestates = array(
         "type" => "activeplayer",
         "args" => "argPlayerExpand",
         "possibleactions" => array( "selectExpandItem", "placeSpecialist",  "playTreasureCard", "pass",  "cancel"),
-        "transitions" => array( "placeSpecialist" => 10, "playTreasureNoAction" => 9 , "playTreasure" => 16, "pass" => 30,  "cancel" => 9, "zombiePass" => 30)
+        "transitions" => array( "placeSpecialist" => 10, "playTreasureNoAction" => 9 , "playTreasure" => 16, "pass" => 30, "passEnd" => 25,  "cancel" => 9, "zombiePass" => 30)
     ), 
 //------------------------------------------------------------------------------------
     10 => array(                // check for special action and select right transition
@@ -227,8 +227,8 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may play treasure card(s) or end turn'),
         "type" => "activeplayer",
         "args" => "argPlayerEndTurn",
-        "possibleactions" => array( "endTurn", "playTreasureCard", "bardAction", "oracleAction", 'cancel', 'placeSpecialist'),
-        "transitions" => array("playTreasureNoAction" => 25 ,  "playTreasure" => 16, "endTurn" => 30, "zombiePass" => 30, 'cancel' => 25)
+        "possibleactions" => array( "endTurn", "playTreasureCard", "bardAction", "oracleAction", 'cancel', 'placeSpecialist', "makeOffering"),
+        "transitions" => array("playTreasureNoAction" => 25 ,  "playTreasure" => 16, "endTurn" => 30, "zombiePass" => 30, 'cancel' => 25, "makeOffering" => 25)
     ),
 
     30 => array(                // transition to next player
