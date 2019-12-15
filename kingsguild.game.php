@@ -3122,13 +3122,29 @@ class kingsguild extends Table
 
             // update after craft actions
             $this->updateAfterCraftActions($player_id);
-            // $sql = "SELECT player_specialist_craftaction speccraft FROM player WHERE player_id = '$player_id' ";
-            // $specialist_craftaction = array_slice(explode("_", self::getUniqueValueFromDB($sql)), 1);
-            // $specialist_craftaction = implode("_", $specialist_craftaction);
-            // $sql = "UPDATE player SET player_specialist_craftaction = '$specialist_craftaction' WHERE player_id = '$player_id' ";
-            // self::dbQuery($sql);
-        } else {
+
+        } else { // Witch action
             $quest_type = $this->getItemTypeById('quest', $quest_id);
+
+            // check if Thug is on questcard
+            $sql = "SELECT token_type_arg thugplayer, token_location_arg locarg FROM tokens WHERE token_type = 'thug' AND token_location = 'quest' ";
+            $thug = self::getObjectFromDB( $sql );
+            if ($thug['locarg'] == $quest_id) {
+                $thug = $thug['thugplayer'];
+            } else {
+                $thug = null;
+            }
+
+            if ($thug) {
+                $thugId = self::getUniqueValueFromDb("SELECT specialistandquest_id id FROM specialistandquest WHERE specialistandquest_type = 'specialist' AND specialistandquest_type_arg = '11' " ); 
+                $sql = "UPDATE tokens SET token_location = 'specialist', token_location_arg = '$thugId' WHERE token_type = 'thug' ";   
+                self::dbQuery($sql);
+
+                // return thug item
+                self::notifyAllPlayers( "moveThug",'', array(
+                    'move_back' => true,
+                ) );
+            }
 
             // give quest to player
             $sql = "UPDATE specialistandquest SET specialistandquest_location = '$player_id' WHERE specialistandquest_type = 'quest' AND specialistandquest_id = '$quest_id' ";
@@ -3145,13 +3161,12 @@ class kingsguild extends Table
                 'sigilToAdd' => null,
             ) );
 
-            // draw new quest card
-            // $this->drawNewCard('quest', null, $quest['locarg']);
             self::setGameStateValue('newQuestCardPosition',  $quest['locarg']);
 
             //transition
             self::setGameStateValue( 'placed_specialist_type', 0);
         }
+        
         $this->gamestate->nextState( "selectQuest" ); 
     }
 
