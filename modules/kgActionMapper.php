@@ -489,9 +489,41 @@ class kgActionMapper {
         } 
 
         foreach($item_cost as $resource_type => $needed) {
-
             $res_count = in_array($resource_type, $reduce) ? $needed-1: $needed;
             if ($this->getResourceCount($resource_type) < $res_count) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function canCraftBothItems($type, $item_position, $item_position2) {
+        $item_cost = $this->game->quest[$type]['cost'][$item_position];  
+        $item_cost2 = $this->game->quest[$type]['cost'][$item_position2]; 
+        $discount = $this->getCraftDiscount();
+        $reduce = array();
+
+        if ( $discount[ $this->game->quest[$type]['items'][$item_position][1] ] != null ) {
+            $reduce = $discount[ $this->game->quest[$type]['items'][$item_position][1] ];
+        } 
+
+        foreach($item_cost as $resource_type => $needed) {
+            $res_count = in_array($resource_type, $reduce) ? $needed-1: $needed;
+            if ($this->getResourceCount($resource_type) < $res_count) {
+                return false;
+            }
+        }
+
+        foreach($item_cost2 as $resource_type => $needed) {
+            $res_count = in_array($resource_type, $reduce) ? $needed-1: $needed;
+            if (key_exists($resource_type, $item_cost) ) {
+                $resMore = $item_cost[$resource_type];
+            } else {
+                $resMore = 0;
+            }
+
+            if ($this->getResourceCount($resource_type) < ($res_count+$resMore) ) {
                 return false;
             }
         }

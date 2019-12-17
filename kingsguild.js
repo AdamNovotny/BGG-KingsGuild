@@ -111,12 +111,22 @@ function (dojo, declare) {
 
             if (!this.isSpectator) {
                 for(var i=0;i<gamedatas.players[this.player_id].handsize;i++) {
-                    if (gamedatas.players[this.player_id].handsize < 8) {
-                        this.addCardTileOnBoard(i, 180, 255.4);
-                    } else if (gamedatas.players[this.player_id].handsize < 11) {
-                        this.addCardTileOnBoard(i, 180*0.9, 255.4*0.9);
+                    if(dojo.hasClass('ebd-body', 'mobile_version')) {
+                        if (gamedatas.players[this.player_id].handsize < 8) {
+                            this.addCardTileOnBoard(i, 180*0.7, 255.4*0.7);
+                        } else if (gamedatas.players[this.player_id].handsize < 10) {
+                            this.addCardTileOnBoard(i, 180*0.6, 255.4*0.6);
+                        } else {
+                            this.addCardTileOnBoard(i, 180*0.4, 255.4*0.4);
+                        }
                     } else {
-                        this.addCardTileOnBoard(i, 180*0.8, 255.4*0.8);
+                        if (gamedatas.players[this.player_id].handsize < 8) {
+                            this.addCardTileOnBoard(i, 180, 255.4);
+                        } else if (gamedatas.players[this.player_id].handsize < 11) {
+                            this.addCardTileOnBoard(i, 180*0.9, 255.4*0.9);
+                        } else {
+                            this.addCardTileOnBoard(i, 180*0.8, 255.4*0.8);
+                        }
                     }
                 }
                 dojo.style('player_cards', 'width', dojo.style('player_cards', 'width')+dojo.style('tile_card_0', 'width')+'px'  );     // !!!!!!!!!!!!!!!

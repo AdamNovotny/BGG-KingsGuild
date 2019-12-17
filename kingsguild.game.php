@@ -2667,8 +2667,20 @@ class kingsguild extends Table
         $item_id_second = $item_id == 0 ? 1:0;
         $quest_type = $this->getItemTypeById('quest', $quest_id);
         if ($second) {
+            if ( count($this->quest[$quest_type]['items']) < 2 ) {
+                throw new BgaUserException( self::_("This quest doesn't have two items. Hit F5 to update") );
+            }
+
             if ( !$mapper->canCraftItem($quest_type, $item_id+1) || !$mapper->canCraftItem($quest_type, $item_id_second+1)) {         
                 throw new BgaUserException( self::_("You don't have enough resources to craft those items") );
+            }
+
+            if ( !$mapper->canCraftBothItems($quest_type, $item_id+1,  $item_id_second+1) ) {         
+                throw new BgaUserException( self::_("You don't have enough resources to craft those items") );
+            }
+        } else {
+            if ( !$mapper->canCraftItem($quest_type, $item_id+1)) {
+                throw new BgaUserException( self::_("You don't have enough resources to craft this item") );
             }
         }
 

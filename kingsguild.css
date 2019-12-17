@@ -61,6 +61,7 @@
     /* overflow: hidden; */
 
     -webkit-box-shadow: 4px 4px 4px #222;
+    -moz-box-shadow: 4px 4px 4px #222;
     box-shadow: 4px 4px 4px #222;
 }
 
@@ -107,6 +108,7 @@
     transition: max-height 1s;
     -webkit-transition: max-height 1s;
     -o-transition: max-height 1s;
+    -moz-transition: max-height 1s;
 
     overflow: hidden;
 }
@@ -115,6 +117,7 @@
     max-height: 0;
     transition: max-height 1s ease-out;
     -webkit-transition: max-height 1s ease-out;
+    -moz-transition: max-height 1s ease-out;
     -o-transition: max-height 1s ease-out;
 }
 
@@ -138,6 +141,8 @@
         flex-wrap: nowrap;
     position: relative;
     -webkit-box-pack: justify;
+    -moz-box-pack: justify;
+    -ms-box-pack: justify;
         -ms-flex-pack: justify;
             justify-content: space-between;
 }
@@ -152,7 +157,8 @@
     -ms-flex-pack: distribute;
         justify-content: space-around;
     -webkit-box-align: center;
-        -ms-flex-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
             align-items: center;
     background: beige;
     border: 2px solid black;
@@ -176,6 +182,7 @@
     background-repeat: no-repeat;
 
     -webkit-box-shadow: 4px 4px 4px #222;
+    -moz-box-shadow: 4px 4px 4px #222;
     box-shadow: 4px 4px 4px #222;
 }
 
@@ -231,10 +238,12 @@
 
 .cardtile {
     -webkit-box-flex: 0;
-        -ms-flex-positive: 0;
-            flex-grow: 0;
+    -moz-box-flex: 0;
+    -ms-box-flex: 0;
+    -ms-flex-positive: 0;
+    flex-grow: 0;
     -ms-flex-negative: 0;
-        flex-shrink: 0;
+    flex-shrink: 0;
 }
 
 .playerheader {
@@ -256,6 +265,7 @@
     background-color: rgba(199, 171, 59, 1.4);
 
     -webkit-transition: left 1s;
+    -moz-transition: left 1s;
     -o-transition: left 1s;
     transition: left 1s;
 }
@@ -285,6 +295,7 @@
 .glowing {
     /* text-shadow: 0 0 5px #FFF, 0 0 10px #FFF, 0 0 15px #FFF, 0 0 15px #49ff18, 0 0 20px #49FF18, 0 0 30px #49FF18, 0 0 40px #49FF18, 0 0 60px #49ff18; */
     -webkit-animation: glow 2s forwards;
+    -moz-animation: glow 2s forwards;
     animation: glow 2s forwards;
 }
 
@@ -392,6 +403,7 @@
     line-height: 20px;
 
     -webkit-box-shadow: 1px 1px 1px #222, inset 0 0 1px #222;
+    -moz-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     box-shadow: 1px 1px 1px #222, inset 0 0 1px #222;
     border-radius: 50%;
 }
@@ -452,6 +464,7 @@
     z-index: 9;
 
     -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    -moz-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     border-radius: 50%;
 }
@@ -697,6 +710,7 @@
     text-shadow: 1px 1px 0 white, 1px -1px 0 white, -1px 1px 0 white, -1px -1px 0 white, 1px 0px 0 white, 0px 1px 0 white, -1px 0px 0 white, 0px -1px 0 white;
     text-align: center;
     -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    -moz-bos-shadow:  1px 1px 2px #222, inset 0 0 2px #222;
     box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     border-radius: 50%;
     cursor: default;
@@ -815,6 +829,8 @@
     height: 70px;
     border: 2px solid darkorange;
     border-radius: 80%;
+    z-index: 10;
+    pointer-events: none;
 }
 
 /*----------- guild background -----------*/
@@ -829,8 +845,9 @@
     position: absolute;
     top: 4%;
     left: 0.5%;
-    box-shadow: 4px 4px 4px #222;
     -webkit-box-shadow: 4px 4px 4px #222;
+    -moz-box-shadow: 4px 4px 4px #222;
+    box-shadow: 4px 4px 4px #222;
     opacity: 0.6;
 }
 
@@ -898,6 +915,7 @@
     background-repeat: no-repeat;
 
     -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    -moz-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     border-radius: 4%;
 
@@ -906,6 +924,8 @@
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
     -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
     -ms-transform-origin: 50% 50%;
         transform-origin: 50% 50%;
 
@@ -958,20 +978,27 @@
 
 .room.roomback {
     -webkit-transform: rotateY( 180deg );
+    -moz-transform: rotateY( 180deg );
+    -o-transform: rotateY( 180deg );
+    -ms-transform: rotateY( 180deg );
     transform: rotateY( 180deg );
 }
 
 .roomcontainer {
     position: absolute;
     -webkit-transition: -webkit-transform 2s;
+    -moz-transition: -webkit-transform 2s;
     -o-transition: -o-transform 2s;
     transition: -webkit-transform 2s;
+
     -o-transition: transform 2s;
     transition: transform 2s;
     transition: transform 2s, -webkit-transform 2s;
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
     -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
     -ms-transform-origin: 50% 50%;
         transform-origin: 50% 50%;
 
@@ -980,6 +1007,9 @@
 
 .roomcontainer.flipped {
     -webkit-transform: rotateY( 180deg );
+    -moz-transform: rotateY( 180deg );
+    -ms-transform: rotateY( 180deg );
+    -o-transform: rotateY( 180deg );
     transform: rotateY( 180deg );
 }
 
@@ -1193,6 +1223,7 @@
     backface-visibility: hidden;
 
     -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    -moz-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     border-radius: 4%;
     pointer-events: all;
@@ -1212,12 +1243,16 @@
 
 .specialist.specialistback {
     -webkit-transform: rotateY( 180deg );
+    -moz-transform: rotateY( 180deg );
+    -ms-transform: rotateY( 180deg );
+    -o-transform: rotateY( 180deg );
     transform: rotateY( 180deg );
 }
 
 .specialistcontainer {
     position: absolute;
     -webkit-transition: -webkit-transform 2s;
+    -moz-transition: -webkit-transform 2s;
     -o-transition: -o-transform 2s;
     transition: -webkit-transform 2s;
     -o-transition: transform 2s;
@@ -1226,12 +1261,17 @@
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
     -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
     -ms-transform-origin: 50% 50%;
         transform-origin: 50% 50%;
 }
 
 .specialistcontainer.flipped {
     -webkit-transform: rotateY( 180deg );
+    -moz-transform: rotateY( 180deg );
+    -o-transform: rotateY( 180deg );
+    -ms-transform: rotateY( 180deg );
     transform: rotateY( 180deg );
 }
 
@@ -1449,6 +1489,7 @@
     backface-visibility: hidden;
 
     -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    -moz-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     border-radius: 4%/2.9%;
     pointer-events: all;
@@ -1456,6 +1497,9 @@
 
 .quest.questback {
     -webkit-transform: rotateY( 180deg );
+    -moz-transform: rotateY( 180deg );
+    -o-transform: rotateY( 180deg );
+    -ms-transform: rotateY( 180deg );
     transform: rotateY( 180deg );
 }
 
@@ -1464,6 +1508,7 @@
     height: 172px;
     position: absolute;
     -webkit-transition: -webkit-transform 2s;
+    -moz-transition: -webkit-transform 2s;
     -o-transition: -o-transform 2s;
     transition: -webkit-transform 2s;
     -o-transition: transform 2s;
@@ -1472,6 +1517,8 @@
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
     -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
     -ms-transform-origin: 50% 50%;
         transform-origin: 50% 50%;
 }
@@ -1805,6 +1852,7 @@
     backface-visibility: hidden;
 
     -webkit-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
+    -moz-box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     box-shadow: 1px 1px 2px #222, inset 0 0 2px #222;
     border-radius: 4%/2.8%;
     pointer-events: all;
@@ -1821,6 +1869,9 @@
 
 .treasure.treasureback {
     -webkit-transform: rotateY( 180deg );
+    -moz-transform: rotateY( 180deg );
+    -o-transform: rotateY( 180deg );
+    -ms-transform: rotateY( 180deg );
     transform: rotateY( 180deg );
 }
 
@@ -1828,6 +1879,7 @@
     position: absolute;
     z-index: 15;
     -webkit-transition: -webkit-transform 2s;
+    -moz-transition: -webkit-transform 2s;
     -o-transition: -o-transform 2s;
     transition: -webkit-transform 2s;
     -o-transition: transform 2s;
@@ -1836,6 +1888,8 @@
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
     -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
     -ms-transform-origin: 50% 50%;
         transform-origin: 50% 50%;
 }
@@ -1854,6 +1908,9 @@
 
 .treasurecontainer.flipped {
     -webkit-transform: rotateY( 180deg );
+    -moz-transform: rotateY( 180deg );
+    -o-transform: rotateY( 180deg );
+    -ms-transform: rotateY( 180deg );
     transform: rotateY( 180deg );
 }
 
@@ -2239,12 +2296,16 @@
     margin-left: 45%;
 }
 
-
 .spectatoritem {
     visibility: hidden;
     display: none;
     width: 0;
     height: 0;
 }
+
+.bgabutton > .logitem, span {
+    pointer-events: none;
+}
+
 
 
