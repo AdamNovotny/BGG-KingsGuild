@@ -58,6 +58,7 @@ function (dojo, declare) {
             this.fortunePotionActive = false;
             this.luckyPotionActive = false;
             this.endPhaseActive = false;
+            this.dealerPassActive = false;
         },
         
         /*
@@ -534,6 +535,11 @@ function (dojo, declare) {
 
                     case 'playerSpecialistOneTimeAction':
                         this.selectedResourcesId = [];
+                        if ('parameters' in args.args ) {
+                            if (args.args.parameters.dealerPass) {
+                                this.dealerPassActive = true;
+                            }
+                        }
                         var cs = constructClientState(args.args.action_name, args.args.parameters );
                         this.setClientState(cs['name'], cs['parameters']);
                     break;
@@ -1010,6 +1016,9 @@ function (dojo, declare) {
                             dojo.addClass('takeres'+i, 'actioncustombutton resbutton');
                         }
                         this.addActionButton( 'cancel', _('Cancel'), 'cancelClientState'  );
+                        if (this.dealerPassActive) {
+                            this.addActionButton( 'pass', _('Do not use'), 'passAction'  );
+                        }
                     break;
 
                     case 'client_playerGatherAndReplace':
@@ -1100,6 +1109,9 @@ function (dojo, declare) {
 
                             }
                             this.addActionButton( 'cancel', _('Cancel'), dojo.partial(this.cancelReplaceResource, args.number, args.alreadySelected, args.selectedResources, args.bonusVariant, args.treasureVariant ) );
+                            if (this.dealerPassActive) {
+                                this.addActionButton( 'pass', _('Do not use'), 'passAction'  );
+                            }
                         }
                     break;
 
@@ -1163,8 +1175,11 @@ function (dojo, declare) {
                             this.addActionButton( 'confirmSingleCraft', _('Craft single item only ')+str, 'confirmCraft' );
                             this.addActionButton( 'confirmDoubleCraft', _('Craft both items ')+str, 'confirmCraft'  );
                             this.addActionButton( 'cancel', _('Cancel'), 'cancelClientState'  );
+                            dojo.addClass('confirmSingleCraft', 'kgbutton');
+                            dojo.addClass('confirmDoubleCraft', 'kgbutton');
                         } else {
                             this.addActionButton( 'confirmCraft', _('Craft ')+str, 'confirmCraft'  );
+                            dojo.addClass('confirmCraft', 'kgbutton');
                             this.addActionButton( 'cancel', _('Cancel'), 'cancelAction'  );
                         }
                     break;
@@ -1194,7 +1209,10 @@ function (dojo, declare) {
 
                         if (str.length > 3) {
                             this.addActionButton( 'steal', str, dojo.partial(this.stealResource, args.selected, args.replaceTrigger, args.selectedForReplace) );
+                            dojo.addClass('steal', 'kgbutton');
                         }
+
+                        this.addActionButton( 'pass', _('Do not use'), 'passAction'  );
                     break;
 
                     case 'playerSelectTreasureCard':
@@ -3209,7 +3227,7 @@ function (dojo, declare) {
             }
 
             var res = i != null ? resources[i].join("_") : "_";
-
+            this.dealerPassActive = false;
             this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/takeResourcesAndReplace.html", {take_res: res, return_res: '_', lock : true}, 
                 this, function(result) {}, function(is_error) {
             });
@@ -3235,6 +3253,7 @@ function (dojo, declare) {
             this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/takeResourcesAndReplace.html", {take_res: res_take, return_res: res_return,  lock : true}, 
                 this, function(result) {
                     this.restoreServerGameState();
+                    this.dealerPassActive = false;
                 }, function(is_error) {
             });
         },
@@ -3512,6 +3531,7 @@ function (dojo, declare) {
                 return;
             }
 
+            this.dealerPassActive = false;
             this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/passAction.html", {lock : true}, 
             this, function(result) {}, function(is_error) {});
         },
@@ -3803,21 +3823,25 @@ function (dojo, declare) {
             var slot_number = parseInt($(notif.args.player_id+'_maxhand').innerText);                                                                
             if(notif.args.player_id == this.player_id) {
                 for (var i=0;i<notif.args.number;i++) {
-                    this.addCardTileOnBoard(slot_number+1+i, dojo.style('tile_card_0', 'width'), dojo.style('tile_card_0', 'height') );
+                    this.addCardTileOnBoard(slot_number+i, dojo.style('tile_card_0', 'width'), dojo.style('tile_card_0', 'height') );
+                }
+
+                if(dojo.hasClass('ebd-body', 'mobile_version')) {
+                    if (slot_number+notif.args.number < 10) {
+                        resizeNode('player_cards', this.sizeRatio*0.85, this.sizeRatio );
+                    } else {
+                        resizeNode('player_cards', this.sizeRatio*0.7, this.sizeRatio );
+                    }
+                } else {
+                    if (slot_number+notif.args.number < 10) {
+                        resizeNode('player_cards', this.sizeRatio*0.9, this.sizeRatio );
+                    } else {
+                        resizeNode('player_cards', this.sizeRatio*0.8, this.sizeRatio );
+                    }
                 }
 
                 var w = (slot_number+notif.args.number)*dojo.style('tile_card_0', 'width')+(slot_number+notif.args.number)*20;
                 dojo.style('player_cards', 'width', w+'px');
-                
-                // if ( dojo.style('player_cards', 'width')+ dojo.style('tile_card_0', 'width')/2 > (dojo.style('playerboardwrap_'+this.player_id, 'width')+dojo.style('main_board', 'width' ) ) ) {
-                //     resizeNode('player_cards', this.sizeRatio*0.9, this.sizeRatio );
-                // }
-                if ( slot_number+notif.args.number < 11) {
-                    resizeNode('player_cards', this.sizeRatio*0.9, this.sizeRatio );
-                }
-                if ( slot_number+notif.args.number > 9 ) {
-                    resizeNode('player_cards', this.sizeRatio*0.8, this.sizeRatio );
-                }
 
                 $(notif.args.player_id+'_maxhand').innerText = slot_number+notif.args.number;
             } else {

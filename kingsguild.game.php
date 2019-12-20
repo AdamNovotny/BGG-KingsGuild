@@ -2034,10 +2034,12 @@ class kingsguild extends Table
                 $state_id = $this->getKeyByValueMultidim( $this->gamestate->states,'name', $this->gamestate->state()['name']);
                 self::setGameStateValue("transition_from_state", $state_id);
                 $this->gamestate->nextState( "takeResources" );
+                return;
             }
 
             if ($this->gamestate->state()['name'] == 'playerReplaceBonusResource') {
                 $this->gamestate->nextState( "takeResources" );
+                return;
             }
 
             if ($this->gamestate->state()['name'] == 'playerSpecialistOneTimeAction' && self::getGameStateValue( 'placed_specialist_type' ) != 26 ) {
@@ -2045,9 +2047,7 @@ class kingsguild extends Table
                 //check bonus resources
                 $bonus_res = $mapper->getGatherBonus();
 
-                if (empty($bonus_res) ) {
-                        $this->gamestate->nextState( 'takeResources' );
-                } else {
+                if (!empty($bonus_res) ) {
                     // bonus not available!!                    
                     foreach($bonus_res as $resource){
                         $sql = "SELECT count(token_id) c FROM tokens WHERE token_type_arg = '$resource' AND token_location = 'board' ";
@@ -2062,7 +2062,7 @@ class kingsguild extends Table
                         }
                     }
                     $bonus_res = array_values($bonus_res);
-    
+
                     if (!empty($bonus_res) ) {
                         $replace_number = $mapper->checkGather($bonus_res, true)['triggerReplace'];
     
@@ -2082,10 +2082,10 @@ class kingsguild extends Table
                         } else {
                             $this->takeResourceByPlayer($bonus_res, $player_id, true ); 
                         }
-                        $this->gamestate->nextState( 'takeResources' );
                     }
                 }
-
+                $this->gamestate->nextState( 'takeResources' );
+                return;
             }
         }
     }
@@ -2387,6 +2387,17 @@ class kingsguild extends Table
             } else {
                 //notify about relics
                 self::notifyAllPlayers("logInfo", clienttranslate( 'No relics in discard pile, Curator action skipped' ), array() );
+                $skip = true;
+            }
+        }
+
+        // if opponents have no resource skip smuggler
+        if ($specialist_type == 34) {
+            $sql = "SELECT token_id id FROM tokens WHERE ( token_type = 'baseresource' OR  token_type = 'advresource') AND token_location <> 'board' AND token_location <> '$player_id' ";
+            $opponentsResource = self::getObjectListFromDB($sql, true);
+
+            if (count($opponentsResource) < 1) {
+                self::notifyAllPlayers("logInfo", clienttranslate( 'No resource in opponent guilds, Smuggler action skipped' ), array() );
                 $skip = true;
             }
         }
@@ -3471,6 +3482,7 @@ class kingsguild extends Table
         if ( $result['action_name'] == 'gather') {
             $result['parameters']['replaceTrigger'] = false;
             $result['parameters']['maxReached'] = false;
+            $result['parameters']['dealerPass'] = true;
         }
 
         if ( $result['action_name'] == 'traderesources') {

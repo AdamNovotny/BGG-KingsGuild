@@ -376,14 +376,14 @@ function constructClientState(name, args) {
         case 'gatherAndReplace':
             clientState['name'] = 'client_playerGatherAndReplace';
             clientState['parameters']["descriptionmyturn"] =_('${You} must choose ${number} resources to return');
-            clientState['parameters']["possibleactions"] = ["chooseResource", "takeResourcesAndReplace", 'cancel'];
+            clientState['parameters']["possibleactions"] = ["chooseResource", "takeResourcesAndReplace", 'cancel', "pass"];
             clientState['parameters']["args"] = {"You": '', "number": args.number, "alreadySelected": args.alreadySelected, "selectedResources": args.selectedResources}  ;
         break;
 
         case 'gather':
             clientState['name'] = 'client_playerGather';
             clientState['parameters']["descriptionmyturn"] =_('${You} must choose resources to gather');
-            clientState['parameters']["possibleactions"] = ["chooseResource", "takeResources", "cancel"];
+            clientState['parameters']["possibleactions"] = ["chooseResource", "takeResources", "cancel", "pass"];
             clientState['parameters']["args"] = {"You": '', "replaceTrigger": args.replaceTrigger, "maxReached": args.maxReached}  ;
         break;
 
@@ -432,7 +432,7 @@ function constructClientState(name, args) {
         case 'steal':
             clientState['name'] = 'client_stealResource';
             clientState['parameters']["descriptionmyturn"] = _('${You} must steal one resource from other player');
-            clientState['parameters']["possibleactions"] = ["selectResource", "stealResource"];
+            clientState['parameters']["possibleactions"] = ["selectResource", "stealResource", "pass"];
             clientState['parameters']["args"] = {"You": '', "selected": args.selected, "replaceTrigger": args.triggerReplace, "selectedForReplace": args.selectedForReplace }  ;
         break;
 

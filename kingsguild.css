@@ -2303,8 +2303,20 @@
     height: 0;
 }
 
-.bgabutton > .logitem, span {
+.kgbutton > .logitem {
     pointer-events: none;
+}
+
+.kgbutton > .logresource {
+    pointer-events: none;
+}
+
+.kgbutton > span {
+    pointer-events: none;
+}
+
+.playercards .treasurecontainer {
+    position: relative;
 }
 
 
