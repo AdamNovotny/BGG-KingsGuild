@@ -3476,7 +3476,49 @@ function (dojo, declare) {
                 if (!sell && (this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Fortune Potion' || this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Lucky Potion') && this.endPhaseActive){
                     var txt = _('Lucky potion and Fortune potion have no effect at the end phase of your turn, are you sure?');
                 }
-                
+
+                if (!sell && (this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Oak Branches')){
+                    var woodnumber = dojo.query('#tile_baseresource_1 .wood').length;
+                    if (woodnumber < 3) {
+                        var txt = dojo.string.substitute( _("Only ${number} wood available, are you sure?"), { number: woodnumber } );
+                    }
+                }
+
+                if (!sell && (this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Mithril Bars')){
+                    var ironnumber = dojo.query('#tile_baseresource_0 .iron').length;
+                    if (ironnumber < 3) {
+                        var txt = dojo.string.substitute( _("Only ${number} iron available, are you sure?"), { number: ironnumber } );
+                    }
+                }
+
+                if (!sell && (this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Bolts of Silk')){
+                    var clothnumber = dojo.query('#tile_baseresource_3 .cloth').length;
+                    if (clothnumber < 3) {
+                        var txt = dojo.string.substitute( _("Only ${number} iron available, are you sure?"), { number: clothnumber } );
+                    }
+                }
+
+                if (!sell && (this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Dragon Hides')){
+                    var leathernumber = dojo.query('#tile_baseresource_2 .leather').length;
+                    if (leathernumber < 3) {
+                        var txt = dojo.string.substitute( _("Only ${number} leather available, are you sure?"), { number: leathernumber } );
+                    }
+                }
+
+                if (!sell && (this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Brilliant Diamonds')){
+                    var gemnumber = dojo.query('#tile_advresource_0 .gem').length;
+                    if (gemnumber < 2) {
+                        var txt = dojo.string.substitute( _("Only ${number} gem available, are you sure?"), { number: gemnumber } );
+                    }
+                }
+
+                if (!sell && (this.gamedatas.treasure[this.selectedTreasureForPlay].name == 'Bottle of Faerie Dust')){
+                    var magicnumber = dojo.query('#tile_advresource_1 .magic').length;
+                    if (magicnumber < 2) {
+                        var txt = dojo.string.substitute( _("Only ${number} magic available, are you sure?"), { number: magicnumber } );
+                    }
+                }
+
                 if (txt != null) {
                     this.confirmationDialog( txt, dojo.hitch( this, function() {
                         this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/playTreasureCard.html", {treasure_id: this.selectedTreasureForPlay,  sell: sell ,lock : true}, 

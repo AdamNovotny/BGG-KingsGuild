@@ -2895,17 +2895,10 @@ class kingsguild extends Table
 
         } elseif ($this->gamestate->state()['name'] == 'playerSpecialistCraftAction') {
             // destroy scroll effect
-            // $treasure_type = $this->treasures[$this->getItemTypeById('treasure', $treasure_ids_selected[0] )]["cathegory"];
             $sql = "SELECT treasure_location_arg locarg, treasure_type spectype FROM treasure WHERE treasure_location = '$player_id' AND treasure_id = '$treasure_ids_selected[0]' ";
             $treasure_info = self::getObjectFromDB($sql);
-            // update after craft actions ??!!!!!!!!!!!!
+
             $this->updateAfterCraftActions($player_id);
-            // $sql = "SELECT player_specialist_craftaction speccraft FROM player WHERE player_id = '$player_id' ";
-            // $specialist_craftaction = array_slice(explode("_", self::getUniqueValueFromDB($sql)), 1);
-            // $specialist_craftaction = implode("_", $specialist_craftaction);
-            // $sql = "UPDATE player SET player_specialist_craftaction = '$specialist_craftaction' WHERE player_id = '$player_id' ";
-            // self::dbQuery($sql);
-            self::setGameStateValue('warlock_active', 1);
             $this->playerPlayTreasureEffect($treasure_ids_selected[0], $player_id, $treasure_info, true);
 
         } elseif ($this->gamestate->state()['name'] == 'playerPlayTreasureEffect') {
