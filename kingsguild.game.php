@@ -1298,7 +1298,14 @@ class kingsguild extends Table
             $notif_sigil_return = $i+1 == count($id_array) && $player_alsoCrafted != null  ? "sigil_".$player_alsoCrafted."_".$sigil_id : null;
             $notif_sigil_add = ($items_nbr>1 && !$completed) ? "sigil_".$player_id."_".$sigil_id : null;
 
-            if ($doublegold) {      
+            $applyBonusNext = false; // fortune potion will be applied to item with higher reward
+            if ($i == 0 && count($id_array) > 1 ) {
+                if ($item_gold < $this->quest[$quest_type]['gold'][$id_array[$i+1]]) {
+                    $applyBonusNext = true;
+                }
+            }
+
+            if ($doublegold && !$applyBonusNext) {      
                 $msg = clienttranslate( '${player_name} craft ${item} and gets ${gold} (Fortune Potion applies)' );
                 // reward gold
                 $this->updatePlayerGold($player_id, $item_gold*2);
@@ -1314,7 +1321,6 @@ class kingsguild extends Table
                     $sql = "UPDATE player SET player_active_potions = '$potion_string ' WHERE player_id = '$player_id' ";
                     self::dbQuery( $sql); 
                 }
-
             } else {
                 $msg = clienttranslate( '${player_name} craft ${item} and gets ${gold}' );
                 // reward gold
