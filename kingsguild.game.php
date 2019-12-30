@@ -2197,13 +2197,15 @@ class kingsguild extends Table
                         self::dbQuery($sql);
                         $statueTriggerReplace = true;
                     } else {
-                        // $this->takeResourceByPlayer($bonus[0], $player_id, true );
                         $this->takeResourceByPlayer(array($bonus[0]), $player_id, true );
                     }
                 } else {
                     if ( $mapper->checkGather($bonus, true)['triggerReplace'] == 1 ) { // bonus res will trigger replace action
                         $sql = "UPDATE player SET player_replace_res = '$bonus[0]' WHERE player_id = '$player_id' ";
                         self::dbQuery($sql);
+                        if (count($bonus) > 1 ) {
+                            $this->takeResourceByPlayer(array($bonus[1]), $player_id, true );
+                        }
                         $statueTriggerReplace = true;
                     } elseif ($mapper->checkGather($bonus, true)['triggerReplace'] == 2) {
                         $res = $bonus[0]."_".$bonus[1];
@@ -2211,9 +2213,6 @@ class kingsguild extends Table
                         self::dbQuery($sql);
                         $statueTriggerReplace = true;
                     }   else {
-                        // foreach($bonus as $res) {
-                        //     $this->takeResourceByPlayer($res, $player_id, true );
-                        // }
                         $this->takeResourceByPlayer($bonus, $player_id, true );
                     }
                 }
@@ -2770,10 +2769,13 @@ class kingsguild extends Table
                     $this->drawNewCard('treasure', $reward[$i], $next['positions'][$i], $player_id );
                 }
                 if ($next['needToSell'] > 0) {
+                    if ($mapper->isSpecificSpecialistPresent('Appraiser') ) {
+                        self::setGameStateValue('player_play_appraiser', $player_id );
+                    }
+
                     $this->gamestate->setPlayersMultiactive( array($player_id), "craftItemAndSell", true );
                     $this->gamestate->nextState( "craftItemAndSell" ); 
                 } else {
-                    // check Appraiser !!!!!!!!!!!!!
                     if ($mapper->isSpecificSpecialistPresent('Appraiser') ) {
                         self::setGameStateValue('appraiser_active',1);
                         self::setGameStateValue('player_play_appraiser', $player_id );
@@ -2876,11 +2878,19 @@ class kingsguild extends Table
                 $this->updateHand($player_id, $position,$treasure );
             }
 
-            // update game state
-            // check Appraiser !!!!!!!!!!!!!
-            if ($mapper->isSpecificSpecialistPresent('Appraiser') &&  !$appraiserPlay ) {
-                self::setGameStateValue('appraiser_active',1);
-                self::setGameStateValue('player_play_appraiser', $player_id );
+            $appraiserPlayer = self::getGameStateValue("player_play_appraiser");
+            if ( $appraiserPlayer != -1) {
+                $activePlayers = $this->gamestate->getActivePlayerList();
+                if (!in_array($appraiserPlayer, $activePlayers)) {
+                    $other_mapper = new kgActionMapper($appraiserPlayer, $this);
+                    if ($other_mapper->isSpecificSpecialistPresent('Appraiser')) {
+                        self::setGameStateValue('appraiser_active', 1);
+                    }
+                }
+
+                if ($player_id == $appraiserPlayer && count($activePlayers) == 1) {
+                    self::setGameStateValue('appraiser_active', 1);
+                }
             }
 
             if ( $appraiserPlay ) {
@@ -2975,16 +2985,6 @@ class kingsguild extends Table
             $mapper_actual = new kgActionMapper($player_id_active, $this);
             $mapper_other = new kgActionMapper($player_id_other, $this);
 
-            //appraiser check
-            if ($mapper_actual->isSpecificSpecialistPresent('Appraiser') ) {
-                self::setGameStateValue("appraiser_active", 1);
-                self::setGameStateValue("player_play_appraiser", $player_id_active);
-            }
-            if ($mapper_other->isSpecificSpecialistPresent('Appraiser') ) {
-                self::setGameStateValue("appraiser_active", 1);
-                self::setGameStateValue("player_play_appraiser", $player_id_other);
-            }
-
             $position_active = $mapper_actual->getPositionForTreasureCards($cards_number);
             $position_other = $mapper_other->getPositionForTreasureCards($cards_number);
 
@@ -3062,11 +3062,26 @@ class kingsguild extends Table
                 }
             }
 
+            //appraiser check
+            $appraiserWillPlay = false;
+            if ($mapper_actual->isSpecificSpecialistPresent('Appraiser') ) {
+                self::setGameStateValue("player_play_appraiser", $player_id_active);
+                $appraiserWillPlay = true;
+            }
+
+            if ($mapper_other->isSpecificSpecialistPresent('Appraiser') ) {
+                self::setGameStateValue("player_play_appraiser", $player_id_other);
+                $appraiserWillPlay = true;
+            }
+
             //state transition
             if (($position_active['needToSell'] > 0) || ($position_other['needToSell'] > 0) ) {
                 $this->gamestate->setPlayersMultiactive( $playersToActivateNext, "confirmAndSell" );
                 $this->gamestate->nextState("confirmAndSell");
             } else {
+                if ($appraiserWillPlay) {
+                    self::setGameStateValue("appraiser_active", 1);
+                }
                 $this->gamestate->nextState( "confirm" );
             }
         }
@@ -3497,8 +3512,8 @@ class kingsguild extends Table
             $specialist = self::getObjectFromDB($sql);
             $result['parameters']['tile_from'] =  'tile_specialist_4';
             if ($specialist === null) {
-                $sql = "SELECT specialistandquest_id id FROM specialistandquest WHERE specialistandquest_type = 'specialist' AND specialistandquest_location = 'board' AND specialistandquest_location_arg = 3 ";
-                $specialist = self::getUniqueValueFromDB($sql);
+                $sql = "SELECT specialistandquest_id id, specialistandquest_type_arg arg FROM specialistandquest WHERE specialistandquest_type = 'specialist' AND specialistandquest_location = 'board' AND specialistandquest_location_arg = 3 ";
+                $specialist = self::getObjectFromDB($sql);
                 $result['parameters']['tile_from'] =  'tile_specialist_3';
             }
             

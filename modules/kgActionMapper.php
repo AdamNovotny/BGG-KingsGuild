@@ -515,6 +515,10 @@ class kgActionMapper {
             }
         }
 
+        if ( $discount[ $this->game->quest[$type]['items'][$item_position2][1] ] != null ) {
+            $reduce = $discount[ $this->game->quest[$type]['items'][$item_position2][1] ];
+        } 
+
         foreach($item_cost2 as $resource_type => $needed) {
             $res_count = in_array($resource_type, $reduce) ? $needed-1: $needed;
             if (key_exists($resource_type, $item_cost) ) {
