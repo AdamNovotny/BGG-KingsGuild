@@ -1445,14 +1445,12 @@ function (dojo, declare) {
         changeItemSize: function(nodeid, width, height) {
             dojo.style(nodeid,'margin','');
             dojo.style(nodeid,'background-position', '');
-            var actBx = parseFloat(dojo.style(nodeid,'background-position-x'));
-            var actBy = parseFloat(dojo.style(nodeid,'background-position-y'));
+            var actBx = parseFloat(getBackgroundXPos(dojo.style(nodeid,'background-position')));
+            var actBy = parseFloat(getBackgroundYPos(dojo.style(nodeid,'background-position')));
 
             dojo.style(nodeid,'height',height+'px'); 
             dojo.style(nodeid,'width',width+'px'); 
-            // var coefx = width/276; // width/296;
-            // var coefy = height/400; //420
-            // dojo.style(nodeid,'background-position', actBx*coefx+'px '+actBy*coefy+'px');
+
             var coef =  height/400;
             dojo.style(nodeid,'background-position', actBx*coef+'px '+actBy*coef+'px');
         },
@@ -2158,8 +2156,8 @@ function (dojo, declare) {
                         dojo.style(chld[i].id,'height','');
                         dojo.style(chld[i].id,'background-position','');
 
-                        bX = parseFloat(dojo.style(chld[i].id,'background-position-x'))*this.specialistSizeCoefEnlarged;
-                        bY = parseFloat(dojo.style(chld[i].id,'background-position-y'))*this.specialistSizeCoefEnlarged ;
+                        bX = parseFloat(getBackgroundXPos(dojo.style(chld[i].id,'background-position')))*this.specialistSizeCoefEnlarged;
+                        bY = parseFloat(getBackgroundYPos(dojo.style(chld[i].id,'background-position')))*this.specialistSizeCoefEnlarged ;
                         if ( chld[i].id != 'specialistdiscount_'+id.split("_")[1]) {
                             dojo.style(chld[i].id,'background-position', bX+'px '+bY+'px');
                         } else {
@@ -2221,12 +2219,12 @@ function (dojo, declare) {
             dojo.style(id,'background-position','');
 
             if (doubleroom) {
-                bX = parseFloat(dojo.style(id,'background-position-x'))*this.roomSizeCoefEnlargedDual;
-                bY = parseFloat(dojo.style(id,'background-position-y'))*this.roomSizeCoefEnlargedDual ;
+                bX = parseFloat(getBackgroundXPos( dojo.style(id,'background-position')) )*this.roomSizeCoefEnlargedDual;
+                bY = parseFloat(getBackgroundYPos( dojo.style(id,'background-position')))*this.roomSizeCoefEnlargedDual ;
                 dojo.style(id,'background-position', bX+'px '+bY+'px');
             } else {
-                bX = parseFloat(dojo.style(id,'background-position-x'))*this.roomSizeCoefEnlarged;
-                bY = parseFloat(dojo.style(id,'background-position-y'))*this.roomSizeCoefEnlarged ;
+                bX = parseFloat(getBackgroundXPos( dojo.style(id,'background-position')))*this.roomSizeCoefEnlarged;
+                bY = parseFloat(getBackgroundYPos( dojo.style(id,'background-position')))*this.roomSizeCoefEnlarged ;
                 dojo.style(id,'background-position', bX+'px '+bY+'px');
             }
 
@@ -2236,12 +2234,12 @@ function (dojo, declare) {
                 dojo.style(chld[i].id,'background-position','');
 
                 if (doubleroom) {
-                    bX = parseFloat(dojo.style(chld[i].id,'background-position-x'))*this.roomSizeCoefEnlargedDual;
-                    bY = parseFloat(dojo.style(chld[i].id,'background-position-y'))*this.roomSizeCoefEnlargedDual ;
+                    bX = parseFloat(getBackgroundXPos( dojo.style(chld[i].id,'background-position')))*this.roomSizeCoefEnlargedDual;
+                    bY = parseFloat(getBackgroundYPos( dojo.style(chld[i].id,'background-position')))*this.roomSizeCoefEnlargedDual ;
                     dojo.style(chld[i].id,'background-position', bX+'px '+bY+'px');
                 } else {
-                    bX = parseFloat(dojo.style(chld[i].id,'background-position-x'))*this.roomSizeCoefEnlarged;
-                    bY = parseFloat(dojo.style(chld[i].id,'background-position-y'))*this.roomSizeCoefEnlarged ;
+                    bX = parseFloat(getBackgroundXPos( dojo.style(chld[i].id,'background-position')))*this.roomSizeCoefEnlarged;
+                    bY = parseFloat(getBackgroundYPos( dojo.style(chld[i].id,'background-position')))*this.roomSizeCoefEnlarged ;
                     dojo.style(chld[i].id,'background-position', bX+'px '+bY+'px');
                 }
             }
@@ -2296,8 +2294,8 @@ function (dojo, declare) {
             dojo.style(id,'height','');
             dojo.style(id,'background-position','');
 
-            bX = parseFloat(dojo.style(id,'background-position-x'))*coef;
-            bY = parseFloat(dojo.style(id,'background-position-y'))*coef;
+            bX = parseFloat(getBackgroundXPos( dojo.style(id,'background-position')))*coef;
+            bY = parseFloat(getBackgroundYPos( dojo.style(id,'background-position')))*coef;
             dojo.style(id,'background-position', bX+'px '+bY+'px');
 
 
@@ -2306,8 +2304,8 @@ function (dojo, declare) {
                 dojo.style(chld[i].id,'height','');
                 dojo.style(chld[i].id,'background-position','');
 
-                bX = parseFloat(dojo.style(chld[i].id,'background-position-x'))*coef;
-                bY = parseFloat(dojo.style(chld[i].id,'background-position-y'))*coef;
+                bX = parseFloat(getBackgroundXPos( dojo.style(chld[i].id,'background-position')))*coef;
+                bY = parseFloat(getBackgroundYPos( dojo.style(chld[i].id,'background-position')))*coef;
                 dojo.style(chld[i].id,'background-position', bX+'px '+bY+'px');
             }
 
@@ -2381,8 +2379,8 @@ function (dojo, declare) {
             dojo.style(id,'margin','');
             dojo.style(id,'background-position','');
 
-            bX = parseFloat(dojo.style(id,'background-position-x'))*coef;
-            bY = parseFloat(dojo.style(id,'background-position-y'))*coef ;
+            bX = parseFloat(getBackgroundXPos( dojo.style(id,'background-position')))*coef;
+            bY = parseFloat(getBackgroundYPos( dojo.style(id,'background-position')))*coef ;
             dojo.style(id,'background-position', bX+'px '+bY+'px');
 
             for (var i=0;i<chld.length;i++) {
@@ -2390,8 +2388,8 @@ function (dojo, declare) {
                 dojo.style(chld[i].id,'height','');
                 dojo.style(chld[i].id,'background-position','');
 
-                bX = parseFloat(dojo.style(chld[i].id,'background-position-x'))*coef;
-                bY = parseFloat(dojo.style(chld[i].id,'background-position-y'))*coef ;
+                bX = parseFloat(getBackgroundXPos( dojo.style(chld[i].id,'background-position')))*coef;
+                bY = parseFloat(getBackgroundYPos( dojo.style(chld[i].id,'background-position')))*coef ;
                 dojo.style(chld[i].id,'background-position', bX+'px '+bY+'px');
             }
 
@@ -2417,8 +2415,8 @@ function (dojo, declare) {
                 dojo.style(all_ids[i],'width','');
                 dojo.style(all_ids[i],'height','');
                 dojo.style(all_ids[i],'background-position','');
-                bX = parseFloat(dojo.style(all_ids[i],'background-position-x'))*this.treasureSizeCoef;
-                bY = parseFloat(dojo.style(all_ids[i],'background-position-y'))*this.treasureSizeCoef ;
+                bX = parseFloat(getBackgroundXPos( dojo.style(all_ids[i],'background-position')))*this.treasureSizeCoef;
+                bY = parseFloat(getBackgroundYPos( dojo.style(all_ids[i],'background-position')))*this.treasureSizeCoef ;
                 dojo.style(all_ids[i],'background-position', bX+'px '+bY+'px');
             }
             resizeNode(all_ids[0], this.sizeRatio,1);
@@ -2785,8 +2783,8 @@ function (dojo, declare) {
 
             var actW = dojo.style('clone','width');
             var actH = dojo.style('clone','height');
-            var actBx = parseFloat(dojo.style('clone','background-position-x'));
-            var actBy = parseFloat(dojo.style('clone','background-position-y'));
+            var actBx = parseFloat(getBackgroundXPos( dojo.style('clone','background-position')));
+            var actBy = parseFloat(getBackgroundYPos( dojo.style('clone','background-position')));
 
             var item_type = id.split("_")[0];
             if (bottomText) {

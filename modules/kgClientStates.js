@@ -49,8 +49,9 @@ function resizeNode(nodeid, coef, previousRatio) {
     if (parseFloat(dojo.style(nodeid,'background-position')) != 0) {
         dojo.style(nodeid,'background-position', '');
 
-        var actBx = parseFloat(dojo.style(nodeid,'background-position-x'));
-        var actBy = parseFloat(dojo.style(nodeid,'background-position-y'));
+        var backpos = dojo.style(nodeid,'background-position');
+        var actBx = parseFloat(getBackgroundXPos(backpos));
+        var actBy = parseFloat(getBackgroundYPos(backpos));
         dojo.style(nodeid,'background-position', actBx*coef+'px '+actBy*coef+'px');
     }
 
@@ -62,6 +63,14 @@ function resizeNode(nodeid, coef, previousRatio) {
         }
     }
 };
+
+function getBackgroundXPos(backgroundpos) {
+    return backgroundpos.split(" ")[0];
+}
+
+function getBackgroundYPos(backgroundpos) {
+    return backgroundpos.split(" ")[1];
+}
 
 function resizeChildNode(nodeid, coef, previousRatio) {
     if (dojo.style(nodeid,'left') != 0) {
@@ -81,8 +90,10 @@ function resizeChildNode(nodeid, coef, previousRatio) {
         dojo.style(nodeid,'height',(actH/previousRatio)*coef+'px'); 
     } 
     
-    var actBx = parseFloat(dojo.style(nodeid,'background-position-x'));
-    var actBy = parseFloat(dojo.style(nodeid,'background-position-y'));
+    var backpos = dojo.style(nodeid,'background-position');
+    var actBx = parseFloat(getBackgroundXPos(backpos));
+    var actBy = parseFloat(getBackgroundYPos(backpos));
+
     dojo.style(nodeid,'background-position', (actBx/previousRatio)*coef+'px '+(actBy/previousRatio)*coef+'px');
 };
 
@@ -153,8 +164,10 @@ function adjustBackgroundPosition(id, coef) {       // adopt background image to
     dojo.style(id,'height','');
     dojo.style(id,'background-position','');
     
-    bX = parseFloat(dojo.style(id,'background-position-x'))*coef;
-    bY = parseFloat(dojo.style(id,'background-position-y'))*coef ;
+    var backpos = dojo.style(id,'background-position');
+    var bX = parseFloat(getBackgroundXPos(backpos))*coef;
+    var bY = parseFloat(getBackgroundYPos(backpos))*coef;
+
     dojo.style(id,'background-position', bX+'px '+bY+'px');
 }
 

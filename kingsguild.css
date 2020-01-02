@@ -342,6 +342,7 @@
     filter: drop-shadow(1px 2px 1px #000000);
     pointer-events: all;
     z-index: 10;
+    background-repeat: no-repeat;
 }
 
 .resource.selection {
@@ -376,12 +377,12 @@
     vertical-align: middle;
 }
 
-.resource.iron{ background-position-x: 0px } .logresource.iron{ background-position-x: 0px }            .panelresource.iron{ background-position-x: 0px }
-.resource.wood{ background-position-x: 250px;} .logresource.wood{ background-position-x: 125px;}        .panelresource.wood{ background-position-x: 100px;}
-.resource.leather{ background-position-x: 500px;} .logresource.leather{ background-position-x: 250px;}  .panelresource.leather{ background-position-x: 200px;}
-.resource.cloth{ background-position-x: 750px;} .logresource.cloth{ background-position-x: 375px;}      .panelresource.cloth{ background-position-x: 300px;}
-.resource.gem { background-position-x: 1000px;} .logresource.gem { background-position-x: 500px;}     .panelresource.magic { background-position-x: 400px;}
-.resource.magic { background-position-x: 1248px;} .logresource.magic { background-position-x: 624px;}   .panelresource.magic { background-position-x: 500px;}
+.resource.iron{ background-position-x: 0px } .logresource.iron{ background-position-x: 0px }            .panelresource.iron{ background-position-x: -0px }
+.resource.wood{ background-position-x: -50px;} .logresource.wood{ background-position-x: -25px;}        .panelresource.wood{ background-position-x: -20px;}
+.resource.leather{ background-position-x: -100px;} .logresource.leather{ background-position-x: -50px;}  .panelresource.leather{ background-position-x: -40px;}
+.resource.cloth{ background-position-x: -150px;} .logresource.cloth{ background-position-x: -75px;}      .panelresource.cloth{ background-position-x: -60px;}
+.resource.gem { background-position-x: -200px;} .logresource.gem { background-position-x: -100px;}     .panelresource.gem { background-position-x: -80px;}
+.resource.magic { background-position-x: -250px;} .logresource.magic { background-position-x: -125px;}   .panelresource.magic { background-position-x: -100px;}
 
 .logitem {
     position: relative;  
@@ -2318,6 +2319,3 @@
 .playercards .treasurecontainer {
     position: relative;
 }
-
-
-
