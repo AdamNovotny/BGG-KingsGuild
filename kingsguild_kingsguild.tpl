@@ -53,7 +53,7 @@
     <div id="handcontainer" class="handcontainer hidden">
         <div id="left_handcontainer" class="whiteblock handcontainer left">
             <h3>{HAND}</h3>
-            <div id="player_cards" class="playercards">
+                <div id="player_cards" class="playercards">
             </div>
         </div>
     </div>
@@ -149,7 +149,7 @@ var jstpl_player_panel = '\<div class="cp_board">\
     </div>\
 </div>';
 
-var jstpl_card_selector = '<div class="card_menu" id="card_menu${id}" style="width: ${width}px; height: ${height}px;" ></div>';
+var jstpl_card_selector = '<div class="card_menu" id="card_menu${id}" style="width: ${width}px; height: ${height}px;" > <div class="cardmenuslider" id="cardmenuslider${id}">&larr;</div></div>';
 var jstpl_overseeritem = '<div id="${id}" class="quest ${specType} tooltipitem"></div>';
 
 var jstpl_tooltipItem = '<div class="tooltipwrap" style="max-width: ${maxWidth}px;">\

@@ -1606,13 +1606,20 @@ class kingsguild extends Table
 
                 // check if hire is possible (enough money for at least one specialist)
                 $canbuild = false;
-                $sql = "SELECT specialistandquest_id id FROM specialistandquest  WHERE specialistandquest_type = 'specialist' AND specialistandquest_location = 'board' AND specialistandquest_visible = '1' ";
-                $specialistOnBoard= self::getObjectListFromDB( $sql, true );
+                $sql = "SELECT specialistandquest_id id, specialistandquest_type_arg t FROM specialistandquest  WHERE specialistandquest_type = 'specialist' AND specialistandquest_location = 'board' AND specialistandquest_visible = '1' ";
+                $specialistOnBoard = self::getObjectListFromDB( $sql);
 
                 for($i=0;$i<count($specialistOnBoard);$i++) {
-                    if( $mapper->canBuildItem('specialist', $specialistOnBoard[$i]) ) {
-                        $canbuild = true;
-                        break;
+                    if( $mapper->canBuildItem('specialist', $specialistOnBoard[$i]['id']) ) {
+                        if($specialistOnBoard[$i]['t'] == 27) { // only Aristocrat present and cannot be placed
+                            if ( $mapper->canBuildAristocrat()) {
+                                $canbuild = true;
+                                break;
+                            }
+                        } else {
+                            $canbuild = true;
+                            break;
+                        }
                     }
                 }
 
@@ -2406,7 +2413,7 @@ class kingsguild extends Table
                 $skip = true;
             }
         }
-
+        
         if ($this->gamestate->state()['name'] != 'playerSpecialistOneTimeAction' && $this->gamestate->state()['name'] != 'playerPlayTreasureEffect') {
             $state_id = $this->getKeyByValueMultidim( $this->gamestate->states,'name', $this->gamestate->state()['name']);
             self::setGameStateValue("transition_from_state", $state_id);
@@ -2421,6 +2428,11 @@ class kingsguild extends Table
                     $this->soloGameExpandActionEnd();
                 }
             }
+
+            if ( (self::getGameStateValue('expandAction_roomPlayed') || self::getGameStateValue('expandAction_specialistPlayed') )&& self::getPlayersNumber() > 1 &&  self::getGameStateValue( 'played_treasure_card') != 0) {
+                self::setGameStateValue("transition_from_state", 25);
+            }
+
             if ( key($this->specialist[$specialist_type]['ability']) == 'onetimeaction' || key($this->specialist[$specialist_type]['ability']) == 'onetimebonus') {
                 if (!$skip) {
                     self::setGameStateValue("placed_specialist_type", $specialist_type);                // chain of specialists actions
@@ -3243,14 +3255,7 @@ class kingsguild extends Table
             self::setGameStateValue('appraiser_active', 0);
         } elseif (self::getGameStateValue('transition_from_state') == 7 ||  self::getGameStateValue('specialist_craft_action_played') == 1 ) {
             // update after craft actions
-            // $player_id = self::getActivePlayerId();
             $this->updateAfterCraftActions($player_id);
-            // $player_id = self::getActivePlayerId();
-            // $sql = "SELECT player_specialist_craftaction speccraft FROM player WHERE player_id = '$player_id' ";
-            // $specialist_craftaction = array_slice(explode("_", self::getUniqueValueFromDB($sql)), 1);
-            // $specialist_craftaction = implode("_", $specialist_craftaction);
-            // $sql = "UPDATE player SET player_specialist_craftaction = '$specialist_craftaction' WHERE player_id = '$player_id' ";
-            // self::dbQuery($sql);
         } elseif ($this->gamestate->state()['name'] == 'playerExpand' && self::getPlayersNumber() == 1) {
             self::setGameStateValue('soloExpandSecondPart', 0);
             self::setGameStateValue('playerEndPhase', 1);
@@ -3263,7 +3268,7 @@ class kingsguild extends Table
         if ($this->gamestate->state()['name'] == 'playerBuildRoomOnly' || $this->gamestate->state()['name'] == 'playerHireSpecialistOnly') {
             $player_id = self::getActivePlayerId();
             $mapper = new kgActionMapper($player_id, $this);
-
+            self::setGameStateValue('playerEndPhase', 1);
             if ($mapper->willPlayOnEnd()) {
                 $this->gamestate->nextState( "passEnd" ); 
             } else {
@@ -3888,7 +3893,6 @@ class kingsguild extends Table
                 }
             }
         }
-
         $transition_from = self::getGameStateValue('transition_from_state');
         $placed_specialist = self::getGameStateValue('placed_specialist_type');
         $specialist_craft_action_played = self::getGameStateValue('specialist_craft_action_played');
@@ -4227,6 +4231,7 @@ class kingsguild extends Table
             if ( self::getGameStateValue('playerEndPhase') == 1 ) {
                 $this->gamestate->nextState( "backToNormalActionsEnd" );  
             } elseif (self::getGameStateValue('expandAction_roomPlayed') || self::getGameStateValue('expandAction_specialistPlayed')) { 
+                self::setGameStateValue('transition_from_state', 6);                    
                 $this->gamestate->nextState( "backToNormalActionsBetween" ); 
             } else {
                 $this->gamestate->nextState( "backToNormalActions" ); 

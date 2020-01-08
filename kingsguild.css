@@ -115,10 +115,6 @@
 
 .handcontainer.hidden {
     max-height: 0;
-    transition: max-height 1s ease-out;
-    -webkit-transition: max-height 1s ease-out;
-    -moz-transition: max-height 1s ease-out;
-    -o-transition: max-height 1s ease-out;
 }
 
 .handcontainer.left {
@@ -165,10 +161,25 @@
     padding: 15px;
     border-radius: 10px;
     z-index: 20;
+
+    transition: left 1s ease-in-out;
+    -moz-transition: left 1s ease-in-out;
+    -o-transition: left 1s ease-in-out;
+    transition: left 1s ease-in-out;
 }
 
 .card_menu .treasurecontainer {
     position: relative;
+}
+
+.cardmenuslider {
+    position: absolute;
+    left: 5px;
+    top: -10px;
+    cursor: pointer;
+    font-size: 30px;
+    font-weight: bolder;
+    z-index: 20;
 }
 
 .playerboard {

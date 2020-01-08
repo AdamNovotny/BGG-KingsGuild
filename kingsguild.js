@@ -196,10 +196,8 @@ function (dojo, declare) {
 
             // Add treasures
             var treasurCardsInMenu = [];
-            // var treasureIdsOrdered = this.orderTreasureCards();
             var treasureIdsOrdered = this.orderTreasureCards(gamedatas.treasure);
-            // for(var treasure_id = Object.keys(gamedatas.treasure).length; treasure_id>0;treasure_id--) {
-            //     var treasure = gamedatas.treasure[treasure_id];
+
             for(var i=0;i<treasureIdsOrdered.length;i++) {
                 var treasure_id = treasureIdsOrdered[i];
                 var treasure = gamedatas.treasure[treasure_id];
@@ -245,8 +243,7 @@ function (dojo, declare) {
                 }
             }
 
-            dojo.connect($('masterroomtoggler'), 'click', this, 'toggleMasterRooms');   
-            // dojo.connect($('showtreasure'), 'click', this, dojo.hitch(this, 'toggleCards', false, false));           
+            dojo.connect($('masterroomtoggler'), 'click', this, 'toggleMasterRooms');          
  
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -268,8 +265,8 @@ function (dojo, declare) {
 
             // this.addTooltip('hinttoggler','', _('View reference cards'));
 
-            if (dojo.query('#handcontainer .treasurecontainer').length >0 ) {
-                this.toggleCards(false, false);
+            if (dojo.query('#handcontainer .treasurecontainer').length > 0 ) {
+                this.toggleCards(true);
             }
 
             if (this.gamedatas.gamestate.name == 'playerGather' || this.gamedatas.gamestate.name == 'playerExpand' || this.gamedatas.gamestate.name == 'playerCraft'  ) {
@@ -298,18 +295,11 @@ function (dojo, declare) {
                 switch( stateName ) {
                     
                     case 'playerGuildTurn':
-                        // var cs = constructClientState(args.args.stateToSwitch, args.args.stateArgs);
-                        // this.setClientState(cs['name'], cs['parameters']);
                         var cs = constructClientState(args.args[this.player_id].stateToSwitch, args.args[this.player_id].stateArgs);
                         this.setClientState(cs['name'], cs['parameters']);
                     break;
 
                     case "playerReplaceBonusResource":
-                        // this.selectedResourcesId = [];
-                        // this.selectedResourcesId.push(args.args.bonus_resource);
-
-                        // var cs = constructClientState('replaceBonus', {'resource':args.args.bonus_resource, 'number': 1, 'alreadySelected': [], 'selectedResources': this.selectedResourcesId, });
-                        // this.setClientState(cs['name'], cs['parameters']);
                         var cs = constructClientState('replaceBonus', {'number': args.args.number, 'alreadySelected': [], 'selectedResources': args.args.bonus_resource, });
                         this.setClientState(cs['name'], cs['parameters']);
                     break;
@@ -418,8 +408,6 @@ function (dojo, declare) {
 
                     case 'playerEndTurn':
                         this.endPhaseActive = true;
-                        // this.toggleCards(true, false);
-                        // var cards = dojo.query('#player_cards .treasurecontainer').addClass('forSelection');
                         var cards = dojo.query('#player_cards .treasure.treasureenlarged').addClass('forSelection');
                         for(var i=0;i<cards.length;i++) {
                             this.handlers.push( dojo.connect(cards[i],'click',this, 'playTreasureCard') );
@@ -502,7 +490,6 @@ function (dojo, declare) {
 
                     case 'playerBuildRoomOnly':
                         var selection = dojo.query('#main_board .tile > .room:last-child').addClass('selection');
-                        // var selection = dojo.query('#main_board .tile > .room:last-child').addClass('selected');
                         selection = selection.concat(dojo.query('#main_board .tile > .roomcontainer:last-child > .room').addClass('selection'));
                         for(var i=0;i<selection.length;i++) {
                             var id = selection[i].id.split('_')[1];
@@ -510,7 +497,6 @@ function (dojo, declare) {
                             this.handlers.push( dojo.connect(selection[i],'click',this, dojo.partial(this.selectExpandItem, id, type )) );
                         }
 
-                        // var cards = dojo.query('#player_cards .treasurecontainer').addClass('forSelection');
                         var cards = dojo.query('#player_cards .treasure.treasureenlarged').addClass('forSelection');
                         for(var i=0;i<cards.length;i++) {
                             this.handlers.push( dojo.connect(cards[i],'click',this, 'playTreasureCard') );
@@ -526,7 +512,6 @@ function (dojo, declare) {
                             this.handlers.push( dojo.connect(selection[i],'click',this, dojo.partial(this.selectExpandItem, id, type )) );
                         }
 
-                        // var cards = dojo.query('#player_cards .treasurecontainer').addClass('forSelection');
                         var cards = dojo.query('#player_cards .treasure.treasureenlarged').addClass('forSelection');
                         for(var i=0;i<cards.length;i++) {
                             this.handlers.push( dojo.connect(cards[i],'click',this, 'playTreasureCard') );
@@ -603,15 +588,12 @@ function (dojo, declare) {
                     case 'client_craftItem':
                         this.selectedCraftItem[0] = args.args.quest_id;
                         this.selectedCraftItem[1] = args.args.item_id;
-                        // dojo.query('#tile_quest_'+ args.args.quest_id+'_'+ args.args.item_id).addClass('selection');
                         dojo.query('#tile_quest_'+ args.args.quest_id+'_'+ args.args.item_id).addClass('selected');
                     break;
 
                     case 'playerSelectTreasureCard':
                         var tr = args.args.possible_treasures;
                         for (var i=0;i<tr.length;i++) {
-                            // dojo.addClass('treasure_'+tr[i], 'forSelection');
-                            // this.handlers.push( dojo.connect(dojo.query('#treasure_'+tr[i])[0],'click',this, dojo.partial(this.selectTreasure, tr[i] )));
                             dojo.addClass('treasure_'+tr[i]+'_front', 'forSelection');
                             this.handlers.push( dojo.connect(dojo.query('#treasure_'+tr[i]+'_front')[0],'click',this, dojo.partial(this.selectTreasure, tr[i] )));
                         }
@@ -629,15 +611,13 @@ function (dojo, declare) {
 
                     case 'client_playerSellTreasure':
                         var tr = args.args.possible_treasures;
+
                         for (var i=0;i<tr.length;i++) {
-                            // dojo.addClass('treasure_'+tr[i], 'forSelection');
-                            // this.handlers.push( dojo.connect(dojo.query('#treasure_'+tr[i])[0],'click',this, dojo.partial(this.selectTreasure, tr[i] )));
                             dojo.addClass('treasure_'+tr[i]+'_front', 'forSelection');
                             this.handlers.push( dojo.connect(dojo.query('#treasure_'+tr[i]+'_front')[0],'click',this, dojo.partial(this.selectTreasure, tr[i] )));
                         }
 
                         if (args.args.selected_treasure) {
-                            // dojo.addClass(args.args.selected_treasure, 'selected');
                             dojo.addClass(args.args.selected_treasure+'_front', 'selected');
                         }
                     break;
@@ -734,7 +714,6 @@ function (dojo, declare) {
                 break;
 
                 case 'playerEndTurn':
-                    // this.toggleCards(false, true);
                     dojo.forEach(this.handlers,dojo.disconnect);
                     this.handlers = [];
                     dojo.query('.forSelection').removeClass('forSelection');
@@ -1407,13 +1386,11 @@ function (dojo, declare) {
         onLoadFunction: function() {
             if ($('card_menu0')) {
                 this.placeOnObjectPos('card_menu0', 'player_cards', 0, -2*dojo.style('tile_card_0', 'height')+10);
-                // this.placeOnObjectPos('card_menu0', 'player_cards', 0, dojo.style('tile_card_0', 'height')+10);
-                this.toggleCards(true, false);
+                this.toggleCards(true);
             }
             if ($('card_menu1')) {
                 this.placeOnObjectPos('card_menu1', 'player_cards', 0, -2*dojo.style('tile_card_0', 'height')+10);
-                // this.placeOnObjectPos('card_menu1', 'player_cards', 0, dojo.style('tile_card_0', 'height')+10);
-                this.toggleCards(true, false);
+                this.toggleCards(true);
             }
         },
 
@@ -2078,24 +2055,23 @@ function (dojo, declare) {
 
         drawAndMoveCardToPlayerHand: function(card_id, card_name, card_back, location_from, location_to ) {
             dojo.destroy('treasureback_'+card_id);
-
+            
             if ( dojo.hasClass('handcontainer', 'hidden') ) {
-                this.toggleCards(false, false);
+                this.toggleCards(true);
             }
-
+            
             if ( String(location_from).split("_")[0] == 'overall'){
                 this.addTreasureOnBoard(card_id,  card_name.replace(/ /g, ''), card_back, location_from, location_from,1);
             } else {
                 this.addTreasureOnBoard(card_id,  card_name.replace(/ /g, ''), card_back,'board', location_from,1);
             }
-            // this.attachToNewParent( 'treasure_'+card_id, 'tile_card_'+location_to);
+
             this.enlargeItem('treasure_'+card_id, 'treasure', this.treasureSizeCoefEnlarged);                          
             this.changeItemSize('treasure_'+card_id, dojo.style('tile_card_0', 'width'), dojo.style('tile_card_0', 'height'));
             this.changeItemSize('treasure_'+card_id+'_front', dojo.style('tile_card_0', 'width'), dojo.style('tile_card_0', 'height'));
             this.changeItemSize('treasure_'+card_id+'_back', dojo.style('tile_card_0', 'width'), dojo.style('tile_card_0', 'height'));
             dojo.removeClass('treasure_'+card_id, 'flipped');
-
-
+            
             if (location_to != null) {
                 if (dojo.hasClass('handcontainer', 'hidden')) {
                     var anim = this.slideToObject('treasure_'+card_id, 'overall_player_board_'+this.player_id, 500,400 );
@@ -2106,6 +2082,7 @@ function (dojo, declare) {
                     this.attachToNewParent( 'treasure_'+card_id, 'tile_card_'+location_to);
                     this.placeOnObject( 'treasure_'+card_id, 'tile_card_'+location_to);
                     this.constructTooltipTreasure(card_id, false, false);
+                    this.toggleCards(true);
                 } ) );
                 anim.play();
             }
@@ -2494,23 +2471,13 @@ function (dojo, declare) {
             }
         },
 
-        toggleCards: function(setON, setOFF) {
-            if (setON) {
+        toggleCards: function(setOn) {
+            if (setOn) {
                 dojo.removeClass('handcontainer', 'hidden');
-            } else if (setOFF) {
-                dojo.addClass('handcontainer', 'hidden');
             } else {
-                dojo.toggleClass('handcontainer', 'hidden'); 
-            }
-
-            // if (dojo.hasClass('handcontainer', 'hidden')) {
-            //     $('showtreasure').innerText = _('▽ Show my treasure cards');
-            //     // dojo.style('handcontainer','height','');
-            // } else {
-            //     // var h = dojo.marginBox('handcontainer').h;
-            //     // dojo.style('handcontainer','height',h+'px');
-            //     $('showtreasure').innerText = _('△ Hide my treasure cards');
-            // }
+                dojo.removeClass('handcontainer', 'hidden');
+                dojo.addClass('handcontainer', 'hidden');
+            } 
         },
 
         incrementQuestCounters: function(quest_id, player_id) {
@@ -2552,8 +2519,19 @@ function (dojo, declare) {
                 }
 
                 this.placeOnObjectPos('card_menu'+id, 'player_cards', 0, -2*dojo.style('tile_card_0', 'height')+10);
-                // this.placeOnObjectPos('card_menu'+id, 'player_cards', 0, dojo.style('tile_card_0', 'height')+10);
-                this.toggleCards(true, false);
+                dojo.connect( $('cardmenuslider'+id), 'click',  this, 'slidecardmenu');
+                this.toggleCards(true);
+        },
+
+        slidecardmenu: function() {
+            console.log('slide');
+            if ($('card_menu0')) {
+                var old =  dojo.style('card_menu0', 'left');
+                dojo.style('card_menu0', 'left', old*0.2 +'px');
+            } else {
+                var old =  dojo.style('card_menu1', 'left');
+                dojo.style('card_menu1', 'left', old*0.2 +'px');
+            }
         },
 
         moveSigil: function(sigil_id, destination, offering) {
@@ -3374,9 +3352,6 @@ function (dojo, declare) {
             dojo.stopEvent(evt);
             if (!this.checkAction( "selectTreasureCards" )) { return;};
 
-            // if (dojo.hasClass('treasure_'+treasure_id, 'selected')) {
-                // dojo.addClass('treasure_'+treasure_id, 'forSelection');
-                // dojo.removeClass('treasure_'+treasure_id, 'selected');
             if (dojo.hasClass('treasure_'+treasure_id+'_front', 'selected')) {
                 dojo.addClass('treasure_'+treasure_id+'_front', 'forSelection');
                 dojo.removeClass('treasure_'+treasure_id+'_front', 'selected');
@@ -3384,8 +3359,6 @@ function (dojo, declare) {
                 if (index !== -1) this.selectedTreasure.splice(index, 1);
             } else {
                 this.selectedTreasure.push(treasure_id);
-                // dojo.addClass('treasure_'+treasure_id, 'selected');
-                // dojo.removeClass('treasure_'+treasure_id, 'forSelection');
                 dojo.addClass('treasure_'+treasure_id+'_front', 'selected');
                 dojo.removeClass('treasure_'+treasure_id+'_front', 'forSelection');
             }
@@ -3437,14 +3410,6 @@ function (dojo, declare) {
             var src = evt.target || evt.srcElement;
             var treasure_id = src.id.split("_")[1];
             this.selectedTreasureForPlay = treasure_id;
-
-            // if (dojo.hasClass('treasure_'+treasure_id, 'selected')) {
-            //     dojo.addClass('treasure_'+treasure_id, 'forSelection');
-            //     dojo.removeClass('treasure_'+treasure_id, 'selected');
-            // } else {
-            //     dojo.addClass('treasure_'+treasure_id, 'selected');
-            //     dojo.removeClass('treasure_'+treasure_id, 'forSelection');
-            // }
 
             var cs = constructClientState('treasureCardPlay', { 'selectedCard': treasure_id });
             this.setClientState(cs['name'], cs['parameters']);
@@ -3665,6 +3630,7 @@ function (dojo, declare) {
 
             dojo.subscribe( 'thisPlayerChooseTreasure', this, "notif_thisPlayerChooseTreasure" );
             dojo.subscribe( 'thisPlayerGetTreasureFromPlayer', this, "notif_thisPlayerGetTreasureFromPlayer" );
+            this.notifqueue.setSynchronous( 'thisPlayerGetTreasureFromPlayer', 1500 );
             dojo.subscribe( 'treasureHandle', this, "notif_treasureHandle" );
 
             dojo.subscribe( 'sellTreasure', this, "notif_sellTreasure" );
@@ -4034,7 +4000,7 @@ function (dojo, declare) {
                 $(notif.args.player_id+'_cards'+this.gamedatas.treasure[notif.args.treasure_id].color).innerText =  parseInt($(notif.args.player_id+'_cards'+this.gamedatas.treasure[notif.args.treasure_id].color).innerText) -1;
 
                 if (dojo.query('#handcontainer .treasurecontainer').length < 1 ) {
-                    this.toggleCards(false, false);
+                    this.toggleCards(false);
                 }
             } else {
                 // update gamedatas
