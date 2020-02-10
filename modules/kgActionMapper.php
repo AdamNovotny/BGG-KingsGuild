@@ -666,10 +666,14 @@ class kgActionMapper {
     private function canPlayTreasureEnd() {
         $cards = $this->getTreasureCards();
 
-        foreach($cards as $card) {
-            if (  $this->game->treasures[$card['treasure_type']]['effect'] != null ) {
-                return true;
-            }
+        // foreach($cards as $card) {
+        //     if (  $this->game->treasures[$card['treasure_type']]['effect'] != null ) {
+        //         return true;
+        //     }
+        // }
+
+        if (count($cards) > 0) {
+            return true;
         }
 
         return false;

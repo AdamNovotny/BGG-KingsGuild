@@ -2436,12 +2436,13 @@ class kingsguild extends Table
             if ( key($this->specialist[$specialist_type]['ability']) == 'onetimeaction' || key($this->specialist[$specialist_type]['ability']) == 'onetimebonus') {
                 if (!$skip) {
                     self::setGameStateValue("placed_specialist_type", $specialist_type);                // chain of specialists actions
+                } else {
+                    self::setGameStateValue("placed_specialist_type",0);
                 }
             } else {
                     self::setGameStateValue("placed_specialist_type",0);
             }
         }
-
         $this->gamestate->nextState( "placeSpecialist" );  
     }
 
@@ -4096,11 +4097,12 @@ class kingsguild extends Table
                     $resolveresult = $this->resolveOneTimeBonus($player_id, $this->specialist[$placed_specialist]['ability']['onetimebonus'], $mapper );
                     if ($resolveresult) {
                         self::setGameStateValue('playerEndPhase', 1);
-                        if ($transitionToPlayerEnd) {
-                            $this->gamestate->nextState( 'playerEndTurn' );
-                        } else {
-                            $this->gamestate->nextState( 'nextPlayer' );
-                        }
+                        // if ($transitionToPlayerEnd) {
+                        //     $this->gamestate->nextState( 'playerEndTurn' );
+                        // } else {
+                        //     $this->gamestate->nextState( 'nextPlayer' );
+                        // }
+                        $this->gamestate->nextState( 'playerEndTurn' );
                     } else {
                         $this->gamestate->setPlayersMultiactive( array($player_id), "sellTreasures", true );
                         $this->gamestate->nextState( 'sellTreasures' );
