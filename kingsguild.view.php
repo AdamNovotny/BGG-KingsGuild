@@ -53,8 +53,8 @@
             $this->tpl['THISNAME'] = $players[$current_player_id]['player_name'];
             $this->tpl['THISMAT'] = $this->game->getPlayerMat($current_player_id);
             $this->tpl['THISGUILD'] = $this->game->getPlayerGuild($current_player_id, true);
-            $this->tpl['SHOWTREASURETEXT'] = self::_("▽ Show my treasure cards");
             $this->tpl['HAND'] = self::_("My treasure cards");
+            $this->tpl['SHOW_COMPLETED_QUESTS'] = self::_("Show my completed quests");
         }
         $this->tpl['MASTERROOMS'] = self::_("<< SHOW MASTER ROOMS");
 

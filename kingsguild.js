@@ -59,6 +59,8 @@ function (dojo, declare) {
             this.luckyPotionActive = false;
             this.endPhaseActive = false;
             this.dealerPassActive = false;
+
+            this.showMasterRoomstext = _('<< SHOW MASTER ROOMS');
         },
         
         /*
@@ -255,7 +257,7 @@ function (dojo, declare) {
 
             this.addTooltipToClass( 'rotate', '', _( 'rotate to the other side' ) );
             this.addTooltip(player_id+'_questCounter_armor', _('armor number'), '');
-            this.addTooltip('discard', _('discard pile'), 'show all discarded treasure card');
+            this.addTooltip('discard', _('discard pile'), _('show all discarded treasure card'));
             dojo.connect($('discard'), "click", this, "showDiscardPile");
             dojo.connect($('showcompquests'), "click", this, "showCompletedQuests");
 
@@ -1392,6 +1394,8 @@ function (dojo, declare) {
                 this.placeOnObjectPos('card_menu1', 'player_cards', 0, -2*dojo.style('tile_card_0', 'height')+10);
                 this.toggleCards(true);
             }
+
+            $('masterroomtoggler').innerText = this.showMasterRoomstext;
         },
 
         recalculateFontSize: function(id) {
@@ -1791,7 +1795,7 @@ function (dojo, declare) {
                     } ) , parent_id );
 
                     var id = parent_id.split("_")[1];
-                    this.constructTooltip( 'tile_quest_'+tile_id+'_'+i, this.gamedatas.quest[id].nameTr, this.gamedatas.quest[id].text, null);
+                    this.constructTooltip( 'tile_quest_'+tile_id+'_'+i, _(this.gamedatas.quest[id].nameTr), this.gamedatas.quest[id].text, null);
                 }
             }
         },
@@ -1903,7 +1907,7 @@ function (dojo, declare) {
                         this.addRoomTilesOnBoard('quest_'+id, null, id, 'item', Object.keys(this.gamedatas.quest[id].items).length);
                     }
 
-                    this.constructTooltip('quest_'+id+'_front', this.gamedatas.quest[id].nameTr, this.gamedatas.quest[id].text, null);
+                    this.constructTooltip('quest_'+id+'_front', _(this.gamedatas.quest[id].nameTr), this.gamedatas.quest[id].text, null);
                     
                     resizeNode('quest_'+id, this.sizeRatio,1);
                     this.placeOnObject( 'quest_'+id, tile);
@@ -2467,7 +2471,7 @@ function (dojo, declare) {
                 $('masterroomtoggler').innerText = _('HIDE MASTER ROOMS >>');
             } else {
                 dojo.style('masterroombox','left',1100*this.sizeRatio+'px');
-                $('masterroomtoggler').innerText = _('<< SHOW MASTER ROOMS');
+                $('masterroomtoggler').innerText = this.showMasterRoomstext;
             }
         },
 
@@ -2584,7 +2588,6 @@ function (dojo, declare) {
                 if (log && args && !args.processed) {
 
                     args.processed = true;
-                    
                     if (!this.isSpectator){
                         args.You = this.divYou(); // will replace ${You} with coloreill replace ${You} with colored version
                     

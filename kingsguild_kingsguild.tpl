@@ -38,7 +38,7 @@
             <div  class="guildtext" style="position: relative; color: #{THISCOLOR}; font-size: 20px;">{THISNAME}</div>
         </div>
 
-        <div class="showtreasure" id="showcompquests">Show my completed quests</div>
+        <div class="showtreasure" id="showcompquests">{SHOW_COMPLETED_QUESTS}</div>
 
         <div id="player_mat_{THISID}" class="playerboard playerboard{THISMAT}">
             <!-- BEGIN playerBoardTiles -->

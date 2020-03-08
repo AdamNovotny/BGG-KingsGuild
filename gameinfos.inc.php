@@ -128,6 +128,20 @@ $gameinfos = array(
 //  IMPORTANT: it is mandatory that the FIRST tag is 1, 2, 3 and 4 (= game category)
 'tags' => array( 3, 100, 106, 203, 204 ),
 
+// Game presentation
+// Short game presentation text that will appear on the game description page, structured as an array of paragraphs.
+// Each paragraph must be wrapped with totranslate() for translation and should not contain html (plain text without formatting).
+// A good length for this text is between 100 and 150 words (about 6 to 9 lines on a standard display)
+// Example:
+// 'presentation' => array(
+//    totranslate("This wonderful game is about geometric shapes!"),
+//    totranslate("It was awarded best triangle game of the year in 2005 and nominated for the Spiel des Jahres."),
+//    ...
+// ),
+'presentation' => array(
+    totranslate("The King's Guild is a strategy board game where players compete to establish the most renowned guild."),
+    totranslate("Lead your guild to prosperity by crafting powerful equipment, sending heroes on quests to earn treasure, and upgrading your guild with unique characters and rooms."),
+),
 
 //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)
 
