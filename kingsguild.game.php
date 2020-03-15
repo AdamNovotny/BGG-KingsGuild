@@ -3631,9 +3631,8 @@ class kingsguild extends Table
             }
 
             if ( $result['action_name'] == 'thugaction' ) {
-                $sql = "SELECT specialistandquest_id id FROM specialistandquest WHERE specialistandquest_type = 'quest' AND specialistandquest_location = 'board' AND specialistandquest_visible = 1 ";
+                $sql = "SELECT specialistandquest_id id FROM specialistandquest WHERE specialistandquest_type = 'quest' AND specialistandquest_location = 'board' AND specialistandquest_visible = 1 AND specialistandquest_type_arg <> 49 AND specialistandquest_type_arg <> 50 ";
                 $questOnBoard = self::getObjectListFromDB($sql, true);
-
                 $result['parameters']['possibleQuests'] = $questOnBoard;
             }
 
