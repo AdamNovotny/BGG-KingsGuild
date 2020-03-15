@@ -2589,22 +2589,21 @@ function (dojo, declare) {
 
                     args.processed = true;
                     if (!this.isSpectator){
-                        args.You = this.divYou(); // will replace ${You} with coloreill replace ${You} with colored version
-                    
-                        if (args.player_name_id) {
-                            args.player_name_id = this.divColoredName(args.player_name_id);
-                        }
+                        args.You = this.divYou();
+                    }
+                    if (args.player_name_id) {
+                        args.player_name_id = this.divColoredName(args.player_name_id);
+                    }
 
-                        if (args.player2_name_id) {
-                            args.player2_name_id = this.divColoredName(args.player2_name_id);
-                        }
+                    if (args.player2_name_id) {
+                        args.player2_name_id = this.divColoredName(args.player2_name_id);
                     }
                     
                     if (args.resourceList) {
                         args.resourceList = this.divResourceList(args.resourceList);
                     }
 
-                    var keys = ['resource', 'cardback', 'card_text', 'gold', 'newline', 'armor', 'weapon', 'magic', 'gems', 'points', 'warrior', 'rogue', 'mage', 'treasure', 'hero', 'actionicon' ];
+                    var keys = ['resource', 'cardback', 'card_text', 'gold', 'newline', 'armor', 'weapon', 'magic', 'gems', 'points', 'warrior', 'rogue', 'mage', 'treasure', 'hero', 'actionicon', 'otherplayername' ];
                     for (var i=0;i<10;i++) {
                         keys.push('resource'+i);
                         keys.push('cardback'+i);
@@ -2624,6 +2623,10 @@ function (dojo, declare) {
 
                         if (typeof args[key] == 'string' && key == 'card_text') {
                             args[key] = this.getBoldText(args[key]);                            
+                        }
+
+                        if (typeof args[key] == 'string' && key == 'otherplayername') {
+                            args[key] = this.divColoredName(args[key]);                            
                         }
                     }
                 }
@@ -2646,17 +2649,17 @@ function (dojo, declare) {
             return __("lang_mainsite", "You");
         },
 
-        divColoredName : function(player_name_id) {
+        divColoredName : function(id) {
             if (this.gamedatas.players != null) {
-                var color = this.gamedatas.players[player_name_id].color;
+                var color = this.gamedatas.players[id].color;
                 var color_bg = "";
-                if (this.gamedatas.players[player_name_id] && this.gamedatas.players[player_name_id].color_back) {
-                    color_bg = "background-color:#" + this.gamedatas.players[player_name_id].color_back + ";";
+                if (this.gamedatas.players[id] && this.gamedatas.players[id].color_back) {
+                    color_bg = "background-color:#" + this.gamedatas.players[id].color_back + ";";
                 }
-                var name = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + this.gamedatas.players[player_name_id].name + "</span>";
+                var name = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + this.gamedatas.players[id].name + "</span>";
                 return name;
             } 
-            return player_name_id;
+            return id;
         },
 
         divResourceList : function(resourceList) {

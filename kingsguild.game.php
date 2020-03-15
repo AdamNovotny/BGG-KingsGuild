@@ -1130,10 +1130,10 @@ class kingsguild extends Table
 
         if ($notify) {
             if ($value > 0) {
-                $msg = clienttranslate( '${player_name_id} gets ${gold}' );
+                $msg = clienttranslate( '${player_name} gets ${gold}' );
                 self::incStat( $value, 'player_goldGained', $player_id );
             } else {
-                $msg = clienttranslate( '${player_name_id} pays ${gold}' );
+                $msg = clienttranslate( '${player_name} pays ${gold}' );
             }
         } else {
             $msg = '';
@@ -1141,7 +1141,7 @@ class kingsguild extends Table
 
         self::notifyAllPlayers( "updateGold", $msg, array(
             'player_id' => $player_id,
-            'player_name_id' => $player_id,
+            'player_name' => $this->getPlayerName($player_id),
             'value' => $value,
             'gold' => 'gold_'.abs($value),
         ) );
@@ -1254,9 +1254,9 @@ class kingsguild extends Table
                 $this->updatePlayerGold($player_id, -2);
                 $this->updatePlayerGold($thug, 2);
                 self::incStat( 2, 'player_goldGained', $thug );
-                self::notifyAllPlayers( "logInfo",clienttranslate( '${player_name_id} pays ${gold} to ${player2_name_id} (Thug)' ), array(
-                    'player_name_id' => $player_id,
-                    'player2_name_id' => $thug,
+                self::notifyAllPlayers( "logInfo",clienttranslate( '${player_name} pays ${gold} to ${otherplayername} (Thug)' ), array(
+                    'player_name' => $this->getPlayerName($player_id),
+                    'otherplayername' => $thug,
                     'gold' => 'gold_2',
                 ) );
             }
@@ -1306,7 +1306,7 @@ class kingsguild extends Table
             }
 
             if ($doublegold && !$applyBonusNext) {      
-                $msg = clienttranslate( '${player_name} craft ${item} and gets ${gold} (Fortune Potion applies)' );
+                $msg = clienttranslate( '${player_name} crafts ${item} and gets ${gold} (Fortune Potion applies)' );
                 // reward gold
                 $this->updatePlayerGold($player_id, $item_gold*2);
                 self::incStat( $item_gold*2, 'player_goldGained', $player_id );
@@ -1322,7 +1322,7 @@ class kingsguild extends Table
                     self::dbQuery( $sql); 
                 }
             } else {
-                $msg = clienttranslate( '${player_name} craft ${item} and gets ${gold}' );
+                $msg = clienttranslate( '${player_name} crafts ${item} and gets ${gold}' );
                 // reward gold
                 $this->updatePlayerGold($player_id, $item_gold);
                 self::incStat( $item_gold, 'player_goldGained', $player_id );
@@ -1399,20 +1399,20 @@ class kingsguild extends Table
 
         if ($sellOnly && !$discard) {
             if ($auctioneerSell) {
-                $msg = clienttranslate( '${player_name_id} sells ${cardback} (${cardname}) and gets ${gold} (Auctioneer)' );
+                $msg = clienttranslate( '${player_name} sells ${cardback} (${cardname}) and gets ${gold} (Auctioneer)' );
                 $gold = 'gold_4';      
             } else {
-                $msg = clienttranslate( '${player_name_id} sells ${cardback} (${cardname}) and gets ${gold}' );
+                $msg = clienttranslate( '${player_name} sells ${cardback} (${cardname}) and gets ${gold}' );
                 $gold = 'gold_'.$this->treasures[$treasure_info['spectype']]['sellcost']; 
             }
 
             self::incStat( 1, 'player_treasureCardsSold', $player_id );
             self::incStat( 1, 'table_treasureCardsSold' );  
         } elseif ($discard) {
-            $msg = clienttranslate( '${player_name_id} discards ${cardback} (${cardname})' );
+            $msg = clienttranslate( '${player_name} discards ${cardback} (${cardname})' );
             $gold = '';
         } else {
-            $msg = clienttranslate( '${player_name_id} plays effect of ${cardback} (${cardname})' );
+            $msg = clienttranslate( '${player_name} plays effect of ${cardback} (${cardname})' );
             $gold = '';
             self::incStat( 1, 'player_treasureCardsPlayed', $player_id );
             self::incStat( 1, 'table_treasureCardsPlayed' );  
@@ -1420,7 +1420,7 @@ class kingsguild extends Table
 
         self::notifyAllPlayers( "sellTreasure", $msg, array(
             'player_id' => $player_id,
-            'player_name_id' => $player_id,
+            'player_name' => $this->getPlayerName($player_id),
             'cardback' => 'treasure_'.$this->treasures[$treasure_info['spectype']]['color'],                      
             'gold' => $gold,
             'treasure_id' => $treasure_id,
@@ -2067,8 +2067,8 @@ class kingsguild extends Table
                         $result = self::getUniqueValueFromDB( $sql );
                         if ($result < 1  ) {
                             // res not available, no bonus
-                            self::notifyAllPlayers("logInfo", clienttranslate( 'No available ${resource} ${player_name_id} gets no bonus' ), array(
-                                'player_name_id' => $player_id,
+                            self::notifyAllPlayers("logInfo", clienttranslate( 'No available ${resource} ${player_name} gets no bonus' ), array(
+                                'player_name' => $this->getPlayerName($player_id),
                                 'resource' =>   'resource_'.$resource,
                             ) );
                             unset($bonus_res[  array_search ($resource, $bonus_res) ] );
@@ -2283,12 +2283,12 @@ class kingsguild extends Table
             self::notifyPlayer($player_id, "cancelClientState", '', array(
             ) );
             // notify rest players
-            self::notifyAllPlayers( "moveSpecialist",  clienttranslate('${player_name_id} moves specialist (Bard action)'), array(
+            self::notifyAllPlayers( "moveSpecialist",  clienttranslate('${player_name} moves specialist (Bard action)'), array(
                 'specialist_id' => $specialist_id,
                 // 'destination' => 'tile_specialist_'.$destination.'_'.$player_id,
                 'destination' => $destination.'_'.$player_id,
                 'destroy' => false,
-                'player_name_id' => $player_id,
+                'player_name' => $this->getPlayerName($player_id),
             ) );
             // send new possible positions to player
             $mapper = new kgActionMapper($player_id, $this);
@@ -2609,13 +2609,13 @@ class kingsguild extends Table
         $sql = "UPDATE tokens SET token_location = '$player_id', token_location_arg = '$position[0]' WHERE token_id = '$resource_id' ";
         self::dbQuery($sql);
 
-        self::notifyAllPlayers("stealResource", clienttranslate( '${player_name} steals ${resource} from ${player_name_id}' ), array(
+        self::notifyAllPlayers("stealResource", clienttranslate( '${player_name} steals ${resource} from ${otherplayername}' ), array(
             'player_name' => $player_name,
             'player_id' => $player_id,
             'resource' => 'resource_'.$resource_type,
             'resource_type' => $resource_type,
             'resource_id' => 'resource_'.$resource_id,
-            'player_name_id' => $player_from,
+            'otherplayername' => $player_from,
             'player_id_from' => $player_from,
             'destination' => 'tile_storage_'.$position[0].'_'.$player_id,
         ) );
@@ -2960,8 +2960,8 @@ class kingsguild extends Table
                 }
 
                 //notify
-                self::notifyAllPlayers("playerChooseRelics", clienttranslate( '${player_name_id} buys ${number} relic(s) from discard pile for ${gold}' ), array(
-                    'player_name_id' => $player_id,
+                self::notifyAllPlayers("playerChooseRelics", clienttranslate( '${player_name} buys ${number} relic(s) from discard pile for ${gold}' ), array(
+                    'player_name' => $this->getPlayerName($player_id),
                     'player_id' => $player_id,
                     'number' => $cards_number,
                     'gold' => 'gold_'.($cards_number*3),
@@ -3038,12 +3038,12 @@ class kingsguild extends Table
                 foreach ($all_players as $player) {
                     if ($player == $player_id_active) {
                         $destroy = ($i == count($treasure_ids_selected)-1) ? true:false;
-                        self::notifyPlayer($player, "thisPlayerChooseTreasure", clienttranslate('${You} choose to keep ${card1} and ${player_name_id} gets ${card2}'), array(
+                        self::notifyPlayer($player, "thisPlayerChooseTreasure", clienttranslate('${You} choose to keep ${card1} and ${player_name} gets ${card2}'), array(
                             'treasure_id_keep' => $treasure_ids_selected[$i],
                             'treasure_id_give' => $treasure_ids_other[$i],
                             'card1' => 'treasure_'.$this->treasures[$this->getItemTypeById('treasure',  $treasure_ids_selected[$i])]['color'],
                             'card2' => 'treasure_'.$this->treasures[$this->getItemTypeById('treasure',  $treasure_ids_other[$i])]['color'],
-                            'player_name_id' => $player_id_other,
+                            'player_name' => $this->getPlayerName($player_id_other),
                             'player_id_give' => $player_id_other,
                             'treasure_location' => 'tile_card_'.$position_active["positions"][$i],
                             'destroy_menu' => $destroy,
@@ -3054,12 +3054,12 @@ class kingsguild extends Table
                         $card_info =  $this->treasures[$this->getItemTypeById('treasure', $treasure_ids_other[$i])];
                         $card_info['type'] = $this->getItemTypeById('treasure', $treasure_ids_other[$i]);    
                         $card_info['visible'] = "1";
-                        self::notifyPlayer($player, "thisPlayerGetTreasureFromPlayer", clienttranslate('${player_name_id} chooses to keep ${card1} and ${You} get ${card2}'), array(
+                        self::notifyPlayer($player, "thisPlayerGetTreasureFromPlayer", clienttranslate('${player_name} chooses to keep ${card1} and ${You} get ${card2}'), array(
                             'treasure_id' => $treasure_ids_other[$i],
                             'treasure_name' => $this->treasures[$this->getItemTypeById('treasure',  $treasure_ids_other[$i])]['name'],
                             'card1' => 'treasure_'.$this->treasures[$this->getItemTypeById('treasure',  $treasure_ids_selected[$i])]['color'],
                             'card2' => 'treasure_'.$this->treasures[$this->getItemTypeById('treasure',  $treasure_ids_other[$i])]['color'],
-                            'player_name_id' => $player_id_active,
+                            'player_name' => $this->getPlayerName($player_id_active),
                             'player_id_from' => $player_id_active,
                             'treasure_id2' => $treasure_ids_selected[$i],
                             'treasure_location' => $position_other["positions"][$i],
@@ -3067,13 +3067,13 @@ class kingsguild extends Table
                             'You'=>'You'
                         ) );
                     } else {
-                        self::notifyPlayer($player, "treasureHandle", clienttranslate('${player_name_id} chooses to keep ${card1} and ${player2_name_id} gets ${card2}'), array(
+                        self::notifyPlayer($player, "treasureHandle", clienttranslate('${player_name} chooses to keep ${card1} and ${otherplayername} gets ${card2}'), array(
                             'treasure_id1' => $treasure_ids_selected[$i],
                             'treasure_id2' => $treasure_ids_other[$i],
                             'card1' => 'treasure_'.$this->treasures[$this->getItemTypeById('treasure',  $treasure_ids_selected[$i])]['color'],
                             'card2' => 'treasure_'.$this->treasures[$this->getItemTypeById('treasure',  $treasure_ids_other[$i])]['color'],
-                            'player_name_id' => $player_id_active,
-                            'player2_name_id' => $player_id_other,
+                            'player_name' => $this->getPlayerName($player_id_active),
+                            'otherplayername' => $player_id_other,
                             'player_id' => $player_id_other,
                             'player_from' => $player_id_active,
                         ) );
@@ -3163,9 +3163,9 @@ class kingsguild extends Table
             // place thug on quest and inform other players
             $sql = "UPDATE tokens SET token_location = 'quest', token_location_arg = '$quest_id' WHERE token_type = 'thug' ";
             self::dbQuery( $sql); 
-            self::notifyAllPlayers( "moveThug", clienttranslate('${player_name_id} places Thug on quest'), array(
+            self::notifyAllPlayers( "moveThug", clienttranslate('${player_name} places Thug on quest'), array(
                 'player_id' => $player_id,
-                'player_name_id' => $player_id,                         
+                'player_name' => $this->getPlayerName($player_id),                         
                 'quest_id' => $quest_id,
                 'move_back' => false,
             ) );
@@ -3201,9 +3201,9 @@ class kingsguild extends Table
             self::dbQuery( $sql); 
 
             //notify
-            self::notifyAllPlayers( "craftItem", clienttranslate('${player_name_id} takes ${questName}'), array(
+            self::notifyAllPlayers( "craftItem", clienttranslate('${player_name} takes ${questName}'), array(
                 'player_id' => $player_id,
-                'player_name_id' => $player_id,   
+                'player_name' => $this->getPlayerName($player_id),   
                 'quest_completed' => true,                     
                 'quest_id' => $quest_id,
                 'questName' => $this->quest[$quest_type]['nameTr'],
@@ -3321,9 +3321,9 @@ class kingsguild extends Table
         self::dbQuery($sql);
 
         // notify
-        self::notifyAllPlayers( "makeOffering", clienttranslate('${player_name_id} makes Offering to the Council'), array(
+        self::notifyAllPlayers( "makeOffering", clienttranslate('${player_name} makes Offering to the Council'), array(
             'player_id' => $player_id,
-            'player_name_id' => $player_id,                         
+            'player_name' => $this->getPlayerName($player_id),                         
             'quest_id' => $quest_id,
             'sigilToAdd' => "sigil_".$player_id."_".$sigil_id,
         ) );
@@ -3925,8 +3925,8 @@ class kingsguild extends Table
                     $result = self::getUniqueValueFromDB( $sql );
                     if ($result < 1  ) {
                         // res not available, no bonus
-                        self::notifyAllPlayers("logInfo", clienttranslate( 'No available ${resource} ${player_name_id} gets no bonus' ), array(
-                            'player_name_id' => $player_id,
+                        self::notifyAllPlayers("logInfo", clienttranslate( 'No available ${resource} ${player_name} gets no bonus' ), array(
+                            'player_name' => $this->getPlayerName($player_id),
                             'resource' =>   'resource_'.$resource,
                         ) );
                         unset($bonus_res[  array_search ($resource, $bonus_res) ] );
@@ -4280,8 +4280,8 @@ class kingsguild extends Table
         if (array_count_values($playerbidvalues)[$max] == 1) {
             $index =  array_search ($max, $playerbidvalues);
             $player_id = $playerids[$index];
-            self::notifyAllPlayers( "logInfo",clienttranslate( '${player_name_id} wins the bidding: ${gold}' ), array(
-                'player_name_id' => $player_id,
+            self::notifyAllPlayers( "logInfo",clienttranslate( '${player_name} wins the bidding: ${gold}' ), array(
+                'player_name' => $this->getPlayerName($player_id),
                 'gold' => 'gold_'.$max,
                 ) );
             $this->updatePlayerGold($player_id, -$max, true);

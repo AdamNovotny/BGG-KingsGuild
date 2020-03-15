@@ -56,7 +56,8 @@
             $this->tpl['HAND'] = self::_("My treasure cards");
             $this->tpl['SHOW_COMPLETED_QUESTS'] = self::_("Show my completed quests");
         }
-        $this->tpl['MASTERROOMS'] = self::_("<< SHOW MASTER ROOMS");
+        // $this->tpl['MASTERROOMS'] = self::_("<< SHOW MASTER ROOMS");
+        $this->tpl['MASTERROOMS'] = "<< SHOW MASTER ROOMS"; // text is set using onLoad function in js
 
         $X_OFFSET = 50;
         $Y_OFFSET = 50;
